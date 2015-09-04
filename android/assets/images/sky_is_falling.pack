@@ -1,0 +1,19 @@
+
+sky_is_falling.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+background
+  rotate: false
+  xy: 2, 79
+  size: 1024, 768
+  orig: 1024, 768
+  offset: 0, 0
+  index: -1
+ship
+  rotate: false
+  xy: 2, 2
+  size: 99, 75
+  orig: 99, 75
+  offset: 0, 0
+  index: -1
