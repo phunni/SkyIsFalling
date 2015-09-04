@@ -44,7 +44,8 @@ public class WorldRenderer implements Disposable {
 
 
     public void resize(int width, int height) {
-        //camera.viewportWidth = (Constants.VIEWPORT_HEIGHT / height) * width;
+        camera.viewportWidth = (Constants.VIEWPORT_HEIGHT / height) * width;
+        gameViewPort.update(width, height);
         camera.update();
     }
 
