@@ -51,7 +51,7 @@ public class WorldRenderer implements Disposable {
 
     private void init() {
         camera = new OrthographicCamera();
-        gameViewPort = new FillViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
+        gameViewPort = new ExtendViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
         camera.position.set(0, 0, 0);
         camera.setToOrtho(false);
         camera.update();
