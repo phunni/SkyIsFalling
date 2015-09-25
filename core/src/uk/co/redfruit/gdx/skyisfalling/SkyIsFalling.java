@@ -19,7 +19,7 @@ public class SkyIsFalling extends Game {
 	public void create () {
 		// Set Libgdx log level 
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
-		Assets.getInstance().intit(new AssetManager());
+		Assets.getInstance().init(new AssetManager());
 		setScreen(new MenuScreen(this));
 	}
 

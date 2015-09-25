@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -21,13 +22,13 @@ public class Assets implements Disposable, AssetErrorListener {
 
     private AssetFonts fonts;
 
-    private TextureRegion background;
+    private Sprite background;
     private PlayerShipAsset player;
 
 
     private Assets(){}
 
-    public void intit(AssetManager assetManager) {
+    public void init(AssetManager assetManager) {
         this.assetManager = assetManager;
         this.assetManager.setErrorListener(this);
         this.assetManager.load(Constants.TEXTURE_SKY_IS_FALLING, TextureAtlas.class);
@@ -45,7 +46,7 @@ public class Assets implements Disposable, AssetErrorListener {
             t.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         }
 
-        background = atlas.findRegion("background");
+        background = atlas.createSprite("background");
         player = new PlayerShipAsset(atlas);
 
     }
@@ -68,7 +69,7 @@ public class Assets implements Disposable, AssetErrorListener {
         return fonts;
     }
 
-    public TextureRegion getBackground() {
+    public Sprite getBackground() {
         return background;
     }
 

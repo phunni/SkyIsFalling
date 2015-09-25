@@ -2,21 +2,15 @@ package uk.co.redfruit.gdx.skyisfalling.game;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.*;
-import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
-import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class WorldRenderer implements Disposable {
 
     private OrthographicCamera camera;
     private OrthographicCamera guiCamera;
-    private Viewport gameViewPort;
-    private Viewport guiViewport;
     private SpriteBatch batch;
     private WorldController worldController;
 
@@ -37,42 +31,40 @@ public class WorldRenderer implements Disposable {
     public void render() {
         renderWorld(batch);
         renderGui(batch);
-        //
-        // ScreenshotFactory.saveScreenshot();
     }
 
 
 
     public void resize(int width, int height) {
-        camera.viewportWidth = (Constants.VIEWPORT_HEIGHT / height) * width;
-        gameViewPort.update(width, height, true);
+        float screenAR = width / (float) height;
+        camera = new OrthographicCamera(20, 20 / screenAR);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+        camera.update();
+
+        batch = new SpriteBatch();
+        batch.setProjectionMatrix(camera.combined);
         camera.update();
     }
 
     private void init() {
-        camera = new OrthographicCamera();
-        gameViewPort = new ExtendViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
-        camera.position.set(0, 0, 0);
-        camera.setToOrtho(false);
-        camera.update();
+        resize((int)Constants.WORLD_WIDTH, (int)Constants.WORLD_HEIGHT);
+        worldController.getLevel().setCamera(camera);
 
         guiCamera = new OrthographicCamera();
-        guiViewport = new ScreenViewport(guiCamera);
         guiCamera.position.set(0, 0, 0);
         guiCamera.setToOrtho(false);
         guiCamera.update();
 
-        batch = new SpriteBatch();
+
 
         debugRenderer = new Box2DDebugRenderer();
-        debugRenderer.setDrawAABBs(true);
+        //debugRenderer.setDrawAABBs(true);
     }
 
     private void renderGui(SpriteBatch batch) {
     }
 
     private void renderWorld(SpriteBatch batch) {
-        batch.setProjectionMatrix(camera.combined);
         batch.begin();
         worldController.getLevel().render(batch);
         batch.end();
