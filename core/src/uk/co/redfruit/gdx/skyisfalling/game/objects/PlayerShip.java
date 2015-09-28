@@ -13,22 +13,25 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 public class PlayerShip extends GameObject {
 
     private PlayerShipAsset playerShipRegion;
-    private static final float SHIP_WIDTH = 1;
+    private static final float SHIP_WIDTH = 2;
     private static float SHIP_SPEED = 4;
+
+    public boolean movingLeft;
+    public boolean movingRight;
 
     public PlayerShip(World world) {
         super(world);
         playerShipRegion = Assets.getInstance().getPlayer();
-        position.set(5, 5);
+        position.set(Constants.WORLD_WIDTH / 2, 0.1f);
         defaultDynamicBodyDef.position.set(position.x, position.y);
         defaultDynamicBodyDef.fixedRotation = true;
         FixtureDef playerShipFixtureDef = new FixtureDef();
         playerShipFixtureDef.density = 1f;
-        playerShipFixtureDef.friction = 0.5f;
-        playerShipFixtureDef.restitution = 0.5f;
+        playerShipFixtureDef.friction = 0.8f;
+        playerShipFixtureDef.restitution = 0.2f;
         body = world.createBody(defaultDynamicBodyDef);
         position.set(body.getPosition().x, body.getPosition().y);
-        loader.attachFixture(body, "player_ship", playerShipFixtureDef, 1);
+        loader.attachFixture(body, "player_ship", playerShipFixtureDef, SHIP_WIDTH);
         Vector2 bodyOrigin = loader.getOrigin("player_ship", SHIP_WIDTH).cpy();
         origin.set(bodyOrigin);
     }
@@ -42,5 +45,19 @@ public class PlayerShip extends GameObject {
         playerShipRegion.ship.setOrigin(origin.x, origin.y);
 
         playerShipRegion.ship.draw(batch);
+    }
+
+    public void moveRight() {
+        Vector2 velocity = body.getLinearVelocity();
+        body.setLinearVelocity(SHIP_SPEED, velocity.y);
+    }
+
+    public void moveLeft(){
+        Vector2 velocity = body.getLinearVelocity();
+        body.setLinearVelocity(-SHIP_SPEED, velocity.y);
+    }
+
+    public void stop() {
+        body.setLinearVelocity(0, body.getLinearVelocity().y);
     }
 }

@@ -43,6 +43,16 @@ public class Level {
     }
 
     public void update(float deltaTime) {
+        if (playerShip.movingLeft) {
+            playerShip.moveLeft();
+        } else if (playerShip.movingRight) {
+            playerShip.moveRight();
+        } else {
+            playerShip.stop();
+        }
+
+
+
        world.step(deltaTime, 6, 2);
     }
 
@@ -50,4 +60,7 @@ public class Level {
         this.camera = camera;
     }
 
+    public PlayerShip getPlayerShip() {
+        return playerShip;
+    }
 }
