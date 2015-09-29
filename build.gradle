@@ -9,7 +9,6 @@ buildscript {
 }
 
 allprojects {
-    apply plugin: "eclipse"
     apply plugin: "idea"
 
     version = '1.0'
@@ -71,8 +70,4 @@ project(":core") {
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.0"
         compile fileTree(dir: 'libs', include: '*.jar')
     }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }
