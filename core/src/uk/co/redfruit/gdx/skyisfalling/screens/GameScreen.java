@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -17,6 +19,7 @@ public class GameScreen extends RedfruitScreen {
 
     private SpriteBatch batch;
     private OrthographicCamera camera;
+    private Viewport gameViewport;
 
     private Level level;
 
@@ -33,6 +36,7 @@ public class GameScreen extends RedfruitScreen {
 
         batch = new SpriteBatch();
         camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
+        gameViewport = new ExtendViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -62,17 +66,16 @@ public class GameScreen extends RedfruitScreen {
         debugRenderer.render(world, camera.combined);
 
         world.step(1f / 60f, 6, 2);
-
-
-
     }
 
     @Override
     public void resize(int width, int height) {
+        gameViewport.update(width, height);
         float screenAR = width / (float) height;
         camera = new OrthographicCamera(20, 20 / screenAR);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+
 
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
