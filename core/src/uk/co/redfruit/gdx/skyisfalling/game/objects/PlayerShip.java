@@ -13,7 +13,7 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 public class PlayerShip extends GameObject {
 
     private PlayerShipAsset playerShipRegion;
-    private static final float SHIP_WIDTH = 2;
+    private static final float SHIP_WIDTH = Constants.SHIP_WIDTH;
     private static float SHIP_SPEED = 4;
 
     public boolean movingLeft;

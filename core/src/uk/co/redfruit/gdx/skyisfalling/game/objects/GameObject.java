@@ -30,6 +30,10 @@ public abstract class GameObject {
         defaultDynamicBodyDef.position.set(position.x, position.y);
     }
 
+    public GameObject(){
+       this(new World(new Vector2(0, -9.8f), true));
+    }
+
     public void update(float deltaTime) {
         position.set(body.getPosition());
     }
