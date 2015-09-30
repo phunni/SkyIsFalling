@@ -50,7 +50,7 @@ public class Assets implements Disposable, AssetErrorListener {
         background = atlas.createSprite("background");
         player = new PlayerShipAsset(atlas);
         enemies = new EnemyShipAsset(atlas);
-
+        fonts = new AssetFonts();
     }
 
     @Override
@@ -61,6 +61,9 @@ public class Assets implements Disposable, AssetErrorListener {
     @Override
     public void dispose() {
         assetManager.dispose();
+        fonts.defaultSmall.dispose();
+        fonts.defaultNormal.dispose();
+        fonts.defaultBig.dispose();
     }
 
     public static Assets getInstance() {
