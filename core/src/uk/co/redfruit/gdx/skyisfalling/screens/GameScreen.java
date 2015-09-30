@@ -4,12 +4,15 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
+import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
@@ -19,7 +22,9 @@ public class GameScreen extends RedfruitScreen {
 
     private SpriteBatch batch;
     private OrthographicCamera camera;
+    private OrthographicCamera cameraGUI;
     private Viewport gameViewport;
+    private Viewport guiViewport;
 
     private Level level;
 
@@ -41,6 +46,12 @@ public class GameScreen extends RedfruitScreen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
+        cameraGUI =  new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+        guiViewport = new ScreenViewport(cameraGUI);
+        cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
+        cameraGUI.setToOrtho(true);
+        cameraGUI.update();
+
         world = new World(new Vector2(0, -9.8f), true);
         debugRenderer = new Box2DDebugRenderer();
 
@@ -61,6 +72,7 @@ public class GameScreen extends RedfruitScreen {
         level.update(deltaTime);
 
         renderWorld(batch);
+        renderGui(batch);
 
 
         debugRenderer.render(world, camera.combined);
@@ -75,6 +87,8 @@ public class GameScreen extends RedfruitScreen {
         camera = new OrthographicCamera(20, 20 / screenAR);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+
+        guiViewport.update(width, height);
 
 
         batch = new SpriteBatch();
@@ -153,6 +167,12 @@ public class GameScreen extends RedfruitScreen {
     }
 
     private void renderGui(SpriteBatch batch) {
+        batch.setProjectionMatrix(cameraGUI.combined);
+        batch.begin();
+        if (Constants.DEBUG) {
+            renderGUIFPSCounter(batch);
+        }
+        batch.end();
     }
 
     private void renderWorld(SpriteBatch batch) {
@@ -163,5 +183,24 @@ public class GameScreen extends RedfruitScreen {
         if (Constants.DEBUG) {
             debugRenderer.render(world, camera.combined);
         }
+    }
+
+    private void renderGUIFPSCounter(SpriteBatch batch) {
+        float x = cameraGUI.viewportWidth - 55;
+        float y = cameraGUI.viewportHeight - 15;
+
+        int fps = Gdx.graphics.getFramesPerSecond();
+
+        BitmapFont fpsFont = Assets.getInstance().getFonts().defaultNormal;
+
+        if (fps >= 45) {
+            fpsFont.setColor(0, 1, 0, 1);
+        } else if (fps >= 30) {
+            fpsFont.setColor(1, 1, 0, 1);
+        } else {
+            fpsFont.setColor(1, 0, 0, 1);
+        }
+        fpsFont.draw(batch, "FPS: " + fps, x, y);
+        fpsFont.setColor(1, 1, 1, 1);
     }
 }

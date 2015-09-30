@@ -17,7 +17,7 @@ public class Constants {
     //Textures
     public static final String TEXTURE_SKY_IS_FALLING = "images/sky_is_falling.pack";
 
-    public static final float SHIP_WIDTH = 1.5f;
+    public static final float SHIP_WIDTH = 1.0f;
 
     public static final boolean DEBUG = true;
 
