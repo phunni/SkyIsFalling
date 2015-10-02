@@ -3,6 +3,7 @@ package uk.co.redfruit.gdx.skyisfalling.game.objects;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pool.Poolable;
@@ -22,6 +23,8 @@ public class EnemyShip extends GameObject implements Poolable {
     public boolean movingLeft;
     public boolean movingRight;
     public boolean movingDown;
+
+    public float lastDirection;
 
     private Sprite sprite;
 
@@ -60,6 +63,7 @@ public class EnemyShip extends GameObject implements Poolable {
         enemyShipFixtureDef.friction = 0.8f;
         enemyShipFixtureDef.restitution = 0.2f;
         body = world.createBody(defaultDynamicBodyDef);
+        body.setGravityScale(0);
         loader.attachFixture(body, "enemy_ship", enemyShipFixtureDef, SHIP_WIDTH);
         Vector2 bodyOrigin = loader.getOrigin("enemy_ship", SHIP_WIDTH).cpy();
         origin.set(bodyOrigin);
@@ -84,10 +88,33 @@ public class EnemyShip extends GameObject implements Poolable {
                 SHIP_WIDTH, SHIP_WIDTH * sprite.getHeight() / sprite.getWidth());
 
         sprite.draw(batch);
+        if (movingLeft) {
+            moveLeft();
+        } else if (movingRight) {
+            moveRight();
+        }
     }
 
     public boolean isAWake() {
         return body.isAwake();
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public void moveRight() {
+        Vector2 velocity = body.getLinearVelocity();
+        body.setLinearVelocity(SHIP_SPEED, velocity.y);
+    }
+
+    public void moveLeft(){
+        Vector2 velocity = body.getLinearVelocity();
+        body.setLinearVelocity(-SHIP_SPEED, velocity.y);
+    }
+
+    public void stop() {
+        body.setLinearVelocity(0, body.getLinearVelocity().y);
     }
 
 }
