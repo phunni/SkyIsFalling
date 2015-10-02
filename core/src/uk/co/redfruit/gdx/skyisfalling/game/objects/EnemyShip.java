@@ -38,7 +38,6 @@ public class EnemyShip extends GameObject implements Poolable {
 
 
     public void init(World world, String colour, Vector2 position) {
-        this.world = world;
         enemyShipRegion = Assets.getInstance().getEnemies();
         switch (colour) {
             case "green":
@@ -56,7 +55,6 @@ public class EnemyShip extends GameObject implements Poolable {
         }
         this.position = position;
         defaultDynamicBodyDef.position.set(position.x, position.y);
-        defaultDynamicBodyDef.awake = false;
         defaultDynamicBodyDef.fixedRotation = true;
         FixtureDef enemyShipFixtureDef = new FixtureDef();
         enemyShipFixtureDef.density = 1f;
