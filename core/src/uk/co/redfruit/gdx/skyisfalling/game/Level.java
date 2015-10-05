@@ -1,17 +1,15 @@
 package uk.co.redfruit.gdx.skyisfalling.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.TimeUtils;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
+import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
@@ -21,6 +19,7 @@ public class Level {
 
     private PlayerShip playerShip;
     private Array<EnemyShip> enemyShips = new Array<EnemyShip>();
+    private Array<Laser> lasers = new Array<>();
 
     private final World world;
 
@@ -32,6 +31,7 @@ public class Level {
     private float score;
 
     private Pool<EnemyShip> enemyShipPool;
+    private Pool<Laser> laserPool;
 
 
     public Level(World newWorld) {
@@ -42,9 +42,15 @@ public class Level {
                 return new EnemyShip(world);
             }
         };
+        laserPool = new Pool<Laser>() {
+            @Override
+            protected Laser newObject() {
+                return new Laser(world);
+            }
+        };
         levelNumber = 1;
         setDifficulty();
-        playerShip = new PlayerShip(newWorld);
+        playerShip = new PlayerShip(world);
         setUpEnemyShips();
         startTime = TimeUtils.nanoTime();
 
@@ -88,6 +94,9 @@ public class Level {
                 enemy.movingRight = false;
             }
         }
+        for (Laser laser : lasers){
+            laser.render(batch);
+        }
         if (moving) {
             startTime = TimeUtils.nanoTime();
         }
@@ -112,6 +121,14 @@ public class Level {
         return playerShip;
     }
 
+    public Pool<Laser> getLaserPool() {
+        return laserPool;
+    }
+
+    public Array<Laser> getLasers() {
+        return lasers;
+    }
+
     private void setUpEnemyShips() {
         if (difficulty == 0) {
             addShips("black", 0.0f);
@@ -130,4 +147,5 @@ public class Level {
             enemyShips.add(enemy);
         }
     }
+
 }

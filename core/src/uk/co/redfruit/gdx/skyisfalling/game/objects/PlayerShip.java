@@ -3,6 +3,7 @@ package uk.co.redfruit.gdx.skyisfalling.game.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
@@ -31,7 +32,8 @@ public class PlayerShip extends GameObject {
         playerShipFixtureDef.restitution = 0.2f;
         body = world.createBody(defaultDynamicBodyDef);
         position.set(body.getPosition().x, body.getPosition().y);
-        loader.attachFixture(body, "player_ship", playerShipFixtureDef, SHIP_WIDTH);
+        Fixture playerFixture = loader.attachFixture(body, "player_ship", playerShipFixtureDef, SHIP_WIDTH);
+        playerFixture.setUserData(this);
         Vector2 bodyOrigin = loader.getOrigin("player_ship", SHIP_WIDTH).cpy();
         origin.set(bodyOrigin);
     }
@@ -45,6 +47,12 @@ public class PlayerShip extends GameObject {
         playerShipRegion.ship.setOrigin(origin.x, origin.y);
 
         playerShipRegion.ship.draw(batch);
+    }
+
+    @Override
+    public Vector2 getPosition() {
+        return new Vector2(playerShipRegion.ship.getX() + playerShipRegion.ship.getWidth() / 2,
+                playerShipRegion.ship.getY() + playerShipRegion.ship.getHeight() / 2);
     }
 
     public void moveRight() {

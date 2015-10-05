@@ -8,6 +8,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import java.util.zip.CheckedInputStream;
+
 public abstract class GameObject {
 
     protected Vector2 position;
@@ -19,6 +21,8 @@ public abstract class GameObject {
 
     protected static BodyEditorLoader loader;
     protected BodyDef defaultDynamicBodyDef;
+
+    protected boolean cullable;
 
     public GameObject(World world) {
         position = new Vector2();
@@ -40,4 +44,15 @@ public abstract class GameObject {
 
     public abstract void render(SpriteBatch batch);
 
+    public Vector2 getPosition() {
+        return position;
+    }
+
+    public void setCullable(boolean cullable) {
+        this.cullable = cullable;
+    }
+
+    public boolean isCullable() {
+        return cullable;
+    }
 }

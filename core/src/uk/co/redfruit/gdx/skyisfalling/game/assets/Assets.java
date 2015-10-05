@@ -25,6 +25,7 @@ public class Assets implements Disposable, AssetErrorListener {
     private Sprite background;
     private PlayerShipAsset player;
     private EnemyShipAsset enemies;
+    private LaserAsset lasers;
 
 
     private Assets(){}
@@ -50,6 +51,7 @@ public class Assets implements Disposable, AssetErrorListener {
         background = atlas.createSprite("background");
         player = new PlayerShipAsset(atlas);
         enemies = new EnemyShipAsset(atlas);
+        lasers = new LaserAsset(atlas);
         fonts = new AssetFonts();
     }
 
@@ -84,5 +86,9 @@ public class Assets implements Disposable, AssetErrorListener {
 
     public EnemyShipAsset getEnemies() {
         return enemies;
+    }
+
+    public LaserAsset getLasers(){
+        return lasers;
     }
 }
