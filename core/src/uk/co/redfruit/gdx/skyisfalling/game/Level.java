@@ -59,13 +59,13 @@ public class Level {
     }
 
     private void setDifficulty() {
-        if (levelNumber < 5) {
+        if (levelNumber < 2) {
             difficulty = 0;
-        } else if (levelNumber < 10) {
+        } else if (levelNumber < 5) {
             difficulty = 1;
-        } else if (levelNumber < 15) {
+        } else if (levelNumber < 8) {
             difficulty = 2;
-        } else if (levelNumber < 20) {
+        } else if (levelNumber < 12) {
             difficulty = 3;
         }
     }
