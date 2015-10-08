@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.LaserAsset;
@@ -55,9 +56,10 @@ public class Laser extends GameObject implements Pool.Poolable {
         laserFixtureDef.friction = 0.0f;
         laserFixtureDef.restitution = 0.1f;
         body = world.createBody(defaultDynamicBodyDef);
-        body.setGravityScale(-1f);
+        body.setGravityScale(0);
         body.createFixture(laserFixtureDef);
         body.setUserData(this);
+        body.setLinearVelocity(0, 15);
         square.dispose();
     }
 
@@ -79,4 +81,6 @@ public class Laser extends GameObject implements Pool.Poolable {
         sprite = null;
         cullable = false;
     }
+
+
 }
