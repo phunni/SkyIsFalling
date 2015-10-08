@@ -1,5 +1,6 @@
 package uk.co.redfruit.gdx.skyisfalling.game;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -38,6 +39,8 @@ public class Level {
     private Pool<EnemyShip> enemyShipPool;
     private Pool<Laser> laserPool;
 
+    private long timeSinceLastShot;
+
 
     public Level(World newWorld) {
         this.world = newWorld;
@@ -58,6 +61,7 @@ public class Level {
         playerShip = new PlayerShip(world);
         setUpEnemyShips();
         startTimeForMovingShips = 1200000000;
+        timeSinceLastShot = TimeUtils.nanoTime();
 
         background.setBounds(0, 0, Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
         background.setScale(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
@@ -119,7 +123,7 @@ public class Level {
             playerShip.stop();
         }
 
-        if (getPlayerShip().lives <= 0) {
+        if (getPlayerShip().lives <= 0 && !gameOver) {
             gameOverStartTime = TimeUtils.nanoTime();
             gameOver = true;
         }
@@ -138,6 +142,14 @@ public class Level {
                 }
                 enemyShips.removeValue(ship, false);
                 enemyShipPool.free(ship);
+            }
+        }
+
+        //if on Android we need to shoot the lasers automatically
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            if (TimeUtils.timeSinceNanos(timeSinceLastShot) > 500000000) {
+                shootLaser();
+                timeSinceLastShot = TimeUtils.nanoTime();
             }
         }
     }
@@ -160,6 +172,12 @@ public class Level {
 
     public int getScore() {
         return (int)score;
+    }
+
+    public void shootLaser() {
+        Laser laser = laserPool.obtain();
+        laser.init("blue", playerShip.getPosition());
+        lasers.add(laser);
     }
 
     private void setUpEnemyShips() {
