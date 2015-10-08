@@ -56,8 +56,8 @@ public class Laser extends GameObject implements Pool.Poolable {
         laserFixtureDef.restitution = 0.1f;
         body = world.createBody(defaultDynamicBodyDef);
         body.setGravityScale(-1f);
-        Fixture laserFixture = body.createFixture(laserFixtureDef);
-        laserFixture.setUserData(this);
+        body.createFixture(laserFixtureDef);
+        body.setUserData(this);
         square.dispose();
     }
 

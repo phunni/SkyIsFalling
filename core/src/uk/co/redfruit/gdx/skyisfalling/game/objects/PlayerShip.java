@@ -1,6 +1,7 @@
 package uk.co.redfruit.gdx.skyisfalling.game.objects;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -13,6 +14,8 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class PlayerShip extends GameObject {
 
+    private static final String TAG = "PlayerShip";
+
     private PlayerShipAsset playerShipRegion;
     private static final float SHIP_WIDTH = Constants.SHIP_WIDTH;
     private static float SHIP_SPEED = 4;
@@ -20,8 +23,11 @@ public class PlayerShip extends GameObject {
     public boolean movingLeft;
     public boolean movingRight;
 
+    public int lives;
+
     public PlayerShip(World world) {
         super(world);
+        lives = 3;
         playerShipRegion = Assets.getInstance().getPlayer();
         position.set(Constants.WORLD_WIDTH / 2, 0.1f);
         defaultDynamicBodyDef.position.set(position.x, position.y);
@@ -31,9 +37,9 @@ public class PlayerShip extends GameObject {
         playerShipFixtureDef.friction = 0.8f;
         playerShipFixtureDef.restitution = 0.2f;
         body = world.createBody(defaultDynamicBodyDef);
+        body.setUserData(this);
         position.set(body.getPosition().x, body.getPosition().y);
-        Fixture playerFixture = loader.attachFixture(body, "player_ship", playerShipFixtureDef, SHIP_WIDTH);
-        playerFixture.setUserData(this);
+        loader.attachFixture(body, "player_ship", playerShipFixtureDef, SHIP_WIDTH);
         Vector2 bodyOrigin = loader.getOrigin("player_ship", SHIP_WIDTH).cpy();
         origin.set(bodyOrigin);
     }
@@ -68,4 +74,5 @@ public class PlayerShip extends GameObject {
     public void stop() {
         body.setLinearVelocity(0, body.getLinearVelocity().y);
     }
+
 }

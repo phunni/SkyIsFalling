@@ -6,9 +6,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -87,13 +90,6 @@ public class GameScreen extends RedfruitScreen {
         debugRenderer.render(world, camera.combined);
 
         world.step(1f / 60f, 6, 2);
-
-        for (Laser laser : level.getLasers()) {
-            if (laser.isCullable()) {
-                level.getLasers().removeValue(laser, false);
-                level.getLaserPool().free(laser);
-            }
-        }
     }
 
     @Override
@@ -188,10 +184,19 @@ public class GameScreen extends RedfruitScreen {
     private void renderGui(SpriteBatch batch) {
         batch.setProjectionMatrix(cameraGUI.combined);
         batch.begin();
+        renderScore(batch);
+        renderLives(batch);
+        if (level.gameOver) {
+            renderGameOver(batch);
+        }
         if (Constants.DEBUG) {
             renderGUIFPSCounter(batch);
         }
         batch.end();
+
+        if (level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000) {
+            game.setScreen(new MenuScreen(game));
+        }
     }
 
     private void renderWorld(SpriteBatch batch) {
@@ -205,7 +210,7 @@ public class GameScreen extends RedfruitScreen {
     }
 
     private void renderGUIFPSCounter(SpriteBatch batch) {
-        BitmapFont fpsFont = Assets.getInstance().getFonts().defaultNormal;
+        BitmapFont fpsFont = Assets.getInstance().getFonts().defaultSmall;
 
         int fps = Gdx.graphics.getFramesPerSecond();
 
@@ -215,7 +220,7 @@ public class GameScreen extends RedfruitScreen {
         layout.setText(fpsFont, fpsString);
 
         float x = cameraGUI.viewportWidth - layout.width - 15;
-        float y = cameraGUI.viewportHeight - 15;
+        float y = 15;
 
         if (fps >= 45) {
             fpsFont.setColor(0, 1, 0, 1);
@@ -226,5 +231,44 @@ public class GameScreen extends RedfruitScreen {
         }
         fpsFont.draw(batch, fpsString, x, y);
         fpsFont.setColor(1, 1, 1, 1);
+    }
+
+    private void renderLives(SpriteBatch batch) {
+        BitmapFont livesFont = Assets.getInstance().getFonts().defaultNormal;
+        GlyphLayout layout = new GlyphLayout();
+        layout.setText(livesFont, "" + level.getPlayerShip().lives);
+
+        Sprite playerLife = Assets.getInstance().getPlayerLife();
+
+        float x = cameraGUI.viewportWidth - playerLife.getWidth() - 25;
+        float y = cameraGUI.viewportHeight - playerLife.getHeight() - 15;
+
+
+        playerLife.setPosition(x, y);
+        playerLife.draw(batch);
+        livesFont.draw(batch, layout, x + playerLife.getWidth(), y);
+    }
+
+    private void renderScore(SpriteBatch batch ){
+        BitmapFont scoreFont = Assets.getInstance().getFonts().defaultNormal;
+        GlyphLayout layout = new GlyphLayout();
+        String scoreString = "Score : " + level.getScore();
+        layout.setText(scoreFont, scoreString);
+
+        float x = 15;
+        float y = cameraGUI.viewportHeight - 15;
+
+        scoreFont.draw(batch, scoreString, x, y);
+    }
+
+    private void renderGameOver(SpriteBatch batch) {
+            BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
+            GlyphLayout gameOverLayout = new GlyphLayout();
+            gameOverLayout.setText(fontGameOver, "GAME OVER!");
+
+            float x = (cameraGUI.viewportWidth / 2) - (gameOverLayout.width / 2);
+            float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
+
+            fontGameOver.draw(batch, gameOverLayout, x, y);
     }
 }

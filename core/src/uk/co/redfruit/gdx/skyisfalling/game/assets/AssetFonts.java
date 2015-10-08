@@ -14,9 +14,9 @@ public class AssetFonts {
     public final BitmapFont defaultBig;
 
     private static final float FONT_SIZE_BASE = 0.004f;
-    private static final float SMALL_FONT = 2;
-    private static final float NORMAL_FONT = 4;
-    private static final float BIG_FONT = 6;
+    private static final float SMALL_FONT = 4;
+    private static final float NORMAL_FONT = 5;
+    private static final float BIG_FONT = 8;
 
     public AssetFonts() {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("skins/DroidSans.ttf"));

@@ -23,6 +23,7 @@ public class Assets implements Disposable, AssetErrorListener {
     private AssetFonts fonts;
 
     private Sprite background;
+    private Sprite playerLife;
     private PlayerShipAsset player;
     private EnemyShipAsset enemies;
     private LaserAsset lasers;
@@ -49,6 +50,7 @@ public class Assets implements Disposable, AssetErrorListener {
         }
 
         background = atlas.createSprite("background");
+        playerLife = atlas.createSprite("playerLife");
         player = new PlayerShipAsset(atlas);
         enemies = new EnemyShipAsset(atlas);
         lasers = new LaserAsset(atlas);
@@ -57,7 +59,7 @@ public class Assets implements Disposable, AssetErrorListener {
 
     @Override
     public void error(AssetDescriptor asset, Throwable throwable) {
-        Gdx.app.error(TAG, "Couldn't load asset: " + asset, (Exception) throwable);
+        Gdx.app.error(TAG, "Couldn't load asset: " + asset, throwable);
     }
 
     @Override
@@ -90,5 +92,9 @@ public class Assets implements Disposable, AssetErrorListener {
 
     public LaserAsset getLasers(){
         return lasers;
+    }
+
+    public Sprite getPlayerLife() {
+        return playerLife;
     }
 }

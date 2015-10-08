@@ -1,5 +1,7 @@
 package uk.co.redfruit.gdx.skyisfalling.game;
 
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -11,6 +13,7 @@ import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
+import uk.co.redfruit.gdx.skyisfalling.screens.MenuScreen;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class Level {
@@ -27,8 +30,10 @@ public class Level {
 
     private float difficulty;
     private float levelNumber;
-    private long startTime;
+    private long startTimeForMovingShips;
+    public long gameOverStartTime;
     private float score;
+    public boolean gameOver;
 
     private Pool<EnemyShip> enemyShipPool;
     private Pool<Laser> laserPool;
@@ -52,7 +57,7 @@ public class Level {
         setDifficulty();
         playerShip = new PlayerShip(world);
         setUpEnemyShips();
-        startTime = TimeUtils.nanoTime();
+        startTimeForMovingShips = 1200000000;
 
         background.setBounds(0, 0, Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
         background.setScale(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
@@ -71,34 +76,36 @@ public class Level {
     }
 
     public void render(SpriteBatch batch) {
-        boolean moving = false;
-        batch.disableBlending();
-        background.draw(batch);
-        batch.enableBlending();
-        playerShip.render(batch);
-        if (TimeUtils.timeSinceNanos(startTime) > 1400000000) {
-            moving = true;
-        }
-        for (EnemyShip enemy : enemyShips) {
-            enemy.render(batch);
-            if (moving) {
-                if (enemy.lastDirection == 0) {
-                    enemy.movingRight = true;
-                    enemy.lastDirection = 1;
-                } else if (enemy.lastDirection == 1) {
-                    enemy.movingLeft = true;
-                    enemy.lastDirection = 0;
-                }
-            } else {
-                enemy.movingLeft = false;
-                enemy.movingRight = false;
+        if (!gameOver) {
+            boolean moving = false;
+            batch.disableBlending();
+            background.draw(batch);
+            batch.enableBlending();
+            playerShip.render(batch);
+            if (TimeUtils.timeSinceNanos(startTimeForMovingShips) > 1400000000) {
+                moving = true;
             }
-        }
-        for (Laser laser : lasers){
-            laser.render(batch);
-        }
-        if (moving) {
-            startTime = TimeUtils.nanoTime();
+            for (EnemyShip enemy : enemyShips) {
+                enemy.render(batch);
+                if (moving) {
+                    if (enemy.lastDirection == 0) {
+                        enemy.movingRight = true;
+                        enemy.lastDirection = 1;
+                    } else if (enemy.lastDirection == 1) {
+                        enemy.movingLeft = true;
+                        enemy.lastDirection = 0;
+                    }
+                } else {
+                    enemy.movingLeft = false;
+                    enemy.movingRight = false;
+                }
+            }
+            for (Laser laser : lasers) {
+                laser.render(batch);
+            }
+            if (moving) {
+                startTimeForMovingShips = TimeUtils.nanoTime();
+            }
         }
 
     }
@@ -112,9 +119,27 @@ public class Level {
             playerShip.stop();
         }
 
+        if (getPlayerShip().lives <= 0) {
+            gameOverStartTime = TimeUtils.nanoTime();
+            gameOver = true;
+        }
 
+        for (Laser laser : lasers) {
+            if (laser.isCullable()) {
+                lasers.removeValue(laser, false);
+                laserPool.free(laser);
+            }
+        }
 
-       world.step(deltaTime, 6, 2);
+        for (EnemyShip ship : enemyShips) {
+            if (ship.isDestroyed()) {
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Ship destroyed");
+                }
+                enemyShips.removeValue(ship, false);
+                enemyShipPool.free(ship);
+            }
+        }
     }
 
     public PlayerShip getPlayerShip() {
@@ -129,6 +154,14 @@ public class Level {
         return lasers;
     }
 
+    public void increaseScore(int increase){
+        score += increase;
+    }
+
+    public int getScore() {
+        return (int)score;
+    }
+
     private void setUpEnemyShips() {
         if (difficulty == 0) {
             addShips("black", 0.0f);
@@ -140,12 +173,13 @@ public class Level {
     private void addShips(String colour, float height) {
         for (int i =0; i < 6; i++) {
             EnemyShip enemy = enemyShipPool.obtain();
-            enemy.init(world, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
+            enemy.init(world, this, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
             /*if (Constants.DEBUG) {
                 Gdx.app.log(TAG, "Body is awake: " + enemy.isAWake());
             }*/
             enemyShips.add(enemy);
         }
     }
+
 
 }
