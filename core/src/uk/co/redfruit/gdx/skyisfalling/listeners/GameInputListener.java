@@ -5,11 +5,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
-import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
@@ -32,8 +28,10 @@ public class GameInputListener extends InputAdapter {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 target = getTarget(screenX, screenY);
         if (target.x < Constants.WORLD_WIDTH / 2) {
+            playerShip.movingRight = false;
             playerShip.movingLeft = true;
         } else if (target.x > Constants.WORLD_WIDTH / 2) {
+            playerShip.movingLeft = false;
             playerShip.movingRight = true;
         }
         return true;
@@ -41,8 +39,12 @@ public class GameInputListener extends InputAdapter {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        playerShip.movingLeft = false;
-        playerShip.movingRight = false;
+        Vector2 target = getTarget(screenX, screenY);
+        if (target.x < Constants.WORLD_WIDTH / 2) {
+            playerShip.movingLeft = false;
+        } else if (target.x > Constants.WORLD_WIDTH / 2) {
+            playerShip.movingRight = false;
+        }
         return true;
     }
 
@@ -53,7 +55,7 @@ public class GameInputListener extends InputAdapter {
         } else if (keycode == Input.Keys.RIGHT) {
             playerShip.movingRight = true;
         } else if (keycode == Input.Keys.SPACE) {
-            shootLaser(level.getLaserPool(), level.getLasers() );
+           level.shootPlayerLaser();
         }
         return true;
     }
@@ -73,9 +75,4 @@ public class GameInputListener extends InputAdapter {
         return new Vector2(target.x, target.y);
     }
 
-    private void shootLaser(Pool<Laser> laserPool, Array<Laser> lasers) {
-        Laser laser = laserPool.obtain();
-        laser.init("blue", playerShip.getPosition());
-        lasers.add(laser);
-    }
 }
