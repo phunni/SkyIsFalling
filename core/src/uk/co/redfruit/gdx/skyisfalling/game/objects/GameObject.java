@@ -52,6 +52,10 @@ public abstract class GameObject {
         this.cullable = cullable;
     }
 
+    public Vector2 getOrigin() {
+        return origin;
+    }
+
     public boolean isCullable() {
         return cullable;
     }

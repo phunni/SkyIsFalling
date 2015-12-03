@@ -5,15 +5,78 @@ filter: Nearest,Nearest
 repeat: none
 background
   rotate: false
-  xy: 2, 79
+  xy: 2, 174
   size: 1024, 768
   orig: 1024, 768
   offset: 0, 0
   index: -1
-ship
+explosion
+  rotate: false
+  xy: 1028, 686
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+enemyRed
+  rotate: false
+  xy: 2, 88
+  size: 93, 84
+  orig: 93, 84
+  offset: 0, 0
+  index: -1
+enemyBlue
+  rotate: false
+  xy: 1028, 600
+  size: 93, 84
+  orig: 93, 84
+  offset: 0, 0
+  index: -1
+enemyBlack
+  rotate: false
+  xy: 1286, 858
+  size: 93, 84
+  orig: 93, 84
+  offset: 0, 0
+  index: -1
+enemyGreen
   rotate: false
   xy: 2, 2
+  size: 93, 84
+  orig: 93, 84
+  offset: 0, 0
+  index: -1
+ship
+  rotate: false
+  xy: 97, 97
   size: 99, 75
   orig: 99, 75
+  offset: 0, 0
+  index: -1
+laserRed
+  rotate: false
+  xy: 1028, 544
+  size: 9, 54
+  orig: 9, 54
+  offset: 0, 0
+  index: -1
+laserGreen
+  rotate: false
+  xy: 1123, 630
+  size: 9, 54
+  orig: 9, 54
+  offset: 0, 0
+  index: -1
+laserBlue
+  rotate: false
+  xy: 1286, 802
+  size: 9, 54
+  orig: 9, 54
+  offset: 0, 0
+  index: -1
+playerLife
+  rotate: false
+  xy: 1381, 916
+  size: 33, 26
+  orig: 33, 26
   offset: 0, 0
   index: -1

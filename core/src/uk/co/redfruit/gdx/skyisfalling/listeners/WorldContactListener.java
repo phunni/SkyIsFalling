@@ -36,15 +36,23 @@ public class WorldContactListener implements ContactListener {
 
 
         if (aUserData instanceof GameObject && bUserData instanceof GameObject) {
-            if (aUserData instanceof Laser && bUserData instanceof EnemyShip)  {
-                laserHitsEnemyShip((EnemyShip) bUserData, (Laser) aUserData);
+            if (aUserData instanceof Laser && bUserData instanceof EnemyShip) {
+                laserEnemyCollision((Laser) aUserData, (EnemyShip) bUserData);
             } else if (bUserData instanceof Laser && aUserData instanceof EnemyShip) {
-                laserHitsEnemyShip((EnemyShip) aUserData, (Laser) bUserData);
-            } /*else if (aUserData instanceof PlayerShip && bUserData instanceof EnemyShip) {
-                ((PlayerShip) aUserData).lives--;
-            } else if (bUserData instanceof PlayerShip && aUserData instanceof EnemyShip){
-                ((PlayerShip) bUserData).lives--;
-            }*/
+                laserEnemyCollision((Laser) bUserData, (EnemyShip) aUserData);
+            } else if (aUserData instanceof PlayerShip && bUserData instanceof EnemyShip) {
+                ((PlayerShip) aUserData).loseALife();
+            } else if (bUserData instanceof PlayerShip && aUserData instanceof EnemyShip) {
+                ((PlayerShip) bUserData).loseALife();
+            } else if (aUserData instanceof Laser && bUserData instanceof PlayerShip) {
+                if (((Laser) aUserData).isEnemyLaser) {
+                    playerShipHitByLaser((Laser) aUserData, (PlayerShip) bUserData);
+                }
+            } else if (bUserData instanceof Laser && aUserData instanceof PlayerShip) {
+                if (((Laser) bUserData).isEnemyLaser) {
+                    playerShipHitByLaser((Laser) bUserData, (PlayerShip) aUserData);
+                }
+            }
         }
 
         if (aUserData instanceof EnemyShip && groundBody.equals(b)) {
@@ -52,20 +60,20 @@ public class WorldContactListener implements ContactListener {
         } else if (groundBody.equals(a) && bUserData instanceof EnemyShip) {
             ((EnemyShip) bUserData).setDestroyed(true);
         }
+
+        if (aUserData instanceof Laser && groundBody.equals(b)) {
+            laserHitsGround((Laser) aUserData);
+        } else if (bUserData instanceof Laser && groundBody.equals(a)) {
+            laserHitsGround((Laser) bUserData);
+        }
+
+
     }
+
 
     @Override
     public void endContact(Contact contact) {
-        Body a = contact.getFixtureA().getBody();
-        Body b = contact.getFixtureB().getBody();
-        Object aUserData = a.getUserData();
-        Object bUserData = b.getUserData();
 
-        if (aUserData instanceof PlayerShip && bUserData instanceof EnemyShip) {
-            ((PlayerShip) aUserData).lives--;
-        } else if (bUserData instanceof PlayerShip && aUserData instanceof EnemyShip){
-            ((PlayerShip) bUserData).lives--;
-        }
     }
 
     @Override
@@ -88,23 +96,31 @@ public class WorldContactListener implements ContactListener {
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
-        Body a = contact.getFixtureA().getBody();
-        Body b = contact.getFixtureB().getBody();
-        Object aUserData = a.getUserData();
-        Object bUserData = b.getUserData();
-
-
-        if (aUserData instanceof EnemyShip && groundBody.equals(b)) {
-            contact.setEnabled(false);
-        } else if (groundBody.equals(a) && bUserData instanceof EnemyShip) {
-            contact.setEnabled(false);
-        }
 
     }
 
     private void laserHitsEnemyShip(EnemyShip aUserData, Laser bUserData) {
         bUserData.setCullable(true);
         aUserData.reduceHitPoints();
+    }
+
+    private void playerShipHitByLaser(Laser laser, PlayerShip ship) {
+        if (laser.isEnemyLaser) {
+            laser.setCullable(true);
+            ship.loseALife();
+        }
+    }
+
+    private void laserEnemyCollision(Laser laser, EnemyShip enemyShip) {
+        if (!laser.isEnemyLaser) {
+            laserHitsEnemyShip(enemyShip, laser);
+        }
+    }
+
+    private void laserHitsGround(Laser laser) {
+        if (laser.isEnemyLaser) {
+            laser.setCullable(true);
+        }
     }
 
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -41,6 +42,7 @@ public class EnemyShip extends GameObject implements Poolable {
 
     private boolean hit;
     private long hitFlash;
+    private long lastShot;
 
     public EnemyShip(World world) {
         super(world);
@@ -104,9 +106,9 @@ public class EnemyShip extends GameObject implements Poolable {
     @Override
     public void render(SpriteBatch batch) {
         Color original  = sprite.getColor();
-        Vector2 shipPosition = body.getPosition().sub(origin);
-        sprite.setPosition(shipPosition.x, shipPosition.y);
-        sprite.setBounds(shipPosition.x, shipPosition.y,
+        position = body.getPosition().sub(origin);
+        sprite.setPosition(position.x, position.y);
+        sprite.setBounds(position.x, position.y,
                 SHIP_WIDTH, SHIP_WIDTH * sprite.getHeight() / sprite.getWidth());
 
         if (hit && TimeUtils.timeSinceNanos(hitFlash) < 250000000) {
@@ -120,10 +122,14 @@ public class EnemyShip extends GameObject implements Poolable {
             moveLeft();
         } else if (movingRight) {
             moveRight();
+        } else if (movingDown) {
+            moveDown();
         }
 
         sprite.setColor(original);
     }
+
+
 
     public boolean isAWake() {
         return body.isAwake();
@@ -141,6 +147,10 @@ public class EnemyShip extends GameObject implements Poolable {
     public void moveLeft(){
         Vector2 velocity = body.getLinearVelocity();
         body.setLinearVelocity(-SHIP_SPEED, velocity.y);
+    }
+
+    public  void moveDown() {
+        body.setLinearVelocity(0, -0.2f);
     }
 
     public void stop() {
@@ -170,6 +180,11 @@ public class EnemyShip extends GameObject implements Poolable {
 
     public void setDestroyed(boolean destroyed) {
         this.destroyed = destroyed;
+        level.blowUp(position, new Vector2(sprite.getWidth(), sprite.getHeight()));
+    }
+
+    public Vector2 getCentre() {
+        return new Vector2(position.x + sprite.getWidth() / 2, position.y + sprite.getHeight() / 2);
     }
 
 }

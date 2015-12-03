@@ -27,6 +27,7 @@ public class Assets implements Disposable, AssetErrorListener {
     private PlayerShipAsset player;
     private EnemyShipAsset enemies;
     private LaserAsset lasers;
+    private ExplosionAsset explosion;
 
 
     private Assets(){}
@@ -55,6 +56,7 @@ public class Assets implements Disposable, AssetErrorListener {
         enemies = new EnemyShipAsset(atlas);
         lasers = new LaserAsset(atlas);
         fonts = new AssetFonts();
+        explosion = new ExplosionAsset();
     }
 
     @Override
@@ -96,5 +98,9 @@ public class Assets implements Disposable, AssetErrorListener {
 
     public Sprite getPlayerLife() {
         return playerLife;
+    }
+
+    public ExplosionAsset getExplosion() {
+        return explosion;
     }
 }

@@ -2,19 +2,19 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.viewport.*;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
@@ -27,8 +27,8 @@ public class GameScreen extends RedfruitScreen {
     private static final String TAG = "GameScreen";
 
     private SpriteBatch batch;
-    private OrthographicCamera camera;
-    private OrthographicCamera cameraGUI;
+    public static OrthographicCamera camera;
+    public  static OrthographicCamera cameraGUI;
     private Viewport gameViewport;
     private Viewport guiViewport;
 
@@ -50,7 +50,7 @@ public class GameScreen extends RedfruitScreen {
 
         batch = new SpriteBatch();
         camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
-        gameViewport = new ExtendViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
+        gameViewport = new StretchViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -66,7 +66,9 @@ public class GameScreen extends RedfruitScreen {
         createSideWalls();
         level = new Level(world);
         world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
-        debugRenderer = new Box2DDebugRenderer();
+        if (Constants.DEBUG) {
+            debugRenderer = new Box2DDebugRenderer();
+        }
 
 
 
@@ -86,10 +88,13 @@ public class GameScreen extends RedfruitScreen {
         renderWorld(batch);
         renderGui(batch);
 
+        if (Constants.DEBUG) {
+            debugRenderer.render(world, camera.combined);
+        }
 
-        debugRenderer.render(world, camera.combined);
-
-        world.step(1f / 60f, 6, 2);
+        if (!level.gameOver && !level.showingWaveNumber) {
+            world.step(1f / 60f, 6, 2);
+        }
     }
 
     @Override
@@ -189,6 +194,9 @@ public class GameScreen extends RedfruitScreen {
         if (level.gameOver) {
             renderGameOver(batch);
         }
+        if (level.showingWaveNumber) {
+            renderNewWAve(batch);
+        }
         if (Constants.DEBUG) {
             renderGUIFPSCounter(batch);
         }
@@ -240,13 +248,13 @@ public class GameScreen extends RedfruitScreen {
 
         Sprite playerLife = Assets.getInstance().getPlayerLife();
 
-        float x = cameraGUI.viewportWidth - playerLife.getWidth() - 25;
-        float y = cameraGUI.viewportHeight - playerLife.getHeight() - 15;
+        float x = cameraGUI.viewportWidth - playerLife.getWidth() - 30;
+        float y = cameraGUI.viewportHeight - (playerLife.getHeight() / 2) - 15;
 
 
-        playerLife.setPosition(x, y);
-        playerLife.draw(batch);
-        livesFont.draw(batch, layout, x + playerLife.getWidth(), y);
+        /*playerLife.setPosition(x, y);
+        playerLife.draw(batch);*/
+        livesFont.draw(batch, layout, x, y);
     }
 
     private void renderScore(SpriteBatch batch ){
@@ -270,5 +278,18 @@ public class GameScreen extends RedfruitScreen {
             float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
 
             fontGameOver.draw(batch, gameOverLayout, x, y);
+    }
+
+    private void renderNewWAve(SpriteBatch batch) {
+        BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
+        GlyphLayout gameOverLayout = new GlyphLayout();
+        gameOverLayout.setText(fontGameOver, "Wave: " + MathUtils.floor(level.levelNumber));
+
+        float x = (cameraGUI.viewportWidth / 2) - (gameOverLayout.width / 2);
+        float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
+
+        fontGameOver.setColor(Color.GREEN);
+
+        fontGameOver.draw(batch, gameOverLayout, x, y);
     }
 }

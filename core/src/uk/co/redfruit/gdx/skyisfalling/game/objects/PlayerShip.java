@@ -1,12 +1,11 @@
 package uk.co.redfruit.gdx.skyisfalling.game.objects;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.TimeUtils;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.PlayerShipAsset;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -22,6 +21,8 @@ public class PlayerShip extends GameObject {
 
     public boolean movingLeft;
     public boolean movingRight;
+    public boolean destroyed;
+    public long lastTimeLifeLost = TimeUtils.millis();
 
     public int lives;
 
@@ -46,9 +47,9 @@ public class PlayerShip extends GameObject {
 
     @Override
     public void render(SpriteBatch batch) {
-        Vector2 shipPosition = body.getPosition().sub(origin);
-        playerShipRegion.ship.setPosition(shipPosition.x, shipPosition.y);
-        playerShipRegion.ship.setBounds(shipPosition.x, shipPosition.y,
+        position = body.getPosition().sub(origin);
+        playerShipRegion.ship.setPosition(position.x, position.y);
+        playerShipRegion.ship.setBounds(position.x, position.y,
                 SHIP_WIDTH, SHIP_WIDTH * playerShipRegion.ship.getHeight() / playerShipRegion.ship.getWidth());
         playerShipRegion.ship.setOrigin(origin.x, origin.y);
 
@@ -73,6 +74,13 @@ public class PlayerShip extends GameObject {
 
     public void stop() {
         body.setLinearVelocity(0, body.getLinearVelocity().y);
+    }
+
+    public void loseALife() {
+        if (!(TimeUtils.timeSinceMillis(lastTimeLifeLost) < 250)) {
+            lives--;
+            lastTimeLifeLost = TimeUtils.millis();
+        }
     }
 
 }

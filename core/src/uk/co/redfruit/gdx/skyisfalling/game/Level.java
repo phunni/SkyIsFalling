@@ -1,10 +1,11 @@
 package uk.co.redfruit.gdx.skyisfalling.game;
 
 import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -12,9 +13,10 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
+import uk.co.redfruit.gdx.skyisfalling.game.objects.Explosion;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
-import uk.co.redfruit.gdx.skyisfalling.screens.MenuScreen;
+import uk.co.redfruit.gdx.skyisfalling.screens.GameScreen;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class Level {
@@ -24,47 +26,36 @@ public class Level {
     private PlayerShip playerShip;
     private Array<EnemyShip> enemyShips = new Array<EnemyShip>();
     private Array<Laser> lasers = new Array<>();
+    private Array<Explosion> explosions = new Array<>();
 
     private final World world;
 
     private Sprite background = Assets.getInstance().getBackground();
 
     private float difficulty;
-    private float levelNumber;
+    public float levelNumber;
     private long startTimeForMovingShips;
     public long gameOverStartTime;
     private float score;
     public boolean gameOver;
+    private long timeStartedShowingWaveNumber;
+    public boolean showingWaveNumber;
 
     private Pool<EnemyShip> enemyShipPool;
     private Pool<Laser> laserPool;
 
     private long timeSinceLastShot;
+    private long lastEnemyShot;
 
 
     public Level(World newWorld) {
         this.world = newWorld;
-        enemyShipPool = new Pool<EnemyShip>() {
-            @Override
-            protected EnemyShip newObject() {
-                return new EnemyShip(world);
-            }
-        };
-        laserPool = new Pool<Laser>() {
-            @Override
-            protected Laser newObject() {
-                return new Laser(world);
-            }
-        };
-        levelNumber = 1;
-        setDifficulty();
-        playerShip = new PlayerShip(world);
-        setUpEnemyShips();
-        startTimeForMovingShips = 1200000000;
-        timeSinceLastShot = TimeUtils.nanoTime();
+        init();
 
-        background.setBounds(0, 0, Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
-        background.setScale(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
+        playerShip = new PlayerShip(world);
+
+        background.setSize(GameScreen.camera.viewportWidth * 1.5f, GameScreen.camera.viewportHeight * 1.5f);
+        background.setPosition(0, 0);
     }
 
     private void setDifficulty() {
@@ -80,11 +71,11 @@ public class Level {
     }
 
     public void render(SpriteBatch batch) {
-        if (!gameOver) {
+        batch.disableBlending();
+        background.draw(batch);
+        batch.enableBlending();
+        if (!gameOver && !showingWaveNumber) {
             boolean moving = false;
-            batch.disableBlending();
-            background.draw(batch);
-            batch.enableBlending();
             playerShip.render(batch);
             if (TimeUtils.timeSinceNanos(startTimeForMovingShips) > 1400000000) {
                 moving = true;
@@ -97,15 +88,22 @@ public class Level {
                         enemy.lastDirection = 1;
                     } else if (enemy.lastDirection == 1) {
                         enemy.movingLeft = true;
+                        enemy.lastDirection = 2;
+                    } else if (enemy.lastDirection == 2) {
+                        enemy.movingDown = true;
                         enemy.lastDirection = 0;
                     }
                 } else {
                     enemy.movingLeft = false;
                     enemy.movingRight = false;
+                    enemy.movingDown = false;
                 }
             }
             for (Laser laser : lasers) {
                 laser.render(batch);
+            }
+            for (Explosion explosion : explosions) {
+                explosion.render(batch);
             }
             if (moving) {
                 startTimeForMovingShips = TimeUtils.nanoTime();
@@ -121,6 +119,10 @@ public class Level {
             playerShip.moveRight();
         } else {
             playerShip.stop();
+        }
+
+        if (TimeUtils.timeSinceMillis(timeStartedShowingWaveNumber) > 1500) {
+            showingWaveNumber = false;
         }
 
         if (getPlayerShip().lives <= 0 && !gameOver) {
@@ -145,11 +147,29 @@ public class Level {
             }
         }
 
+        if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
+            if (enemyShips.size > 0) {
+                shootEnemyLaser(getRandomEnemyShip());
+                lastEnemyShot = TimeUtils.millis();
+            }
+        }
+
+        if (MathUtils.randomBoolean(0.01f * difficulty)) {
+            if (enemyShips.size > 0) {
+                shootEnemyLaser(getRandomEnemyShip());
+                lastEnemyShot = TimeUtils.millis();
+            }
+        }
+
+        if (enemyShips.size <= 0) {
+            init();
+        }
+
         //if on Android we need to shoot the lasers automatically
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            if (TimeUtils.timeSinceNanos(timeSinceLastShot) > 500000000) {
-                shootLaser();
-                timeSinceLastShot = TimeUtils.nanoTime();
+            if (TimeUtils.timeSinceMillis(timeSinceLastShot) > 250) {
+                shootPlayerLaser();
+                timeSinceLastShot = TimeUtils.millis();
             }
         }
     }
@@ -174,10 +194,20 @@ public class Level {
         return (int)score;
     }
 
-    public void shootLaser() {
+    public void shootPlayerLaser() {
         Laser laser = laserPool.obtain();
-        laser.init("blue", playerShip.getPosition());
+        laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
         lasers.add(laser);
+    }
+
+    public void shootEnemyLaser(EnemyShip ship) {
+        Laser laser = laserPool.obtain();
+        laser.init("green", ship.getCentre(), new Vector2(0, -9));
+        lasers.add(laser);
+    }
+
+    public void blowUp(Vector2 position, Vector2 size) {
+        explosions.add(new Explosion(position, size));
     }
 
     private void setUpEnemyShips() {
@@ -185,6 +215,18 @@ public class Level {
             addShips("black", 0.0f);
             addShips("black", 1.5f);
             addShips("black", 3.0f);
+        } else if (difficulty == 1) {
+            addShips("blue", 0.0f);
+            addShips("black", 1.5f);
+            addShips("black", 3.0f);
+        } else if (difficulty == 2) {
+            addShips("green", 0.0f);
+            addShips("blue", 1.5f);
+            addShips("black", 3.0f);
+        } else if (difficulty >= 3) {
+            addShips("red", 0.0f);
+            addShips("green", 1.5f);
+            addShips("blue", 3.0f);
         }
     }
 
@@ -197,6 +239,40 @@ public class Level {
             }*/
             enemyShips.add(enemy);
         }
+    }
+
+    private EnemyShip getRandomEnemyShip() {
+        if (enemyShips.size > 0) {
+            int ship = MathUtils.random(enemyShips.size - 1);
+            return enemyShips.get(ship);
+        } else {
+            return null;
+        }
+    }
+
+    private void init() {
+        enemyShipPool = new Pool<EnemyShip>() {
+            @Override
+            protected EnemyShip newObject() {
+                return new EnemyShip(world);
+            }
+        };
+        laserPool = new Pool<Laser>() {
+            @Override
+            protected Laser newObject() {
+                return new Laser(world, GameScreen.camera);
+            }
+        };
+
+        levelNumber++;
+        setDifficulty();
+
+        setUpEnemyShips();
+        startTimeForMovingShips = 1200000000;
+        timeSinceLastShot = TimeUtils.nanoTime();
+
+        timeStartedShowingWaveNumber = TimeUtils.millis();
+        showingWaveNumber = true;
     }
 
 
