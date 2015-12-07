@@ -167,9 +167,9 @@ public class Level {
 
         //if on Android we need to shoot the lasers automatically
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            if (TimeUtils.timeSinceMillis(timeSinceLastShot) > 250) {
+            if (TimeUtils.timeSinceNanos(timeSinceLastShot) > 250000000) {
                 shootPlayerLaser();
-                timeSinceLastShot = TimeUtils.millis();
+                timeSinceLastShot = TimeUtils.nanoTime();
             }
         }
     }
