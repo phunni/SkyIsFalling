@@ -56,7 +56,7 @@ public class Assets implements Disposable, AssetErrorListener {
         enemies = new EnemyShipAsset(atlas);
         lasers = new LaserAsset(atlas);
         fonts = new AssetFonts();
-        explosion = new ExplosionAsset();
+        explosion = new ExplosionAsset(atlas);
     }
 
     @Override
