@@ -2,7 +2,6 @@ package uk.co.redfruit.gdx.skyisfalling.game;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -24,7 +23,7 @@ public class Level {
     private static final String TAG = "Level";
 
     private PlayerShip playerShip;
-    private Array<EnemyShip> enemyShips = new Array<EnemyShip>();
+    private Array<EnemyShip> enemyShips = new Array<>();
     private Array<Laser> lasers = new Array<>();
     private Array<Explosion> explosions = new Array<>();
 
@@ -207,6 +206,9 @@ public class Level {
     }
 
     public void blowUp(Vector2 position, Vector2 size) {
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "New explosion at: " + position.x + ", " + position.y);
+        }
         explosions.add(new Explosion(position, size));
     }
 

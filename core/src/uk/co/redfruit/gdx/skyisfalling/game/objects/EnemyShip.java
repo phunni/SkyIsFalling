@@ -180,7 +180,7 @@ public class EnemyShip extends GameObject implements Poolable {
 
     public void setDestroyed(boolean destroyed) {
         this.destroyed = destroyed;
-        level.blowUp(position, new Vector2(sprite.getWidth(), sprite.getHeight()));
+        level.blowUp(position.cpy(), new Vector2(sprite.getWidth(), sprite.getHeight()));
     }
 
     public Vector2 getCentre() {

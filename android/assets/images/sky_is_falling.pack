@@ -5,77 +5,182 @@ filter: Nearest,Nearest
 repeat: none
 background
   rotate: false
-  xy: 2, 174
+  xy: 2, 240
   size: 1024, 768
   orig: 1024, 768
   offset: 0, 0
   index: -1
-explosion
-  rotate: false
-  xy: 1028, 686
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
 enemyRed
   rotate: false
-  xy: 2, 88
+  xy: 2, 154
   size: 93, 84
   orig: 93, 84
   offset: 0, 0
   index: -1
 enemyBlue
   rotate: false
-  xy: 1028, 600
+  xy: 1028, 924
   size: 93, 84
   orig: 93, 84
   offset: 0, 0
   index: -1
 enemyBlack
   rotate: false
-  xy: 1286, 858
+  xy: 2, 68
   size: 93, 84
   orig: 93, 84
   offset: 0, 0
   index: -1
 enemyGreen
   rotate: false
-  xy: 2, 2
+  xy: 97, 154
   size: 93, 84
   orig: 93, 84
   offset: 0, 0
   index: -1
 ship
   rotate: false
-  xy: 97, 97
+  xy: 1123, 933
   size: 99, 75
   orig: 99, 75
   offset: 0, 0
   index: -1
+explosion
+  rotate: false
+  xy: 1028, 858
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 2
+explosion
+  rotate: false
+  xy: 2, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 9
+explosion
+  rotate: false
+  xy: 97, 88
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 12
+explosion
+  rotate: false
+  xy: 192, 174
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 8
+explosion
+  rotate: false
+  xy: 1224, 944
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 4
+explosion
+  rotate: false
+  xy: 1028, 792
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 14
+explosion
+  rotate: false
+  xy: 258, 174
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 11
+explosion
+  rotate: false
+  xy: 1290, 944
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 6
+explosion
+  rotate: false
+  xy: 1028, 726
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 7
+explosion
+  rotate: false
+  xy: 324, 174
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 10
+explosion
+  rotate: false
+  xy: 1356, 944
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 0
+explosion
+  rotate: false
+  xy: 1028, 660
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 3
+explosion
+  rotate: false
+  xy: 390, 174
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 13
+explosion
+  rotate: false
+  xy: 1422, 944
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 15
+explosion
+  rotate: false
+  xy: 1028, 594
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 5
+explosion
+  rotate: false
+  xy: 456, 174
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 1
 laserRed
   rotate: false
-  xy: 1028, 544
+  xy: 1094, 868
   size: 9, 54
   orig: 9, 54
   offset: 0, 0
   index: -1
 laserGreen
   rotate: false
-  xy: 1123, 630
+  xy: 68, 12
   size: 9, 54
   orig: 9, 54
   offset: 0, 0
   index: -1
 laserBlue
   rotate: false
-  xy: 1286, 802
+  xy: 163, 98
   size: 9, 54
   orig: 9, 54
   offset: 0, 0
   index: -1
 playerLife
   rotate: false
-  xy: 1381, 916
+  xy: 1488, 982
   size: 33, 26
   orig: 33, 26
   offset: 0, 0

@@ -53,15 +53,11 @@ public class WorldContactListener implements ContactListener {
                     playerShipHitByLaser((Laser) bUserData, (PlayerShip) aUserData);
                 }
             }
-        }
-
-        if (aUserData instanceof EnemyShip && groundBody.equals(b)) {
+        } else if (aUserData instanceof EnemyShip && groundBody.equals(b)) {
             ((EnemyShip) aUserData).setDestroyed(true);
         } else if (groundBody.equals(a) && bUserData instanceof EnemyShip) {
             ((EnemyShip) bUserData).setDestroyed(true);
-        }
-
-        if (aUserData instanceof Laser && groundBody.equals(b)) {
+        } else if (aUserData instanceof Laser && groundBody.equals(b)) {
             laserHitsGround((Laser) aUserData);
         } else if (bUserData instanceof Laser && groundBody.equals(a)) {
             laserHitsGround((Laser) bUserData);
