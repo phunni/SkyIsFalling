@@ -42,9 +42,11 @@ public class Level {
 
     private Pool<EnemyShip> enemyShipPool;
     private Pool<Laser> laserPool;
+    private Pool<Explosion> explosionPool;
 
     private long timeSinceLastShot;
     private long lastEnemyShot;
+    private long timeSinceLastExplosion = TimeUtils.millis();
 
 
     public Level(World newWorld) {
@@ -206,10 +208,15 @@ public class Level {
     }
 
     public void blowUp(Vector2 position, Vector2 size) {
-        if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "New explosion at: " + position.x + ", " + position.y);
+        if (TimeUtils.timeSinceMillis(timeSinceLastExplosion) >250) {
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "New explosion at: " + position.x + ", " + position.y);
+            }
+            Explosion explosion = explosionPool.obtain();
+            explosion.init(position, size);
+            explosions.add(explosion);
+            timeSinceLastExplosion = TimeUtils.millis();
         }
-        explosions.add(new Explosion(position, size));
     }
 
     private void setUpEnemyShips() {
@@ -263,6 +270,12 @@ public class Level {
             @Override
             protected Laser newObject() {
                 return new Laser(world, GameScreen.camera);
+            }
+        };
+        explosionPool = new Pool<Explosion>() {
+            @Override
+            protected Explosion newObject() {
+                return new Explosion();
             }
         };
 
