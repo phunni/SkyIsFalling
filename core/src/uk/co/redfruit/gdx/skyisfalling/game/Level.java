@@ -83,21 +83,23 @@ public class Level {
             }
             for (EnemyShip enemy : enemyShips) {
                 enemy.render(batch);
-                if (moving) {
-                    if (enemy.lastDirection == 0) {
-                        enemy.movingRight = true;
-                        enemy.lastDirection = 1;
-                    } else if (enemy.lastDirection == 1) {
-                        enemy.movingLeft = true;
-                        enemy.lastDirection = 2;
-                    } else if (enemy.lastDirection == 2) {
-                        enemy.movingDown = true;
-                        enemy.lastDirection = 0;
+                if (!enemy.isFalling()) {
+                    if (moving) {
+                        if (enemy.lastDirection == 0) {
+                            enemy.movingRight = true;
+                            enemy.lastDirection = 1;
+                        } else if (enemy.lastDirection == 1) {
+                            enemy.movingLeft = true;
+                            enemy.lastDirection = 2;
+                        } else if (enemy.lastDirection == 2) {
+                            enemy.movingDown = true;
+                            enemy.lastDirection = 0;
+                        }
+                    } else {
+                        stopShips(enemy);
                     }
                 } else {
-                    enemy.movingLeft = false;
-                    enemy.movingRight = false;
-                    enemy.movingDown = false;
+                    stopShips(enemy);
                 }
             }
             for (Laser laser : lasers) {
@@ -202,9 +204,11 @@ public class Level {
     }
 
     public void shootEnemyLaser(EnemyShip ship) {
-        Laser laser = laserPool.obtain();
-        laser.init("green", ship.getCentre(), new Vector2(0, -9));
-        lasers.add(laser);
+        if (!ship.isFalling()) {
+            Laser laser = laserPool.obtain();
+            laser.init("green", ship.getCentre(), new Vector2(0, -9));
+            lasers.add(laser);
+        }
     }
 
     public void blowUp(Vector2 position, Vector2 size) {
@@ -288,6 +292,12 @@ public class Level {
 
         timeStartedShowingWaveNumber = TimeUtils.millis();
         showingWaveNumber = true;
+    }
+
+    private void stopShips(EnemyShip enemy) {
+        enemy.movingLeft = false;
+        enemy.movingRight = false;
+        enemy.movingDown = false;
     }
 
 

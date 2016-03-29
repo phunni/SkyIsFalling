@@ -97,7 +97,11 @@ public class WorldContactListener implements ContactListener {
 
     private void laserHitsEnemyShip(EnemyShip aUserData, Laser bUserData) {
         bUserData.setCullable(true);
-        aUserData.reduceHitPoints();
+        if (!aUserData.isFalling()) {
+            aUserData.reduceHitPoints();
+        } else {
+            aUserData.setDestroyed(true);
+        }
     }
 
     private void playerShipHitByLaser(Laser laser, PlayerShip ship) {
