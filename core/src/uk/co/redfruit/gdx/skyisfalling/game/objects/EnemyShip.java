@@ -4,10 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pool.Poolable;
@@ -43,6 +41,8 @@ public class EnemyShip extends GameObject implements Poolable {
     private boolean hit;
     private long hitFlash;
     private long lastShot;
+
+    private boolean isFalling;
 
     public EnemyShip(World world) {
         super(world);
@@ -100,6 +100,7 @@ public class EnemyShip extends GameObject implements Poolable {
         movingRight = false;
         destroyed = false;
         hitPoints = 0;
+        isFalling = false;
     }
 
 
@@ -171,11 +172,16 @@ public class EnemyShip extends GameObject implements Poolable {
         if (hitPoints == 0) {
             level.increaseScore(50);
             body.setGravityScale(1);
+            isFalling = true;
         }
     }
 
     public boolean isDestroyed() {
         return destroyed;
+    }
+
+    public boolean isFalling() {
+        return isFalling;
     }
 
     public void setDestroyed(boolean destroyed) {
