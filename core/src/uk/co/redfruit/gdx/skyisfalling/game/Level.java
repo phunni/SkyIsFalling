@@ -150,17 +150,19 @@ public class Level {
             }
         }
 
-        if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
-            if (enemyShips.size > 0) {
-                shootEnemyLaser(getRandomEnemyShip());
-                lastEnemyShot = TimeUtils.millis();
+        if (!gameOver && !showingWaveNumber) {
+            if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
+                if (enemyShips.size > 0) {
+                    shootEnemyLaser(getRandomEnemyShip());
+                    lastEnemyShot = TimeUtils.millis();
+                }
             }
-        }
 
-        if (MathUtils.randomBoolean(0.01f * difficulty)) {
-            if (enemyShips.size > 0) {
-                shootEnemyLaser(getRandomEnemyShip());
-                lastEnemyShot = TimeUtils.millis();
+            if (MathUtils.randomBoolean(0.01f * difficulty)) {
+                if (enemyShips.size > 0) {
+                    shootEnemyLaser(getRandomEnemyShip());
+                    lastEnemyShot = TimeUtils.millis();
+                }
             }
         }
 
@@ -198,9 +200,12 @@ public class Level {
     }
 
     public void shootPlayerLaser() {
-        Laser laser = laserPool.obtain();
-        laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
-        lasers.add(laser);
+
+        if (!gameOver && !showingWaveNumber) {
+            Laser laser = laserPool.obtain();
+            laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
+            lasers.add(laser);
+        }
     }
 
     public void shootEnemyLaser(EnemyShip ship) {
@@ -282,6 +287,10 @@ public class Level {
                 return new Explosion();
             }
         };
+
+        for (Laser laser : lasers) {
+            laser.setCullable(true);
+        }
 
         levelNumber++;
         setDifficulty();
