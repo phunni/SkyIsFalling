@@ -195,7 +195,7 @@ public class GameScreen extends RedfruitScreen {
             renderGameOver(batch);
         }
         if (level.showingWaveNumber) {
-            renderNewWAve(batch);
+            renderNewWave(batch);
         }
         if (Constants.DEBUG) {
             renderGUIFPSCounter(batch);
@@ -280,7 +280,7 @@ public class GameScreen extends RedfruitScreen {
             fontGameOver.draw(batch, gameOverLayout, x, y);
     }
 
-    private void renderNewWAve(SpriteBatch batch) {
+    private void renderNewWave(SpriteBatch batch) {
         BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
         GlyphLayout gameOverLayout = new GlyphLayout();
         gameOverLayout.setText(fontGameOver, "Wave: " + MathUtils.floor(level.levelNumber));
