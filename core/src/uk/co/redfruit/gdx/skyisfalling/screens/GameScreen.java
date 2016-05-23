@@ -11,13 +11,13 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.*;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
-import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -195,7 +195,7 @@ public class GameScreen extends RedfruitScreen {
             renderGameOver(batch);
         }
         if (level.showingWaveNumber) {
-            renderNewWAve(batch);
+            renderNewWave(batch);
         }
         if (Constants.DEBUG) {
             renderGUIFPSCounter(batch);
@@ -280,7 +280,7 @@ public class GameScreen extends RedfruitScreen {
             fontGameOver.draw(batch, gameOverLayout, x, y);
     }
 
-    private void renderNewWAve(SpriteBatch batch) {
+    private void renderNewWave(SpriteBatch batch) {
         BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
         GlyphLayout gameOverLayout = new GlyphLayout();
         gameOverLayout.setText(fontGameOver, "Wave: " + MathUtils.floor(level.levelNumber));

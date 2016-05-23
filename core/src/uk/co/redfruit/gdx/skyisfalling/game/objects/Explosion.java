@@ -5,17 +5,20 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Pool;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 
 /**
  * Created by paul on 09/10/15.
  */
-public class Explosion extends GameObject {
+public class Explosion extends GameObject implements Pool.Poolable {
 
     private Animation animation = Assets.getInstance().getExplosion().explosionAnimation;
     private float stateTime = 0f;
     private TextureRegion currentFrame;
     private Vector2 size;
+
+    public Explosion() {}
 
     public Explosion (Vector2 position, Vector2 size) {
         this.position = position;
@@ -27,5 +30,23 @@ public class Explosion extends GameObject {
         stateTime += Gdx.graphics.getDeltaTime();
         currentFrame = animation.getKeyFrame(stateTime, false);
         batch.draw(currentFrame, position.x, position.y, size.x, size.y);
+    }
+
+    @Override
+    public void reset() {
+        stateTime = 0f;
+        currentFrame = null;
+        size = null;
+        position = null;
+        origin = new Vector2();
+        loader = null;
+        defaultDynamicBodyDef = null;
+    }
+
+    public void init(Vector2 position, Vector2 size) {
+        this.position = position;
+        this.size = size;
+        loader = null;
+        defaultDynamicBodyDef = null;
     }
 }
