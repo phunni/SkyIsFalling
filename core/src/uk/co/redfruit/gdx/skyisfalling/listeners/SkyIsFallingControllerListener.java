@@ -35,7 +35,7 @@ public class SkyIsFallingControllerListener implements ControllerListener {
     public boolean buttonDown(Controller controller, int buttonCode) {
 
         if (level != null) {
-            if (buttonCode == MogaProHD.BUTTON_L2) {
+            if (buttonCode == MogaProHD.BUTTON_R2) {
                 level.shootPlayerLaser();
             }
         }

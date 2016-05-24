@@ -11,7 +11,7 @@ public class MogaProHD {
     public static final int BUTTON_X = 3;
     public static final int BUTTON_Y = 4;
     public static final int BUTTON_L1 = 5;
-    public static final int BUTTON_L2 = 6;
+    public static final int BUTTON_R2 = 6;
     public static final int BUTTON_START = 7;
     public static final int BUTTON_SELECT = 0;
     public static final int BUTTON_L_STICK = 8;
