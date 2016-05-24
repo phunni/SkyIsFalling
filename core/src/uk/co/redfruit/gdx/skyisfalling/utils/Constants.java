@@ -19,7 +19,7 @@ public class Constants {
 
     public static final float SHIP_WIDTH = 1.0f;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 
 }
