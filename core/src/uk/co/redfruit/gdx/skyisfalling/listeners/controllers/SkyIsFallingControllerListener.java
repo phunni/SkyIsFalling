@@ -1,4 +1,4 @@
-package uk.co.redfruit.gdx.skyisfalling.listeners;
+package uk.co.redfruit.gdx.skyisfalling.listeners.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
+import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.mappings.MogaProHD;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -16,14 +17,15 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 public class SkyIsFallingControllerListener implements ControllerListener {
 
     private static final String TAG = "SkyIsFallingControllerListener";
-    private Level level;
-    private PlayerShip playerShip;
+    protected Level level;
+    protected PlayerShip playerShip;
 
     @Override
     public void connected(Controller controller) {
         if (Constants.DEBUG) {
             Gdx.app.log(TAG, "Controller connected: " + controller.getName());
         }
+        ControllerManager.setControllerListener(controller);
     }
 
     @Override
@@ -33,12 +35,6 @@ public class SkyIsFallingControllerListener implements ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-
-        if (level != null) {
-            if (buttonCode == MogaProHD.BUTTON_R2) {
-                level.shootPlayerLaser();
-            }
-        }
 
         if (Constants.DEBUG) {
             Gdx.app.log(TAG, "Button pressed: " + buttonCode);
@@ -54,42 +50,22 @@ public class SkyIsFallingControllerListener implements ControllerListener {
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
-        if (axisCode == MogaProHD.L_AXIS_X || axisCode == MogaProHD.R_AXIS_X) {
-            if (playerShip != null) {
-                if (value < 0) {
-                    playerShip.movingRight = false;
-                    playerShip.movingLeft = true;
-                } else if (value > 0){
-                    playerShip.movingRight = true;
-                    playerShip.movingLeft = false;
-                } else {
-                    playerShip.movingRight = false;
-                    playerShip.movingLeft = false;
-                }
+        if (value < -0.2f || value > 0.2f){
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "Controller Axis: + " + axisCode + " value: " + value);
             }
-        }
-        if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Controller Axis value: " + value);
         }
         return true;
     }
 
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {
-        if (playerShip != null) {
-            if (value.toString().equals(MogaProHD.POV_W)) {
-                playerShip.movingRight = false;
-                playerShip.movingLeft = true;
-            } else if (value.toString().equals(MogaProHD.POV_E)) {
-                playerShip.movingRight = true;
-                playerShip.movingLeft = false;
-            } else if (value.toString().equals(MogaProHD.POV_C)) {
-                playerShip.movingRight = false;
-                playerShip.movingLeft = false;
-            }
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Controller POV: + " + povCode + " value: " + value);
         }
         return true;
     }
+
 
     @Override
     public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {

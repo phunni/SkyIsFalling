@@ -5,15 +5,12 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
-import uk.co.redfruit.gdx.skyisfalling.listeners.SkyIsFallingControllerListener;
+import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
+import uk.co.redfruit.gdx.skyisfalling.game.controllers.mappings.XBOX360;
+import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.screens.MenuScreen;
-import uk.co.redfruit.gdx.skyisfalling.screens.RedfruitScreen;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class SkyIsFalling extends Game {
@@ -33,6 +30,8 @@ public class SkyIsFalling extends Game {
 
 			for (Controller controller : Controllers.getControllers()) {
 				Gdx.app.log(TAG, controller.getName());
+				ControllerManager.setControllerListener(controller);
+				Gdx.app.log(TAG, "Controller class: " + controller.getClass().getName());
 			}
 
 			Gdx.app.log(TAG, "Number of Controllers: " + Controllers.getControllers().size);
@@ -42,7 +41,8 @@ public class SkyIsFalling extends Game {
 		setScreen(new MenuScreen(this));
 	}
 
-    public static SkyIsFallingControllerListener getControllerListener() {
+
+	public static SkyIsFallingControllerListener getControllerListener() {
         return controllerListener;
     }
 
