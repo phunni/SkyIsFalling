@@ -44,15 +44,19 @@ public class SkyIsFallingControllerListener implements ControllerListener {
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        Gdx.app.log(TAG, "Button release: " + buttonCode);
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Button release: " + buttonCode);
+        }
         return true;
     }
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
-        if (value < -0.2f || value > 0.2f){
-            if (Constants.DEBUG) {
-                Gdx.app.log(TAG, "Controller Axis: + " + axisCode + " value: " + value);
+        if (Constants.DEBUG) {
+            if (value < -0.2f || value > 0.2f) {
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Controller Axis: + " + axisCode + " value: " + value);
+                }
             }
         }
         return true;
