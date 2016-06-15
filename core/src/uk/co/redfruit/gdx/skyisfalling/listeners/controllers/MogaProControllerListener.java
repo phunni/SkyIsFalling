@@ -30,9 +30,6 @@ public class MogaProControllerListener extends SkyIsFallingControllerListener {
                     } else if (value > 0) {
                         playerShip.movingRight = true;
                         playerShip.movingLeft = false;
-                    } else {
-                        playerShip.movingRight = false;
-                        playerShip.movingLeft = false;
                     }
                 }
             }

@@ -59,4 +59,8 @@ public abstract class GameObject {
     public boolean isCullable() {
         return cullable;
     }
+
+    public Body getBody() {
+        return body;
+    }
 }

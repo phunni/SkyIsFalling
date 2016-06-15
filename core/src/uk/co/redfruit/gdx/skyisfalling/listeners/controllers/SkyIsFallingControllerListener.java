@@ -7,7 +7,6 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
-import uk.co.redfruit.gdx.skyisfalling.game.controllers.mappings.MogaProHD;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
@@ -30,7 +29,12 @@ public class SkyIsFallingControllerListener implements ControllerListener {
 
     @Override
     public void disconnected(Controller controller) {
-        Gdx.app.log(TAG, "Controller disconnected: " + controller.getName());
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Controller disconnected: " + controller.getName());
+        }
+        controller.removeListener(ControllerManager.NVIDIA_SHIELD_CONTROLLER_LISTENER);
+        controller.removeListener(ControllerManager.XBOX_360_CONTROLLER_LISTENER);
+        controller.removeListener(ControllerManager.MOGA_PRO_CONTROLLER_LISTENER);
     }
 
     @Override
@@ -62,6 +66,8 @@ public class SkyIsFallingControllerListener implements ControllerListener {
         return true;
     }
 
+
+
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {
         if (Constants.DEBUG) {
@@ -92,5 +98,19 @@ public class SkyIsFallingControllerListener implements ControllerListener {
     public void setLevel(Level level) {
         this.level = level;
         this.playerShip = level.getPlayerShip();
+    }
+
+    protected void moveLeft(float value) {
+        if (playerShip != null) {
+            playerShip.movingRight = false;
+            playerShip.movingLeft = true;
+        }
+    }
+
+    protected void moveRight(float value) {
+        if (playerShip != null) {
+            playerShip.movingRight = true;
+            playerShip.movingLeft = false;
+        }
     }
 }

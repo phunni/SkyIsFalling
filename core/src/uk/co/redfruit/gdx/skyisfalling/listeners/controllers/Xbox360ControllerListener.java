@@ -37,11 +37,5 @@ public class Xbox360ControllerListener extends SkyIsFallingControllerListener {
     }
 
 
-    public void stopMoving() {
-        if (level != null ) {
-            playerShip.movingRight = false;
-            playerShip.movingLeft = false;
-        }
-    }
 
 }
