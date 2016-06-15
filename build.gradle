@@ -31,10 +31,12 @@ project(":desktop") {
 
     dependencies {
         compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
     }
 }
 
@@ -53,6 +55,9 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-android:$gdxVersion"
     }
 }
 
@@ -66,5 +71,7 @@ project(":core") {
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.0"
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.0"
         compile fileTree(dir: 'libs', include: '*.jar')
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-lwjgl3:$gdxVersion"
     }
 }

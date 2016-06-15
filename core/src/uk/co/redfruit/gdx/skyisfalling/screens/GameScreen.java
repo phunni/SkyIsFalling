@@ -2,6 +2,8 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,9 +18,12 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import uk.co.redfruit.gdx.skyisfalling.SkyIsFalling;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
+import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
+import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
@@ -71,6 +76,8 @@ public class GameScreen extends RedfruitScreen {
         }
 
 
+        SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
+        ControllerManager.setLevel(level);
 
 
 
