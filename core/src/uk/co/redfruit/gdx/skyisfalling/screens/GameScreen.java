@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.async.ThreadUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -44,6 +45,9 @@ public class GameScreen extends RedfruitScreen {
     private Body groundBody;
     private Body leftWall;
     private Body rightWall;
+
+    private final float TIME_STEP = 1f/60f;
+    private float physicsStepAccumulator = 0;
 
 
     public GameScreen(Game game) {
@@ -100,8 +104,13 @@ public class GameScreen extends RedfruitScreen {
         }
 
         if (!level.gameOver && !level.showingWaveNumber) {
-            world.step(1f / 60f, 6, 2);
+            doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
         }
+        /*try {
+            Thread.sleep(1000/30);
+        } catch (InterruptedException e) {
+            Gdx.app.log(TAG, "Failed to sleep!");
+        }*/
     }
 
     @Override
@@ -140,6 +149,15 @@ public class GameScreen extends RedfruitScreen {
         world.dispose();
         batch.dispose();
         debugRenderer.dispose();
+    }
+
+    private void doPhysicsWorldStep(float deltaTime) {
+        float frameTime = Math.min(deltaTime, 0.25f);
+        physicsStepAccumulator += frameTime;
+        while (physicsStepAccumulator >= TIME_STEP) {
+            world.step(TIME_STEP, 6, 2);
+            physicsStepAccumulator -= TIME_STEP;
+        }
     }
 
     private void createGround() {

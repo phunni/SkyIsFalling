@@ -150,7 +150,7 @@ public class Level {
             }
         }
 
-        if (!gameOver && !showingWaveNumber) {
+        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100) {
             if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
                 if (enemyShips.size > 0) {
                     shootEnemyLaser(getRandomEnemyShip());
