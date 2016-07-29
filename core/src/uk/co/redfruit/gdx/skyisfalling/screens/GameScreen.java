@@ -65,7 +65,8 @@ public class GameScreen extends RedfruitScreen {
         batch.setProjectionMatrix(camera.combined);
 
         cameraGUI =  new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-        guiViewport = new ScreenViewport(cameraGUI);
+        guiViewport = new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+        guiViewport.setCamera(cameraGUI);
         cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
         cameraGUI.setToOrtho(false);
         cameraGUI.update();
@@ -115,7 +116,7 @@ public class GameScreen extends RedfruitScreen {
 
     @Override
     public void resize(int width, int height) {
-        gameViewport.update(width, height);
+        //gameViewport.update(width, height);
         float screenAR = width / (float) height;
         camera = new OrthographicCamera(20, 20 / screenAR);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
