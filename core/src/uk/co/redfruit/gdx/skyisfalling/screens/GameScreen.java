@@ -274,13 +274,13 @@ public class GameScreen extends RedfruitScreen {
 
         Sprite playerLife = Assets.getInstance().getPlayerLife();
 
-        float x = cameraGUI.viewportWidth - playerLife.getWidth() - 30;
+        float x = cameraGUI.viewportWidth - playerLife.getWidth() - 100;
         float y = cameraGUI.viewportHeight - (playerLife.getHeight() / 2) - 15;
 
 
-        /*playerLife.setPosition(x, y);
-        playerLife.draw(batch);*/
-        livesFont.draw(batch, layout, x, y);
+        playerLife.setPosition(x, y);
+        playerLife.draw(batch);
+        livesFont.draw(batch, layout, x + playerLife.getWidth() + 15, y);
     }
 
     private void renderScore(SpriteBatch batch ){
