@@ -278,7 +278,7 @@ public class GameScreen extends RedfruitScreen {
         float y = cameraGUI.viewportHeight - (playerLife.getHeight() / 2) - 15;
 
 
-        playerLife.setPosition(x, y);
+        playerLife.setPosition(x, y - 15);
         playerLife.draw(batch);
         livesFont.draw(batch, layout, x + playerLife.getWidth() + 15, y);
     }
