@@ -107,11 +107,6 @@ public class GameScreen extends RedfruitScreen {
         if (!level.gameOver && !level.showingWaveNumber) {
             doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
         }
-        /*try {
-            Thread.sleep(1000/30);
-        } catch (InterruptedException e) {
-            Gdx.app.log(TAG, "Failed to sleep!");
-        }*/
     }
 
     @Override
