@@ -64,8 +64,8 @@ public class GameScreen extends RedfruitScreen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-        cameraGUI =  new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-        guiViewport = new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+        cameraGUI =  new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        guiViewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         guiViewport.setCamera(cameraGUI);
         cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
         cameraGUI.setToOrtho(false);
@@ -111,14 +111,16 @@ public class GameScreen extends RedfruitScreen {
 
     @Override
     public void resize(int width, int height) {
-        //gameViewport.update(width, height);
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Resize called: " + width + " x " + height);
+        }
+        gameViewport.update(width, height);
         float screenAR = width / (float) height;
         camera = new OrthographicCamera(20, 20 / screenAR);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
         guiViewport.update(width, height);
-
 
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
@@ -271,6 +273,10 @@ public class GameScreen extends RedfruitScreen {
 
         float x = cameraGUI.viewportWidth - playerLife.getWidth() - 100;
         float y = cameraGUI.viewportHeight - (playerLife.getHeight() / 2) - 15;
+
+        /*if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Lives rendered at: " + x + " x " + y);
+        }*/
 
 
         playerLife.setPosition(x, y - 15);
