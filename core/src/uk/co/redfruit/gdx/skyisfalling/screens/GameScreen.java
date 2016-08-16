@@ -2,8 +2,6 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,9 +12,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.async.ThreadUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import uk.co.redfruit.gdx.skyisfalling.SkyIsFalling;
@@ -34,9 +31,14 @@ public class GameScreen extends RedfruitScreen {
 
     private SpriteBatch batch;
     public static OrthographicCamera camera;
-    public  static OrthographicCamera cameraGUI;
+    public static OrthographicCamera cameraGUI;
     private Viewport gameViewport;
     private Viewport guiViewport;
+
+    private Skin skinSkyIsFalling;
+    private Stage stage;
+    private Label livesLabel;
+    private Label scoreLabel;
 
     private Level level;
 
@@ -46,7 +48,7 @@ public class GameScreen extends RedfruitScreen {
     private Body leftWall;
     private Body rightWall;
 
-    private final float TIME_STEP = 1f/60f;
+    private final float TIME_STEP = 1f / 60f;
     private float physicsStepAccumulator = 0;
 
 
@@ -64,7 +66,7 @@ public class GameScreen extends RedfruitScreen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-        cameraGUI =  new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cameraGUI = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         guiViewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         guiViewport.setCamera(cameraGUI);
         cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
@@ -76,19 +78,21 @@ public class GameScreen extends RedfruitScreen {
         createSideWalls();
         level = new Level(world);
         world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
-        if (Constants.DEBUG) {
+        if ( Constants.DEBUG ) {
             debugRenderer = new Box2DDebugRenderer();
         }
+
+        rebuildStage();
 
 
         SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
         ControllerManager.setLevel(level);
 
 
-
         Gdx.input.setInputProcessor(new GameInputListener(camera, level));
         //Gdx.input.setCatchBackKey(true);
     }
+
 
     @Override
     public void render(float deltaTime) {
@@ -98,20 +102,20 @@ public class GameScreen extends RedfruitScreen {
         level.update(deltaTime);
 
         renderWorld(batch);
-        renderGui(batch);
+        renderGameHUD(batch);
 
-        if (Constants.DEBUG) {
+        if ( Constants.DEBUG ) {
             debugRenderer.render(world, camera.combined);
         }
 
-        if (!level.gameOver && !level.showingWaveNumber) {
+        if ( !level.gameOver && !level.showingWaveNumber ) {
             doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
         }
     }
 
     @Override
     public void resize(int width, int height) {
-        if (Constants.DEBUG) {
+        if ( Constants.DEBUG ) {
             Gdx.app.log(TAG, "Resize called: " + width + " x " + height);
         }
         gameViewport.update(width, height);
@@ -124,6 +128,8 @@ public class GameScreen extends RedfruitScreen {
 
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
+
+        stage.getViewport().update(width, height);
     }
 
     @Override
@@ -147,12 +153,14 @@ public class GameScreen extends RedfruitScreen {
         world.dispose();
         batch.dispose();
         debugRenderer.dispose();
+        stage.dispose();
+        skinSkyIsFalling.dispose();
     }
 
     private void doPhysicsWorldStep(float deltaTime) {
         float frameTime = Math.min(deltaTime, 0.25f);
         physicsStepAccumulator += frameTime;
-        while (physicsStepAccumulator >= TIME_STEP) {
+        while ( physicsStepAccumulator >= TIME_STEP ) {
             world.step(TIME_STEP, 6, 2);
             physicsStepAccumulator -= TIME_STEP;
         }
@@ -209,8 +217,16 @@ public class GameScreen extends RedfruitScreen {
         wallBox.dispose();
     }
 
-    private void renderGui(SpriteBatch batch) {
-        batch.setProjectionMatrix(cameraGUI.combined);
+    private void renderGameHUD(SpriteBatch batch) {
+        livesLabel.setText("" + level.getPlayerShip().lives);
+        scoreLabel.setText("Score: " + level.getScore());
+
+        if ( stage != null ) {
+            stage.act();
+            stage.draw();
+        }
+
+        /*batch.setProjectionMatrix(cameraGUI.combined);
         batch.begin();
         renderScore(batch);
         renderLives(batch);
@@ -227,7 +243,7 @@ public class GameScreen extends RedfruitScreen {
 
         if (level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000) {
             game.setScreen(new MenuScreen(game));
-        }
+        }*/
     }
 
     private void renderWorld(SpriteBatch batch) {
@@ -235,7 +251,7 @@ public class GameScreen extends RedfruitScreen {
         batch.begin();
         level.render(batch);
         batch.end();
-        if (Constants.DEBUG) {
+        if ( Constants.DEBUG ) {
             debugRenderer.render(world, camera.combined);
         }
     }
@@ -253,9 +269,9 @@ public class GameScreen extends RedfruitScreen {
         float x = cameraGUI.viewportWidth - layout.width - 15;
         float y = 15;
 
-        if (fps >= 45) {
+        if ( fps >= 45 ) {
             fpsFont.setColor(0, 1, 0, 1);
-        } else if (fps >= 30) {
+        } else if ( fps >= 30 ) {
             fpsFont.setColor(1, 1, 0, 1);
         } else {
             fpsFont.setColor(1, 0, 0, 1);
@@ -284,7 +300,7 @@ public class GameScreen extends RedfruitScreen {
         livesFont.draw(batch, layout, x + playerLife.getWidth() + 15, y);
     }
 
-    private void renderScore(SpriteBatch batch ){
+    private void renderScore(SpriteBatch batch) {
         BitmapFont scoreFont = Assets.getInstance().getFonts().defaultNormal;
         GlyphLayout layout = new GlyphLayout();
         String scoreString = "Score : " + level.getScore();
@@ -297,14 +313,14 @@ public class GameScreen extends RedfruitScreen {
     }
 
     private void renderGameOver(SpriteBatch batch) {
-            BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
-            GlyphLayout gameOverLayout = new GlyphLayout();
-            gameOverLayout.setText(fontGameOver, "GAME OVER!");
+        BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
+        GlyphLayout gameOverLayout = new GlyphLayout();
+        gameOverLayout.setText(fontGameOver, "GAME OVER!");
 
-            float x = (cameraGUI.viewportWidth / 2) - (gameOverLayout.width / 2);
-            float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
+        float x = (cameraGUI.viewportWidth / 2) - (gameOverLayout.width / 2);
+        float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
 
-            fontGameOver.draw(batch, gameOverLayout, x, y);
+        fontGameOver.draw(batch, gameOverLayout, x, y);
     }
 
     private void renderNewWave(SpriteBatch batch) {
@@ -318,5 +334,43 @@ public class GameScreen extends RedfruitScreen {
         fontGameOver.setColor(Color.GREEN);
 
         fontGameOver.draw(batch, gameOverLayout, x, y);
+    }
+
+    private void rebuildStage() {
+
+        skinSkyIsFalling = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
+        stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+
+        Table livesLayer = buildLivesLayer();
+        Table scoreAndPauseButtonLayer = buildScoreAndPauseButtonLayer();
+
+        stage.clear();
+        Stack stack = new Stack();
+        stage.addActor(stack);
+        stack.setSize(stage.getWidth(), stage.getHeight());
+        stack.add(livesLayer);
+        stack.add(scoreAndPauseButtonLayer);
+    }
+
+    private Table buildScoreAndPauseButtonLayer() {
+        Table layer = new Table();
+        layer.top().left();
+
+        scoreLabel = new Label("Score: " + level.getScore(), skinSkyIsFalling);
+        layer.add(scoreLabel).pad(10, 25, 10, 10);
+
+        return layer;
+    }
+
+    private Table buildLivesLayer() {
+        Table layer = new Table();
+        layer.top().right();
+
+        Image livesImage = new Image(Assets.getInstance().getPlayerLife());
+        layer.add(livesImage).pad(10);
+
+        livesLabel = new Label("" + level.getPlayerShip().lives, skinSkyIsFalling);
+        layer.add(livesLabel).pad(10,5,10,25);
+        return layer;
     }
 }
