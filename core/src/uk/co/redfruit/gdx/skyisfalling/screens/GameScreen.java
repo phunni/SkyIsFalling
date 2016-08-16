@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import uk.co.redfruit.gdx.skyisfalling.SkyIsFalling;
@@ -39,6 +41,7 @@ public class GameScreen extends RedfruitScreen {
     private Stage stage;
     private Label livesLabel;
     private Label scoreLabel;
+    private BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
 
     private Level level;
 
@@ -226,10 +229,10 @@ public class GameScreen extends RedfruitScreen {
             stage.draw();
         }
 
-        /*batch.setProjectionMatrix(cameraGUI.combined);
+        batch.setProjectionMatrix(cameraGUI.combined);
         batch.begin();
-        renderScore(batch);
-        renderLives(batch);
+        //renderScore(batch);
+        //renderLives(batch);
         if (level.gameOver) {
             renderGameOver(batch);
         }
@@ -243,7 +246,7 @@ public class GameScreen extends RedfruitScreen {
 
         if (level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000) {
             game.setScreen(new MenuScreen(game));
-        }*/
+        }
     }
 
     private void renderWorld(SpriteBatch batch) {
@@ -356,7 +359,7 @@ public class GameScreen extends RedfruitScreen {
         Table layer = new Table();
         layer.top().left();
 
-        scoreLabel = new Label("Score: " + level.getScore(), skinSkyIsFalling);
+        scoreLabel = new Label("Score: " + level.getScore(), new Label.LabelStyle(normalFont, Color.WHITE));
         layer.add(scoreLabel).pad(10, 25, 10, 10);
 
         return layer;
@@ -367,9 +370,11 @@ public class GameScreen extends RedfruitScreen {
         layer.top().right();
 
         Image livesImage = new Image(Assets.getInstance().getPlayerLife());
-        layer.add(livesImage).pad(10);
+        livesImage.setScaling(Scaling.fillY);
 
-        livesLabel = new Label("" + level.getPlayerShip().lives, skinSkyIsFalling);
+        layer.add(livesImage).pad(10).fill();
+
+        livesLabel = new Label("" + level.getPlayerShip().lives, new Label.LabelStyle(normalFont, Color.WHITE));
         layer.add(livesLabel).pad(10,5,10,25);
         return layer;
     }
