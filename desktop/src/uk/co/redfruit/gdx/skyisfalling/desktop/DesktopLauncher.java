@@ -11,7 +11,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setTitle("The Sky is Falling");
         config.setWindowedMode(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-		config.useVsync(false);
+		//config.useVsync(false);
 		new Lwjgl3Application(new SkyIsFalling(), config);
 	}
 }
