@@ -305,6 +305,9 @@ public class GameScreen extends RedfruitScreen {
         Table pauseLayer = buildPauseLayer();
 
         stage.clear();
+        if (Constants.DEBUG) {
+            stage.setDebugAll(true);
+        }
         Stack stack = new Stack();
         stage.addActor(stack);
         stack.setSize(stage.getWidth(), stage.getHeight());
@@ -320,7 +323,7 @@ public class GameScreen extends RedfruitScreen {
         Table layer = new Table();
         layer.top().left();
         ImageButton pauseButton = new ImageButton(new SpriteDrawable(Assets.getInstance().getPause()));
-        layer.add(pauseButton).pad(10,5,10,25);
+        layer.add(pauseButton).pad(25).fill();
 
         return layer;
     }
@@ -342,7 +345,7 @@ public class GameScreen extends RedfruitScreen {
         layer.center().top();
 
         scoreLabel = new Label("" + level.getScore(), new Label.LabelStyle(normalFont, Color.WHITE));
-        layer.add(scoreLabel).pad(10, 25, 10, 10);
+        layer.add(scoreLabel).pad(10);
 
         return layer;
     }
