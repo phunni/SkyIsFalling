@@ -12,8 +12,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -41,6 +43,7 @@ public class GameScreen extends RedfruitScreen {
     private Stage stage;
     private Label livesLabel;
     private Label scoreLabel;
+    private Label fpsLabel;
     private BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
 
     private Level level;
@@ -222,7 +225,19 @@ public class GameScreen extends RedfruitScreen {
 
     private void renderGameHUD(SpriteBatch batch) {
         livesLabel.setText("" + level.getPlayerShip().lives);
-        scoreLabel.setText("Score: " + level.getScore());
+        scoreLabel.setText("" + level.getScore());
+        if (Constants.DEBUG) {
+            int fps = Gdx.graphics.getFramesPerSecond();
+            fpsLabel.setText("FPS: " + fps);
+            if ( fps >= 45 ) {
+                fpsLabel.getStyle().fontColor = Color.GREEN;
+            } else if ( fps >= 30 ) {
+                fpsLabel.getStyle().fontColor = Color.YELLOW;
+            } else {
+                fpsLabel.getStyle().fontColor = Color.RED;
+            }
+
+        }
 
         if ( stage != null ) {
             stage.act();
@@ -239,9 +254,6 @@ public class GameScreen extends RedfruitScreen {
         if (level.showingWaveNumber) {
             renderNewWave(batch);
         }
-        if (Constants.DEBUG) {
-            renderGUIFPSCounter(batch);
-        }
         batch.end();
 
         if (level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000) {
@@ -257,62 +269,6 @@ public class GameScreen extends RedfruitScreen {
         if ( Constants.DEBUG ) {
             debugRenderer.render(world, camera.combined);
         }
-    }
-
-    private void renderGUIFPSCounter(SpriteBatch batch) {
-        BitmapFont fpsFont = Assets.getInstance().getFonts().defaultSmall;
-
-        int fps = Gdx.graphics.getFramesPerSecond();
-
-        String fpsString = "FPS: " + fps;
-
-        GlyphLayout layout = new GlyphLayout();
-        layout.setText(fpsFont, fpsString);
-
-        float x = cameraGUI.viewportWidth - layout.width - 15;
-        float y = 15;
-
-        if ( fps >= 45 ) {
-            fpsFont.setColor(0, 1, 0, 1);
-        } else if ( fps >= 30 ) {
-            fpsFont.setColor(1, 1, 0, 1);
-        } else {
-            fpsFont.setColor(1, 0, 0, 1);
-        }
-        fpsFont.draw(batch, fpsString, x, y);
-        fpsFont.setColor(1, 1, 1, 1);
-    }
-
-    private void renderLives(SpriteBatch batch) {
-        BitmapFont livesFont = Assets.getInstance().getFonts().defaultNormal;
-        GlyphLayout layout = new GlyphLayout();
-        layout.setText(livesFont, "" + level.getPlayerShip().lives);
-
-        Sprite playerLife = Assets.getInstance().getPlayerLife();
-
-        float x = cameraGUI.viewportWidth - playerLife.getWidth() - 100;
-        float y = cameraGUI.viewportHeight - (playerLife.getHeight() / 2) - 15;
-
-        /*if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Lives rendered at: " + x + " x " + y);
-        }*/
-
-
-        playerLife.setPosition(x, y - 15);
-        playerLife.draw(batch);
-        livesFont.draw(batch, layout, x + playerLife.getWidth() + 15, y);
-    }
-
-    private void renderScore(SpriteBatch batch) {
-        BitmapFont scoreFont = Assets.getInstance().getFonts().defaultNormal;
-        GlyphLayout layout = new GlyphLayout();
-        String scoreString = "Score : " + level.getScore();
-        layout.setText(scoreFont, scoreString);
-
-        float x = 15;
-        float y = cameraGUI.viewportHeight - 15;
-
-        scoreFont.draw(batch, scoreString, x, y);
     }
 
     private void renderGameOver(SpriteBatch batch) {
@@ -345,21 +301,47 @@ public class GameScreen extends RedfruitScreen {
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         Table livesLayer = buildLivesLayer();
-        Table scoreAndPauseButtonLayer = buildScoreAndPauseButtonLayer();
+        Table scoreLayer = buildScoreLayer();
+        Table pauseLayer = buildPauseLayer();
 
         stage.clear();
         Stack stack = new Stack();
         stage.addActor(stack);
         stack.setSize(stage.getWidth(), stage.getHeight());
         stack.add(livesLayer);
-        stack.add(scoreAndPauseButtonLayer);
+        stack.add(scoreLayer);
+        stack.add(pauseLayer);
+        if (Constants.DEBUG) {
+            stack.add(buildFPSLayer());
+        }
     }
 
-    private Table buildScoreAndPauseButtonLayer() {
+    private Table buildPauseLayer() {
         Table layer = new Table();
         layer.top().left();
+        ImageButton pauseButton = new ImageButton(new SpriteDrawable(Assets.getInstance().getPause()));
+        layer.add(pauseButton).pad(10,5,10,25);
 
-        scoreLabel = new Label("Score: " + level.getScore(), new Label.LabelStyle(normalFont, Color.WHITE));
+        return layer;
+    }
+
+    private Table buildFPSLayer() {
+        Table layer = new Table();
+        layer.bottom().right();
+        int fps = Gdx.graphics.getFramesPerSecond();
+        // colour will default to red, but should change to reflect fps almost instantly
+        Label.LabelStyle fpsStyle = new Label.LabelStyle(normalFont, Color.RED);
+        fpsLabel = new Label("FPS: " + fps, fpsStyle);
+
+        layer.add(fpsLabel).pad(25);
+        return layer;
+    }
+
+    private Table buildScoreLayer() {
+        Table layer = new Table();
+        layer.center().top();
+
+        scoreLabel = new Label("" + level.getScore(), new Label.LabelStyle(normalFont, Color.WHITE));
         layer.add(scoreLabel).pad(10, 25, 10, 10);
 
         return layer;
