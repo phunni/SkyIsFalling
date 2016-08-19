@@ -4,11 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Disposable;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
@@ -28,14 +29,22 @@ public class Assets implements Disposable, AssetErrorListener {
     private EnemyShipAsset enemies;
     private LaserAsset lasers;
     private ExplosionAsset explosion;
+    private Sprite pause;
 
 
     private Assets(){}
 
     public void init(AssetManager assetManager) {
+        ResolutionFileResolver fileResolver = new ResolutionFileResolver(new InternalFileHandleResolver(),
+                new Resolution(800, 480, ""), new Resolution(1200, 1920, "high"));
+        String textureAtlas = fileResolver.resolve(Constants.TEXTURE_SKY_IS_FALLING).path();
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Resolved File: " + textureAtlas);
+        }
+
         this.assetManager = assetManager;
         this.assetManager.setErrorListener(this);
-        this.assetManager.load(Constants.TEXTURE_SKY_IS_FALLING, TextureAtlas.class);
+        this.assetManager.load(textureAtlas, TextureAtlas.class);
 
         this.assetManager.finishLoading();
 
@@ -44,7 +53,7 @@ public class Assets implements Disposable, AssetErrorListener {
             Gdx.app.debug(TAG, "asset: " + a);
         }
 
-        TextureAtlas atlas = assetManager.get(Constants.TEXTURE_SKY_IS_FALLING);
+        TextureAtlas atlas = assetManager.get(textureAtlas);
 
         for (Texture t : atlas.getTextures()) {
             t.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -57,6 +66,7 @@ public class Assets implements Disposable, AssetErrorListener {
         lasers = new LaserAsset(atlas);
         fonts = new AssetFonts();
         explosion = new ExplosionAsset(atlas);
+        pause = atlas.createSprite("pause");
     }
 
     @Override
@@ -102,5 +112,9 @@ public class Assets implements Disposable, AssetErrorListener {
 
     public ExplosionAsset getExplosion() {
         return explosion;
+    }
+
+    public Sprite getPause() {
+        return pause;
     }
 }

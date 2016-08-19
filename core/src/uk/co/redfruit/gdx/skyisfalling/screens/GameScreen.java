@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -246,8 +247,7 @@ public class GameScreen extends RedfruitScreen {
 
         batch.setProjectionMatrix(cameraGUI.combined);
         batch.begin();
-        //renderScore(batch);
-        //renderLives(batch);
+
         if (level.gameOver) {
             renderGameOver(batch);
         }
@@ -322,8 +322,11 @@ public class GameScreen extends RedfruitScreen {
     private Table buildPauseLayer() {
         Table layer = new Table();
         layer.top().left();
-        ImageButton pauseButton = new ImageButton(new SpriteDrawable(Assets.getInstance().getPause()));
-        layer.add(pauseButton).pad(25).fill();
+        Drawable pauseImage = new SpriteDrawable(Assets.getInstance().getPause());
+        ImageButton pauseButton = new ImageButton(pauseImage);
+
+        layer.add(pauseButton).pad(10);
+
 
         return layer;
     }
@@ -355,7 +358,7 @@ public class GameScreen extends RedfruitScreen {
         layer.top().right();
 
         Image livesImage = new Image(Assets.getInstance().getPlayerLife());
-        livesImage.setScaling(Scaling.fillY);
+        livesImage.setScaling(Scaling.fit);
 
         layer.add(livesImage).pad(10).fill();
 

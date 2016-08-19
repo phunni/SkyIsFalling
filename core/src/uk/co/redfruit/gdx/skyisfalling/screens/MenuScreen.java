@@ -55,6 +55,9 @@ public class MenuScreen extends RedfruitScreen {
 
     @Override
     public void show() {
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Device density: " + Gdx.graphics.getDensity());
+        }
         stage  = new Stage(new FillViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT));
         Gdx.input.setInputProcessor(stage);
         rebuildStage();
