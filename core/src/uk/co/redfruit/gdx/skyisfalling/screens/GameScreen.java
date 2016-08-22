@@ -7,12 +7,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -46,6 +44,7 @@ public class GameScreen extends RedfruitScreen {
     private Label scoreLabel;
     private Label fpsLabel;
     private BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
+    private BitmapFont largeFont = Assets.getInstance().getFonts().defaultBig;
 
     private Level level;
 
@@ -347,7 +346,7 @@ public class GameScreen extends RedfruitScreen {
         Table layer = new Table();
         layer.center().top();
 
-        scoreLabel = new Label("" + level.getScore(), new Label.LabelStyle(normalFont, Color.WHITE));
+        scoreLabel = new Label("" + level.getScore(), new Label.LabelStyle(largeFont, Color.WHITE));
         layer.add(scoreLabel).pad(10);
 
         return layer;
