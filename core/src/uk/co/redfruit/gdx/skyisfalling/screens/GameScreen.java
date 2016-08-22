@@ -2,6 +2,7 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,8 +12,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Scaling;
@@ -24,8 +27,8 @@ import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
-import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
+import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class GameScreen extends RedfruitScreen {
@@ -96,8 +99,10 @@ public class GameScreen extends RedfruitScreen {
         SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
         ControllerManager.setLevel(level);
 
-
-        Gdx.input.setInputProcessor(new GameInputListener(camera, level));
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(new GameInputListener(camera, level));
+        Gdx.input.setInputProcessor(inputMultiplexer);
         //Gdx.input.setCatchBackKey(true);
     }
 
@@ -326,6 +331,13 @@ public class GameScreen extends RedfruitScreen {
         layer.top().left();
         Drawable pauseImage = new SpriteDrawable(Assets.getInstance().getPause());
         ImageButton pauseButton = new ImageButton(pauseImage);
+        pauseButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                state = State.PAUSE;
+                Gdx.app.log(TAG, "Pause button pressed");
+            }
+        });
 
         layer.add(pauseButton).pad(10);
 
