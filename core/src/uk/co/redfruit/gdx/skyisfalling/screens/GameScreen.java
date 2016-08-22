@@ -57,6 +57,8 @@ public class GameScreen extends RedfruitScreen {
     private final float TIME_STEP = 1f / 60f;
     private float physicsStepAccumulator = 0;
 
+    private State state = State.RUN;
+
 
     public GameScreen(Game game) {
         super((game));
@@ -141,6 +143,7 @@ public class GameScreen extends RedfruitScreen {
     @Override
     public void pause() {
         super.pause();
+        this.state = State.PAUSE;
     }
 
     @Override
@@ -364,5 +367,10 @@ public class GameScreen extends RedfruitScreen {
         livesLabel = new Label("" + level.getPlayerShip().lives, new Label.LabelStyle(normalFont, Color.WHITE));
         layer.add(livesLabel).pad(10,5,10,25);
         return layer;
+    }
+
+    public enum State {
+        PAUSE,
+        RUN
     }
 }
