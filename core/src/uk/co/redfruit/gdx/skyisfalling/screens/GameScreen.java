@@ -48,6 +48,8 @@ public class GameScreen extends RedfruitScreen {
     private Label fpsLabel;
     private BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
     private BitmapFont largeFont = Assets.getInstance().getFonts().defaultBig;
+    private InputMultiplexer inputMultiplexer;
+    private GameInputListener gameInputListener;
 
     private Level level;
 
@@ -99,9 +101,11 @@ public class GameScreen extends RedfruitScreen {
         SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
         ControllerManager.setLevel(level);
 
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        gameInputListener = new GameInputListener(camera, level);
+
+        inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(new GameInputListener(camera, level));
+        inputMultiplexer.addProcessor(gameInputListener);
         Gdx.input.setInputProcessor(inputMultiplexer);
         //Gdx.input.setCatchBackKey(true);
     }
@@ -111,18 +115,26 @@ public class GameScreen extends RedfruitScreen {
     public void render(float deltaTime) {
         Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        switch (state) {
+            case RUN:
 
-        level.update(deltaTime);
 
-        renderWorld(batch);
-        renderGameHUD(batch);
+                level.update(deltaTime);
 
-        if ( Constants.DEBUG ) {
-            debugRenderer.render(world, camera.combined);
-        }
+                renderWorld(batch);
+                renderGameHUD(batch);
 
-        if ( !level.gameOver && !level.showingWaveNumber ) {
-            doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
+                if ( Constants.DEBUG ) {
+                    debugRenderer.render(world, camera.combined);
+                }
+
+                if ( !level.gameOver && !level.showingWaveNumber ) {
+                    doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
+                }
+               break;
+            case PAUSE:
+                renderGameHUD(batch);
+                break;
         }
     }
 
@@ -307,23 +319,68 @@ public class GameScreen extends RedfruitScreen {
         skinSkyIsFalling = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
         stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
-        Table livesLayer = buildLivesLayer();
-        Table scoreLayer = buildScoreLayer();
-        Table pauseLayer = buildPauseLayer();
-
         stage.clear();
-        if (Constants.DEBUG) {
+        if ( Constants.DEBUG ) {
             stage.setDebugAll(true);
         }
+
         Stack stack = new Stack();
         stage.addActor(stack);
         stack.setSize(stage.getWidth(), stage.getHeight());
-        stack.add(livesLayer);
-        stack.add(scoreLayer);
-        stack.add(pauseLayer);
-        if (Constants.DEBUG) {
-            stack.add(buildFPSLayer());
+
+
+
+        switch (state) {
+            case RUN:
+                Table livesLayer = buildLivesLayer();
+                Table scoreLayer = buildScoreLayer();
+                Table pauseLayer = buildPauseLayer();
+
+
+
+                stack.add(livesLayer);
+                stack.add(scoreLayer);
+                stack.add(pauseLayer);
+                if ( Constants.DEBUG ) {
+                    stack.add(buildFPSLayer());
+                }
+                break;
+            case PAUSE:
+                Table pausedLayer = buildPausedLayer();
+                stack.add(pausedLayer);
+                if ( Constants.DEBUG ) {
+                    stack.add(buildFPSLayer());
+                }
+                break;
         }
+    }
+
+    private Table buildPausedLayer() {
+        Table layer = new Table();
+        layer.center();
+        Label pausedLabel = new Label("Paused" , skinSkyIsFalling);
+        layer.add(pausedLabel).pad(25);
+        layer.row();
+        TextButton continueButton = new TextButton("Continue", skinSkyIsFalling);
+        continueButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                state = State.RUN;
+                rebuildStage();
+                refreshInputMultiplexer();
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Game resumed after pause");
+                }
+            }
+        });
+        layer.add(continueButton).pad(25);
+        return layer;
+    }
+
+    private void refreshInputMultiplexer() {
+        inputMultiplexer.clear();
+        inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(gameInputListener);
     }
 
     private Table buildPauseLayer() {
@@ -335,7 +392,11 @@ public class GameScreen extends RedfruitScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 state = State.PAUSE;
-                Gdx.app.log(TAG, "Pause button pressed");
+                rebuildStage();
+                refreshInputMultiplexer();
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Pause button pressed");
+                }
             }
         });
 
