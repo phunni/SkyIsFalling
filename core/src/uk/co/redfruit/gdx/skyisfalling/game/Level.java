@@ -29,7 +29,7 @@ public class Level {
 
     private final World world;
 
-    private Sprite background = Assets.getInstance().getBackground();
+
 
     private float difficulty;
     public float levelNumber;
@@ -54,9 +54,6 @@ public class Level {
         init();
 
         playerShip = new PlayerShip(world);
-
-        background.setSize(GameScreen.camera.viewportWidth * 1.5f, GameScreen.camera.viewportHeight * 1.5f);
-        background.setPosition(0, 0);
     }
 
     private void setDifficulty() {
@@ -73,7 +70,6 @@ public class Level {
 
     public void render(SpriteBatch batch) {
         batch.disableBlending();
-        background.draw(batch);
         batch.enableBlending();
         if (!gameOver && !showingWaveNumber) {
             boolean moving = false;
