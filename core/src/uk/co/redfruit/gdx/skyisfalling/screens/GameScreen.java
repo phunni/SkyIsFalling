@@ -1,5 +1,6 @@
 package uk.co.redfruit.gdx.skyisfalling.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -96,6 +97,10 @@ public class GameScreen extends RedfruitScreen {
         world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
         if ( Constants.DEBUG ) {
             debugRenderer = new Box2DDebugRenderer();
+        }
+
+        if ( Gdx.app.getType() == Application.ApplicationType.Android) {
+            background.setSize(Gdx.graphics.getWidth() * 1.5f, Gdx.graphics.getHeight() * 1.5f);
         }
 
         background.setPosition(0, 0);
@@ -383,6 +388,9 @@ public class GameScreen extends RedfruitScreen {
     }
 
     private void renderBackground(SpriteBatch batch) {
+        /*if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Background Position: " + background.getX() + " ," + background.getY());
+        }*/
         batch.begin();
         background.draw(batch);
         batch.end();
