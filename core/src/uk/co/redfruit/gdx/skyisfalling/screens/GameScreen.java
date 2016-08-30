@@ -49,6 +49,7 @@ public class GameScreen extends RedfruitScreen {
     private Label fpsLabel;
     private BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
     private BitmapFont largeFont = Assets.getInstance().getFonts().defaultBig;
+    private BitmapFont smallFont = Assets.getInstance().getFonts().defaultSmall;
     private InputMultiplexer inputMultiplexer;
     private GameInputListener gameInputListener;
     private Sprite background = Assets.getInstance().getBackground();
@@ -83,8 +84,8 @@ public class GameScreen extends RedfruitScreen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-        cameraGUI = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        guiViewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cameraGUI = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+        guiViewport = new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         guiViewport.setCamera(cameraGUI);
         cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
         cameraGUI.setToOrtho(false);
@@ -198,7 +199,7 @@ public class GameScreen extends RedfruitScreen {
         layer.bottom().right();
         int fps = Gdx.graphics.getFramesPerSecond();
         // colour will default to red, but should change to reflect fps almost instantly
-        Label.LabelStyle fpsStyle = new Label.LabelStyle(normalFont, Color.RED);
+        Label.LabelStyle fpsStyle = new Label.LabelStyle(smallFont, Color.RED);
         fpsLabel = new Label("FPS: " + fps, fpsStyle);
 
         layer.add(fpsLabel).pad(25);
@@ -210,11 +211,11 @@ public class GameScreen extends RedfruitScreen {
         layer.top().right();
 
         Image livesImage = new Image(Assets.getInstance().getPlayerLife());
-        livesImage.setScaling(Scaling.fit);
+        livesImage.setScaling(Scaling.fillX);
 
         layer.add(livesImage).pad(10).fill();
 
-        livesLabel = new Label("" + level.getPlayerShip().lives, new Label.LabelStyle(normalFont, Color.WHITE));
+        livesLabel = new Label("" + level.getPlayerShip().lives, new Label.LabelStyle(smallFont, Color.WHITE));
         layer.add(livesLabel).pad(10,5,10,25);
         return layer;
     }
@@ -243,10 +244,11 @@ public class GameScreen extends RedfruitScreen {
     private Table buildPausedLayer() {
         Table layer = new Table();
         layer.center();
-        Label pausedLabel = new Label("Paused" , skinSkyIsFalling);
+        Label pausedLabel = new Label("Paused" , new Label.LabelStyle(normalFont, Color.WHITE));
         layer.add(pausedLabel).pad(25);
         layer.row();
         TextButton continueButton = new TextButton("Continue", skinSkyIsFalling);
+
         continueButton.addListener(new ChangeListener() {
 //methods start
             @Override
@@ -343,7 +345,7 @@ public class GameScreen extends RedfruitScreen {
     private void rebuildStage() {
 
         skinSkyIsFalling = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
-        stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        stage = new Stage(new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT));
 
         stage.clear();
         if ( Constants.DEBUG ) {
@@ -423,7 +425,7 @@ public class GameScreen extends RedfruitScreen {
         if (level.gameOver) {
             renderGameOver(batch);
         }
-        if (level.showingWaveNumber) {
+        if (level.showingWaveNumber && state == State.RUN) {
             renderNewWave(batch);
         }
         batch.end();
@@ -446,15 +448,15 @@ public class GameScreen extends RedfruitScreen {
 
     private void renderNewWave(SpriteBatch batch) {
         BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
-        GlyphLayout gameOverLayout = new GlyphLayout();
-        gameOverLayout.setText(fontGameOver, "Wave: " + MathUtils.floor(level.levelNumber));
+        GlyphLayout newWaveLayout = new GlyphLayout();
+        newWaveLayout.setText(fontGameOver, "Wave: " + MathUtils.floor(level.levelNumber));
 
-        float x = (cameraGUI.viewportWidth / 2) - (gameOverLayout.width / 2);
-        float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
+        float x = (cameraGUI.viewportWidth / 2) - (newWaveLayout.width / 2);
+        float y = (cameraGUI.viewportHeight / 2) - (newWaveLayout.height / 2);
 
         fontGameOver.setColor(Color.GREEN);
 
-        fontGameOver.draw(batch, gameOverLayout, x, y);
+        fontGameOver.draw(batch, newWaveLayout, x, y);
     }
 
     private void renderWorld(SpriteBatch batch) {
