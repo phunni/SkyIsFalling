@@ -100,11 +100,15 @@ public class GameScreen extends RedfruitScreen {
             debugRenderer = new Box2DDebugRenderer();
         }
 
-        if ( Gdx.app.getType() == Application.ApplicationType.Android) {
-            background.setSize(Gdx.graphics.getWidth() * 1.5f, Gdx.graphics.getHeight() * 1.5f);
-        }
+        /*if ( Gdx.app.getType() == Application.ApplicationType.Android) {
+            background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }*/
 
         background.setPosition(0, 0);
+        background.setSize(camera.viewportWidth, camera.viewportHeight);
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Background initial size: " + background.getWidth() + "  x "  + background.getHeight());
+        }
 
         rebuildStage();
 
@@ -125,6 +129,7 @@ public class GameScreen extends RedfruitScreen {
     public void render(float deltaTime) {
         Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.setProjectionMatrix(camera.combined);
         renderBackground(batch);
         switch (state) {
             case RUN:
@@ -156,7 +161,8 @@ public class GameScreen extends RedfruitScreen {
         }
         gameViewport.update(width, height);
         float screenAR = width / (float) height;
-        camera = new OrthographicCamera(20, 20 / screenAR);
+        float arHeight = 20 / screenAR;
+        camera = new OrthographicCamera(20,arHeight);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
@@ -166,12 +172,17 @@ public class GameScreen extends RedfruitScreen {
         batch.setProjectionMatrix(camera.combined);
 
         stage.getViewport().update(width, height);
+        background.setSize(20, arHeight);
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Viewport resized: " + camera.viewportWidth + " x " + camera.viewportHeight);
+            Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x "  + background.getHeight());
+        }
     }
 
     @Override
     public void pause() {
         super.pause();
-        pauseGame();
+       pauseGame();
     }
 
     @Override
@@ -440,8 +451,8 @@ public class GameScreen extends RedfruitScreen {
         GlyphLayout gameOverLayout = new GlyphLayout();
         gameOverLayout.setText(fontGameOver, "GAME OVER!");
 
-        float x = (cameraGUI.viewportWidth / 2) - (gameOverLayout.width / 2);
-        float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
+        float x = (camera.viewportWidth / 2) - (gameOverLayout.width / 2);
+        float y = (camera.viewportHeight / 2) - (gameOverLayout.height / 2);
 
         fontGameOver.draw(batch, gameOverLayout, x, y);
     }
@@ -451,8 +462,8 @@ public class GameScreen extends RedfruitScreen {
         GlyphLayout newWaveLayout = new GlyphLayout();
         newWaveLayout.setText(fontGameOver, "Wave: " + MathUtils.floor(level.levelNumber));
 
-        float x = (cameraGUI.viewportWidth / 2) - (newWaveLayout.width / 2);
-        float y = (cameraGUI.viewportHeight / 2) - (newWaveLayout.height / 2);
+        float x = (camera.viewportWidth / 2) - (newWaveLayout.width / 2);
+        float y = (camera.viewportHeight / 2) - (newWaveLayout.height / 2);
 
         fontGameOver.setColor(Color.GREEN);
 
