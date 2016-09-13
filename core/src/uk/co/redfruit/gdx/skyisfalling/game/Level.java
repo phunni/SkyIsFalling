@@ -48,9 +48,12 @@ public class Level {
     private long lastEnemyShot;
     private long timeSinceLastExplosion = TimeUtils.millis();
 
+    private GameScreen gameScreen;
 
-    public Level(World newWorld) {
+
+    public Level(World newWorld, GameScreen gameScreen) {
         this.world = newWorld;
+        this.gameScreen = gameScreen;
         init();
 
         playerShip = new PlayerShip(world);

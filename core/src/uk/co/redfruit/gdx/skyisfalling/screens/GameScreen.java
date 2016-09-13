@@ -1,6 +1,5 @@
 package uk.co.redfruit.gdx.skyisfalling.screens;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -47,6 +45,8 @@ public class GameScreen extends RedfruitScreen {
     private Label livesLabel;
     private Label scoreLabel;
     private Label fpsLabel;
+    private Label waveLabel;
+    private Label gameOverLabel;
     private BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
     private BitmapFont largeFont = Assets.getInstance().getFonts().defaultBig;
     private BitmapFont smallFont = Assets.getInstance().getFonts().defaultSmall;
@@ -73,7 +73,7 @@ public class GameScreen extends RedfruitScreen {
         RUN
     }
 
-//methods start
+    //methods start
     @Override
     public void show() {
 
@@ -94,7 +94,7 @@ public class GameScreen extends RedfruitScreen {
         world = new World(new Vector2(0, -9.8f), true);
         createGround();
         createSideWalls();
-        level = new Level(world);
+        level = new Level(world, this);
         world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
         if ( Constants.DEBUG ) {
             debugRenderer = new Box2DDebugRenderer();
@@ -106,12 +106,12 @@ public class GameScreen extends RedfruitScreen {
 
         background.setPosition(0, 0);
         background.setSize(camera.viewportWidth, camera.viewportHeight);
-        if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Background initial size: " + background.getWidth() + "  x "  + background.getHeight());
+        if ( Constants.DEBUG ) {
+            Gdx.app.log(TAG, "Background initial size: " + background.getWidth() + "  x " + background.getHeight());
         }
 
-        rebuildStage();
 
+        rebuildStage();
 
         SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
         ControllerManager.setLevel(level);
@@ -123,6 +123,8 @@ public class GameScreen extends RedfruitScreen {
         inputMultiplexer.addProcessor(gameInputListener);
         Gdx.input.setInputProcessor(inputMultiplexer);
         //Gdx.input.setCatchBackKey(true);
+
+
     }
 
     @Override
@@ -139,15 +141,16 @@ public class GameScreen extends RedfruitScreen {
 
                 renderWorld(batch);
                 renderGameHUD(batch);
+                renderNewWaveAndGameOver();
 
                 if ( Constants.DEBUG ) {
                     debugRenderer.render(world, camera.combined);
                 }
 
-                if ( !level.gameOver && !level.showingWaveNumber ) {
+                if ( !level.gameOver ) {
                     doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
                 }
-               break;
+                break;
             case PAUSE:
                 renderGameHUD(batch);
                 break;
@@ -162,7 +165,7 @@ public class GameScreen extends RedfruitScreen {
         gameViewport.update(width, height);
         float screenAR = width / (float) height;
         float arHeight = 20 / screenAR;
-        camera = new OrthographicCamera(20,arHeight);
+        camera = new OrthographicCamera(20, arHeight);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
@@ -173,16 +176,20 @@ public class GameScreen extends RedfruitScreen {
 
         stage.getViewport().update(width, height);
         background.setSize(20, arHeight);
-        if (Constants.DEBUG) {
+        if ( Constants.DEBUG ) {
             Gdx.app.log(TAG, "Viewport resized: " + camera.viewportWidth + " x " + camera.viewportHeight);
-            Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x "  + background.getHeight());
+            Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x " + background.getHeight());
         }
+    }
+
+    public Label getWaveLabel() {
+        return waveLabel;
     }
 
     @Override
     public void pause() {
         super.pause();
-       pauseGame();
+        pauseGame();
     }
 
     @Override
@@ -227,7 +234,7 @@ public class GameScreen extends RedfruitScreen {
         layer.add(livesImage).pad(10).fill();
 
         livesLabel = new Label("" + level.getPlayerShip().lives, new Label.LabelStyle(smallFont, Color.WHITE));
-        layer.add(livesLabel).pad(10,5,10,25);
+        layer.add(livesLabel).pad(10, 5, 10, 25);
         return layer;
     }
 
@@ -240,7 +247,7 @@ public class GameScreen extends RedfruitScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 pauseGame();
-                if (Constants.DEBUG) {
+                if ( Constants.DEBUG ) {
                     Gdx.app.log(TAG, "Pause button pressed");
                 }
             }
@@ -255,19 +262,19 @@ public class GameScreen extends RedfruitScreen {
     private Table buildPausedLayer() {
         Table layer = new Table();
         layer.center();
-        Label pausedLabel = new Label("Paused" , new Label.LabelStyle(normalFont, Color.WHITE));
+        Label pausedLabel = new Label("Paused", new Label.LabelStyle(normalFont, Color.WHITE));
         layer.add(pausedLabel).pad(25);
         layer.row();
         TextButton continueButton = new TextButton("Continue", skinSkyIsFalling);
 
         continueButton.addListener(new ChangeListener() {
-//methods start
+            //methods start
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 state = State.RUN;
                 rebuildStage();
                 refreshInputMultiplexer();
-                if (Constants.DEBUG) {
+                if ( Constants.DEBUG ) {
                     Gdx.app.log(TAG, "Game resumed after pause");
                 }
             }
@@ -283,6 +290,26 @@ public class GameScreen extends RedfruitScreen {
 
         scoreLabel = new Label("" + level.getScore(), new Label.LabelStyle(largeFont, Color.WHITE));
         layer.add(scoreLabel).pad(10);
+
+        return layer;
+    }
+
+    private Table buildWaveLayer() {
+        Table layer = new Table();
+        layer.center();
+        waveLabel = new Label("Wave #" + +MathUtils.floor(level.levelNumber), new Label.LabelStyle(largeFont, Color.GREEN));
+        waveLabel.setVisible(false);
+        layer.add(waveLabel);
+
+        return layer;
+    }
+
+    private Table buildGameOverLayer() {
+        Table layer = new Table();
+        layer.center();
+        gameOverLabel = new Label("Game Over!", new Label.LabelStyle(largeFont, Color.WHITE));
+        layer.add(gameOverLabel);
+        gameOverLabel.setVisible(false);
 
         return layer;
     }
@@ -368,18 +395,20 @@ public class GameScreen extends RedfruitScreen {
         stack.setSize(stage.getWidth(), stage.getHeight());
 
 
-
         switch (state) {
             case RUN:
                 Table livesLayer = buildLivesLayer();
                 Table scoreLayer = buildScoreLayer();
                 Table pauseLayer = buildPauseLayer();
-
+                Table waveLayer = buildWaveLayer();
+                Table gameOverLayer = buildGameOverLayer();
 
 
                 stack.add(livesLayer);
                 stack.add(scoreLayer);
                 stack.add(pauseLayer);
+                stack.add(waveLayer);
+                stack.add(gameOverLayer);
                 if ( Constants.DEBUG ) {
                     stack.add(buildFPSLayer());
                 }
@@ -394,10 +423,13 @@ public class GameScreen extends RedfruitScreen {
         }
     }
 
+
     private void refreshInputMultiplexer() {
-        inputMultiplexer.clear();
-        inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(gameInputListener);
+        if (inputMultiplexer != null) {
+            inputMultiplexer.clear();
+            inputMultiplexer.addProcessor(stage);
+            inputMultiplexer.addProcessor(gameInputListener);
+        }
     }
 
     private void renderBackground(SpriteBatch batch) {
@@ -412,7 +444,7 @@ public class GameScreen extends RedfruitScreen {
     private void renderGameHUD(SpriteBatch batch) {
         livesLabel.setText("" + level.getPlayerShip().lives);
         scoreLabel.setText("" + level.getScore());
-        if (Constants.DEBUG) {
+        if ( Constants.DEBUG ) {
             int fps = Gdx.graphics.getFramesPerSecond();
             fpsLabel.setText("FPS: " + fps);
             if ( fps >= 45 ) {
@@ -431,43 +463,32 @@ public class GameScreen extends RedfruitScreen {
         }
 
         batch.setProjectionMatrix(cameraGUI.combined);
-        batch.begin();
 
-        if (level.gameOver) {
-            renderGameOver(batch);
-        }
-        if (level.showingWaveNumber && state == State.RUN) {
-            renderNewWave(batch);
-        }
-        batch.end();
-
-        if (level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000) {
+        if ( level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000 ) {
             game.setScreen(new MenuScreen(game));
         }
     }
 
-    private void renderGameOver(SpriteBatch batch) {
-        BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
-        GlyphLayout gameOverLayout = new GlyphLayout();
-        gameOverLayout.setText(fontGameOver, "GAME OVER!");
 
-        float x = (camera.viewportWidth / 2) - (gameOverLayout.width / 2);
-        float y = (camera.viewportHeight / 2) - (gameOverLayout.height / 2);
+    private void renderNewWaveAndGameOver() {
+        if (level.showingWaveNumber) {
+            waveLabel.setText("Wave #" + +MathUtils.floor(level.levelNumber));
+        }
+        if (waveLabel != null) {
+            if (level.showingWaveNumber) {
+                waveLabel.setVisible(true);
+            } else {
+                waveLabel.setVisible(false);
+            }
+        }
+        if (gameOverLabel != null) {
+            if (level.gameOver) {
+                gameOverLabel.setVisible(true);
+            } else {
+                gameOverLabel.setVisible(false);
+            }
+        }
 
-        fontGameOver.draw(batch, gameOverLayout, x, y);
-    }
-
-    private void renderNewWave(SpriteBatch batch) {
-        BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
-        GlyphLayout newWaveLayout = new GlyphLayout();
-        newWaveLayout.setText(fontGameOver, "Wave: " + MathUtils.floor(level.levelNumber));
-
-        float x = (camera.viewportWidth / 2) - (newWaveLayout.width / 2);
-        float y = (camera.viewportHeight / 2) - (newWaveLayout.height / 2);
-
-        fontGameOver.setColor(Color.GREEN);
-
-        fontGameOver.draw(batch, newWaveLayout, x, y);
     }
 
     private void renderWorld(SpriteBatch batch) {
