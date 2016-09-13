@@ -21,7 +21,7 @@ public class SmartFontGenerator {
 	private boolean forceGeneration;
 	private String generatedFontDir;
 	private int referenceScreenWidth;
-	// TODO figure out optimal page size automatically
+
 	private int pageSize;
 
 	public SmartFontGenerator() {

@@ -22,21 +22,18 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import uk.co.redfruit.gdx.skyisfalling.SkyIsFalling;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
-import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class GameScreen extends RedfruitScreen {
 
     private static final String TAG = "GameScreen";
     public static OrthographicCamera camera;
-    public static OrthographicCamera cameraGUI;
-    private final float TIME_STEP = 1f / 60f;
+    private static OrthographicCamera cameraGUI;
     private SpriteBatch batch;
     private Viewport gameViewport;
     private Viewport guiViewport;
@@ -68,7 +65,7 @@ public class GameScreen extends RedfruitScreen {
         super((game));
     }
 
-    public enum State {
+    private enum State {
         PAUSE,
         RUN
     }
@@ -94,7 +91,7 @@ public class GameScreen extends RedfruitScreen {
         world = new World(new Vector2(0, -9.8f), true);
         createGround();
         createSideWalls();
-        level = new Level(world, this);
+        level = new Level(world);
         world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
         if ( Constants.DEBUG ) {
             debugRenderer = new Box2DDebugRenderer();
@@ -113,7 +110,7 @@ public class GameScreen extends RedfruitScreen {
 
         rebuildStage();
 
-        SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
+        //SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
         ControllerManager.setLevel(level);
 
         gameInputListener = new GameInputListener(camera, level);
@@ -180,10 +177,6 @@ public class GameScreen extends RedfruitScreen {
             Gdx.app.log(TAG, "Viewport resized: " + camera.viewportWidth + " x " + camera.viewportHeight);
             Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x " + background.getHeight());
         }
-    }
-
-    public Label getWaveLabel() {
-        return waveLabel;
     }
 
     @Override
@@ -368,6 +361,7 @@ public class GameScreen extends RedfruitScreen {
     private void doPhysicsWorldStep(float deltaTime) {
         float frameTime = Math.min(deltaTime, 0.25f);
         physicsStepAccumulator += frameTime;
+        float TIME_STEP = 1f / 60f;
         while ( physicsStepAccumulator >= TIME_STEP ) {
             world.step(TIME_STEP, 6, 2);
             physicsStepAccumulator -= TIME_STEP;
