@@ -46,6 +46,8 @@ public class Level {
     private long lastEnemyShot;
     private long timeSinceLastExplosion = TimeUtils.millis();
 
+    public boolean paused;
+
 
     public Level(World newWorld) {
         this.world = newWorld;

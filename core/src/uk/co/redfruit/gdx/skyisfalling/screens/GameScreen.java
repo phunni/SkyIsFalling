@@ -128,6 +128,12 @@ public class GameScreen extends RedfruitScreen {
     public void render(float deltaTime) {
         Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (level.paused) {
+            pauseGame();
+        } else if (state == State.PAUSE && !level.paused) {
+            state = State.RUN;
+            rebuildStage();
+        }
         batch.setProjectionMatrix(camera.combined);
         renderBackground(batch);
         switch (state) {
@@ -265,6 +271,7 @@ public class GameScreen extends RedfruitScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 state = State.RUN;
+                level.paused = false;
                 rebuildStage();
                 refreshInputMultiplexer();
                 if ( Constants.DEBUG ) {
