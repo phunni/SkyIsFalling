@@ -13,7 +13,7 @@ public class Constants {
     // GUI Width
     public static final float VIEWPORT_GUI_WIDTH = 800f;
     // GUI Height
-    public static final float VIEWPORT_GUI_HEIGHT = 480.0f;
+    public static final float VIEWPORT_GUI_HEIGHT = 400f;
 
     //Skins
     public static final String SKIN_SKY_IS_FALLING = "skins/skyisfalling-ui.json";

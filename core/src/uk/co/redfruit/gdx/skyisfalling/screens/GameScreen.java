@@ -2,17 +2,20 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Scaling;
@@ -24,44 +27,52 @@ import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
-import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
+import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class GameScreen extends RedfruitScreen {
 
     private static final String TAG = "GameScreen";
-
-    private SpriteBatch batch;
     public static OrthographicCamera camera;
-    public static OrthographicCamera cameraGUI;
+    private static OrthographicCamera cameraGUI;
+    private SpriteBatch batch;
     private Viewport gameViewport;
     private Viewport guiViewport;
-
     private Skin skinSkyIsFalling;
     private Stage stage;
     private Label livesLabel;
     private Label scoreLabel;
     private Label fpsLabel;
+    private Label waveLabel;
+    private Label gameOverLabel;
     private BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
     private BitmapFont largeFont = Assets.getInstance().getFonts().defaultBig;
-
+    private BitmapFont smallFont = Assets.getInstance().getFonts().defaultSmall;
+    private InputMultiplexer inputMultiplexer;
+    private GameInputListener gameInputListener;
+    private Sprite background = Assets.getInstance().getBackground();
     private Level level;
-
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private Body groundBody;
     private Body leftWall;
     private Body rightWall;
-
-    private final float TIME_STEP = 1f / 60f;
     private float physicsStepAccumulator = 0;
+
+    private State state = State.RUN;
 
 
     public GameScreen(Game game) {
         super((game));
     }
 
+    private enum State {
+        PAUSE,
+        RUN
+    }
+
+    //methods start
     @Override
     public void show() {
 
@@ -72,8 +83,8 @@ public class GameScreen extends RedfruitScreen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-        cameraGUI = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        guiViewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cameraGUI = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+        guiViewport = new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         guiViewport.setCamera(cameraGUI);
         cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
         cameraGUI.setToOrtho(false);
@@ -88,34 +99,66 @@ public class GameScreen extends RedfruitScreen {
             debugRenderer = new Box2DDebugRenderer();
         }
 
-        rebuildStage();
+        /*if ( Gdx.app.getType() == Application.ApplicationType.Android) {
+            background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }*/
 
+        background.setPosition(0, 0);
+        background.setSize(camera.viewportWidth, camera.viewportHeight);
+        if ( Constants.DEBUG ) {
+            Gdx.app.log(TAG, "Background initial size: " + background.getWidth() + "  x " + background.getHeight());
+        }
+
+
+        rebuildStage();
 
         SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
         ControllerManager.setLevel(level);
 
+        gameInputListener = new GameInputListener(camera, level);
 
-        Gdx.input.setInputProcessor(new GameInputListener(camera, level));
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(gameInputListener);
+        Gdx.input.setInputProcessor(inputMultiplexer);
         //Gdx.input.setCatchBackKey(true);
-    }
 
+
+    }
 
     @Override
     public void render(float deltaTime) {
         Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        level.update(deltaTime);
-
-        renderWorld(batch);
-        renderGameHUD(batch);
-
-        if ( Constants.DEBUG ) {
-            debugRenderer.render(world, camera.combined);
+        if (level.paused) {
+            pauseGame();
+        } else if (state == State.PAUSE && level.unpaused) {
+            state = State.RUN;
+            rebuildStage();
         }
+        batch.setProjectionMatrix(camera.combined);
+        renderBackground(batch);
+        switch (state) {
+            case RUN:
 
-        if ( !level.gameOver && !level.showingWaveNumber ) {
-            doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
+
+                level.update(deltaTime);
+
+                renderWorld(batch);
+                renderGameHUD(batch);
+                renderNewWaveAndGameOver();
+
+                if ( Constants.DEBUG ) {
+                    debugRenderer.render(world, camera.combined);
+                }
+
+                if ( !level.gameOver ) {
+                    doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
+                }
+                break;
+            case PAUSE:
+                renderGameHUD(batch);
+                break;
         }
     }
 
@@ -126,7 +169,8 @@ public class GameScreen extends RedfruitScreen {
         }
         gameViewport.update(width, height);
         float screenAR = width / (float) height;
-        camera = new OrthographicCamera(20, 20 / screenAR);
+        float arHeight = 20 / screenAR;
+        camera = new OrthographicCamera(20, arHeight);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
@@ -136,11 +180,17 @@ public class GameScreen extends RedfruitScreen {
         batch.setProjectionMatrix(camera.combined);
 
         stage.getViewport().update(width, height);
+        background.setSize(20, arHeight);
+        if ( Constants.DEBUG ) {
+            Gdx.app.log(TAG, "Viewport resized: " + camera.viewportWidth + " x " + camera.viewportHeight);
+            Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x " + background.getHeight());
+        }
     }
 
     @Override
     public void pause() {
         super.pause();
+        pauseGame();
     }
 
     @Override
@@ -163,13 +213,107 @@ public class GameScreen extends RedfruitScreen {
         skinSkyIsFalling.dispose();
     }
 
-    private void doPhysicsWorldStep(float deltaTime) {
-        float frameTime = Math.min(deltaTime, 0.25f);
-        physicsStepAccumulator += frameTime;
-        while ( physicsStepAccumulator >= TIME_STEP ) {
-            world.step(TIME_STEP, 6, 2);
-            physicsStepAccumulator -= TIME_STEP;
-        }
+    private Table buildFPSLayer() {
+        Table layer = new Table();
+        layer.bottom().right();
+        int fps = Gdx.graphics.getFramesPerSecond();
+        // colour will default to red, but should change to reflect fps almost instantly
+        Label.LabelStyle fpsStyle = new Label.LabelStyle(smallFont, Color.RED);
+        fpsLabel = new Label("FPS: " + fps, fpsStyle);
+
+        layer.add(fpsLabel).pad(25);
+        return layer;
+    }
+
+    private Table buildLivesLayer() {
+        Table layer = new Table();
+        layer.top().right();
+
+        Image livesImage = new Image(Assets.getInstance().getPlayerLife());
+        livesImage.setScaling(Scaling.fillX);
+
+        layer.add(livesImage).pad(10).fill();
+
+        livesLabel = new Label("" + level.getPlayerShip().lives, new Label.LabelStyle(smallFont, Color.WHITE));
+        layer.add(livesLabel).pad(10, 5, 10, 25);
+        return layer;
+    }
+
+    private Table buildPauseLayer() {
+        Table layer = new Table();
+        layer.top().left();
+        Drawable pauseImage = new SpriteDrawable(Assets.getInstance().getPause());
+        ImageButton pauseButton = new ImageButton(pauseImage);
+        pauseButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                pauseGame();
+                if ( Constants.DEBUG ) {
+                    Gdx.app.log(TAG, "Pause button pressed");
+                }
+            }
+        });
+
+        layer.add(pauseButton).pad(10);
+
+
+        return layer;
+    }
+
+    private Table buildPausedLayer() {
+        Table layer = new Table();
+        layer.center();
+        Label pausedLabel = new Label("Paused", new Label.LabelStyle(normalFont, Color.WHITE));
+        layer.add(pausedLabel).pad(25);
+        layer.row();
+        TextButton continueButton = new TextButton("Continue", skinSkyIsFalling);
+
+        continueButton.addListener(new ChangeListener() {
+            //methods start
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                state = State.RUN;
+                level.paused = false;
+                rebuildStage();
+                refreshInputMultiplexer();
+                if ( Constants.DEBUG ) {
+                    Gdx.app.log(TAG, "Game resumed after pause");
+                }
+            }
+//methods end
+        });
+        layer.add(continueButton).pad(25).minWidth(250);
+        return layer;
+    }
+
+    private Table buildScoreLayer() {
+        Table layer = new Table();
+        layer.center().top();
+
+        scoreLabel = new Label("" + level.getScore(), new Label.LabelStyle(largeFont, Color.WHITE));
+        layer.add(scoreLabel).pad(10);
+
+        return layer;
+    }
+
+    private Table buildWaveLayer() {
+        Table layer = new Table();
+        layer.center();
+        waveLabel = new Label("Wave #" + +MathUtils.floor(level.levelNumber), new Label.LabelStyle(largeFont, Color.GREEN));
+        waveLabel.setVisible(false);
+        layer.add(waveLabel);
+
+        return layer;
+    }
+
+    private Table buildGameOverLayer() {
+        Table layer = new Table();
+        layer.center();
+        gameOverLabel = new Label("Game Over!", new Label.LabelStyle(largeFont, Color.WHITE));
+        layer.add(gameOverLabel);
+        gameOverLabel.setVisible(false);
+
+        return layer;
     }
 
     private void createGround() {
@@ -223,10 +367,87 @@ public class GameScreen extends RedfruitScreen {
         wallBox.dispose();
     }
 
+    private void doPhysicsWorldStep(float deltaTime) {
+        float frameTime = Math.min(deltaTime, 0.25f);
+        physicsStepAccumulator += frameTime;
+        float TIME_STEP = 1f / 60f;
+        while ( physicsStepAccumulator >= TIME_STEP ) {
+            world.step(TIME_STEP, 6, 2);
+            physicsStepAccumulator -= TIME_STEP;
+        }
+    }
+
+    private void pauseGame() {
+        state = State.PAUSE;
+        rebuildStage();
+        refreshInputMultiplexer();
+    }
+
+    private void rebuildStage() {
+
+        skinSkyIsFalling = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
+        stage = new Stage(new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT));
+
+        stage.clear();
+        if ( Constants.DEBUG ) {
+            stage.setDebugAll(true);
+        }
+
+        Stack stack = new Stack();
+        stage.addActor(stack);
+        stack.setSize(stage.getWidth(), stage.getHeight());
+
+
+        switch (state) {
+            case RUN:
+                Table livesLayer = buildLivesLayer();
+                Table scoreLayer = buildScoreLayer();
+                Table pauseLayer = buildPauseLayer();
+                Table waveLayer = buildWaveLayer();
+                Table gameOverLayer = buildGameOverLayer();
+
+
+                stack.add(livesLayer);
+                stack.add(scoreLayer);
+                stack.add(pauseLayer);
+                stack.add(waveLayer);
+                stack.add(gameOverLayer);
+                if ( Constants.DEBUG ) {
+                    stack.add(buildFPSLayer());
+                }
+                break;
+            case PAUSE:
+                Table pausedLayer = buildPausedLayer();
+                stack.add(pausedLayer);
+                if ( Constants.DEBUG ) {
+                    stack.add(buildFPSLayer());
+                }
+                break;
+        }
+    }
+
+
+    private void refreshInputMultiplexer() {
+        if (inputMultiplexer != null) {
+            inputMultiplexer.clear();
+            inputMultiplexer.addProcessor(stage);
+            inputMultiplexer.addProcessor(gameInputListener);
+        }
+    }
+
+    private void renderBackground(SpriteBatch batch) {
+        /*if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Background Position: " + background.getX() + " ," + background.getY());
+        }*/
+        batch.begin();
+        background.draw(batch);
+        batch.end();
+    }
+
     private void renderGameHUD(SpriteBatch batch) {
         livesLabel.setText("" + level.getPlayerShip().lives);
         scoreLabel.setText("" + level.getScore());
-        if (Constants.DEBUG) {
+        if ( Constants.DEBUG ) {
             int fps = Gdx.graphics.getFramesPerSecond();
             fpsLabel.setText("FPS: " + fps);
             if ( fps >= 45 ) {
@@ -245,19 +466,32 @@ public class GameScreen extends RedfruitScreen {
         }
 
         batch.setProjectionMatrix(cameraGUI.combined);
-        batch.begin();
 
-        if (level.gameOver) {
-            renderGameOver(batch);
-        }
-        if (level.showingWaveNumber) {
-            renderNewWave(batch);
-        }
-        batch.end();
-
-        if (level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000) {
+        if ( level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000 ) {
             game.setScreen(new MenuScreen(game));
         }
+    }
+
+
+    private void renderNewWaveAndGameOver() {
+        if (level.showingWaveNumber) {
+            waveLabel.setText("Wave #" + +MathUtils.floor(level.levelNumber));
+        }
+        if (waveLabel != null) {
+            if (level.showingWaveNumber) {
+                waveLabel.setVisible(true);
+            } else {
+                waveLabel.setVisible(false);
+            }
+        }
+        if (gameOverLabel != null) {
+            if (level.gameOver) {
+                gameOverLabel.setVisible(true);
+            } else {
+                gameOverLabel.setVisible(false);
+            }
+        }
+
     }
 
     private void renderWorld(SpriteBatch batch) {
@@ -269,100 +503,5 @@ public class GameScreen extends RedfruitScreen {
             debugRenderer.render(world, camera.combined);
         }
     }
-
-    private void renderGameOver(SpriteBatch batch) {
-        BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
-        GlyphLayout gameOverLayout = new GlyphLayout();
-        gameOverLayout.setText(fontGameOver, "GAME OVER!");
-
-        float x = (cameraGUI.viewportWidth / 2) - (gameOverLayout.width / 2);
-        float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
-
-        fontGameOver.draw(batch, gameOverLayout, x, y);
-    }
-
-    private void renderNewWave(SpriteBatch batch) {
-        BitmapFont fontGameOver = Assets.getInstance().getFonts().defaultBig;
-        GlyphLayout gameOverLayout = new GlyphLayout();
-        gameOverLayout.setText(fontGameOver, "Wave: " + MathUtils.floor(level.levelNumber));
-
-        float x = (cameraGUI.viewportWidth / 2) - (gameOverLayout.width / 2);
-        float y = (cameraGUI.viewportHeight / 2) - (gameOverLayout.height / 2);
-
-        fontGameOver.setColor(Color.GREEN);
-
-        fontGameOver.draw(batch, gameOverLayout, x, y);
-    }
-
-    private void rebuildStage() {
-
-        skinSkyIsFalling = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
-        stage = new Stage(new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-
-        Table livesLayer = buildLivesLayer();
-        Table scoreLayer = buildScoreLayer();
-        Table pauseLayer = buildPauseLayer();
-
-        stage.clear();
-        if (Constants.DEBUG) {
-            stage.setDebugAll(true);
-        }
-        Stack stack = new Stack();
-        stage.addActor(stack);
-        stack.setSize(stage.getWidth(), stage.getHeight());
-        stack.add(livesLayer);
-        stack.add(scoreLayer);
-        stack.add(pauseLayer);
-        if (Constants.DEBUG) {
-            stack.add(buildFPSLayer());
-        }
-    }
-
-    private Table buildPauseLayer() {
-        Table layer = new Table();
-        layer.top().left();
-        Drawable pauseImage = new SpriteDrawable(Assets.getInstance().getPause());
-        ImageButton pauseButton = new ImageButton(pauseImage);
-
-        layer.add(pauseButton).pad(10);
-
-
-        return layer;
-    }
-
-    private Table buildFPSLayer() {
-        Table layer = new Table();
-        layer.bottom().right();
-        int fps = Gdx.graphics.getFramesPerSecond();
-        // colour will default to red, but should change to reflect fps almost instantly
-        Label.LabelStyle fpsStyle = new Label.LabelStyle(normalFont, Color.RED);
-        fpsLabel = new Label("FPS: " + fps, fpsStyle);
-
-        layer.add(fpsLabel).pad(25);
-        return layer;
-    }
-
-    private Table buildScoreLayer() {
-        Table layer = new Table();
-        layer.center().top();
-
-        scoreLabel = new Label("" + level.getScore(), new Label.LabelStyle(largeFont, Color.WHITE));
-        layer.add(scoreLabel).pad(10);
-
-        return layer;
-    }
-
-    private Table buildLivesLayer() {
-        Table layer = new Table();
-        layer.top().right();
-
-        Image livesImage = new Image(Assets.getInstance().getPlayerLife());
-        livesImage.setScaling(Scaling.fit);
-
-        layer.add(livesImage).pad(10).fill();
-
-        livesLabel = new Label("" + level.getPlayerShip().lives, new Label.LabelStyle(normalFont, Color.WHITE));
-        layer.add(livesLabel).pad(10,5,10,25);
-        return layer;
-    }
+//methods end
 }

@@ -35,16 +35,9 @@ public class Assets implements Disposable, AssetErrorListener {
     private Assets(){}
 
     public void init(AssetManager assetManager) {
-        ResolutionFileResolver fileResolver = new ResolutionFileResolver(new InternalFileHandleResolver(),
-                new Resolution(800, 480, ""), new Resolution(1200, 1920, "high"));
-        String textureAtlas = fileResolver.resolve(Constants.TEXTURE_SKY_IS_FALLING).path();
-        if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Resolved File: " + textureAtlas);
-        }
-
         this.assetManager = assetManager;
         this.assetManager.setErrorListener(this);
-        this.assetManager.load(textureAtlas, TextureAtlas.class);
+        this.assetManager.load(Constants.TEXTURE_SKY_IS_FALLING, TextureAtlas.class);
 
         this.assetManager.finishLoading();
 
@@ -53,7 +46,7 @@ public class Assets implements Disposable, AssetErrorListener {
             Gdx.app.debug(TAG, "asset: " + a);
         }
 
-        TextureAtlas atlas = assetManager.get(textureAtlas);
+        TextureAtlas atlas = assetManager.get(Constants.TEXTURE_SKY_IS_FALLING);
 
         for (Texture t : atlas.getTextures()) {
             t.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);

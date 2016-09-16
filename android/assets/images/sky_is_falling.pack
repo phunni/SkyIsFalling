@@ -157,13 +157,6 @@ explosion
   orig: 64, 64
   offset: 0, 0
   index: 1
-pause
-  rotate: false
-  xy: 1488, 958
-  size: 50, 50
-  orig: 50, 50
-  offset: 0, 0
-  index: -1
 laserRed
   rotate: false
   xy: 1094, 868
@@ -187,8 +180,15 @@ laserBlue
   index: -1
 playerLife
   rotate: false
-  xy: 1028, 566
+  xy: 1488, 982
   size: 33, 26
   orig: 33, 26
+  offset: 0, 0
+  index: -1
+pause
+  rotate: false
+  xy: 1028, 567
+  size: 25, 25
+  orig: 25, 25
   offset: 0, 0
   index: -1

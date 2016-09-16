@@ -2,7 +2,6 @@ package uk.co.redfruit.gdx.skyisfalling.game;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
-import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Explosion;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
@@ -29,7 +27,7 @@ public class Level {
 
     private final World world;
 
-    private Sprite background = Assets.getInstance().getBackground();
+
 
     private float difficulty;
     public float levelNumber;
@@ -48,15 +46,15 @@ public class Level {
     private long lastEnemyShot;
     private long timeSinceLastExplosion = TimeUtils.millis();
 
+    public boolean paused;
+    public boolean unpaused;
+
 
     public Level(World newWorld) {
         this.world = newWorld;
         init();
 
         playerShip = new PlayerShip(world);
-
-        background.setSize(GameScreen.camera.viewportWidth * 1.5f, GameScreen.camera.viewportHeight * 1.5f);
-        background.setPosition(0, 0);
     }
 
     private void setDifficulty() {
@@ -73,7 +71,6 @@ public class Level {
 
     public void render(SpriteBatch batch) {
         batch.disableBlending();
-        background.draw(batch);
         batch.enableBlending();
         if (!gameOver && !showingWaveNumber) {
             boolean moving = false;
@@ -183,14 +180,6 @@ public class Level {
         return playerShip;
     }
 
-    public Pool<Laser> getLaserPool() {
-        return laserPool;
-    }
-
-    public Array<Laser> getLasers() {
-        return lasers;
-    }
-
     public void increaseScore(int increase){
         score += increase;
     }
@@ -208,7 +197,7 @@ public class Level {
         }
     }
 
-    public void shootEnemyLaser(EnemyShip ship) {
+    private void shootEnemyLaser(EnemyShip ship) {
         if (!ship.isFalling()) {
             Laser laser = laserPool.obtain();
             laser.init("green", ship.getCentre(), new Vector2(0, -9));
