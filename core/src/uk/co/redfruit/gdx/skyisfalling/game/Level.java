@@ -47,6 +47,7 @@ public class Level {
     private long timeSinceLastExplosion = TimeUtils.millis();
 
     public boolean paused;
+    public boolean unpaused;
 
 
     public Level(World newWorld) {

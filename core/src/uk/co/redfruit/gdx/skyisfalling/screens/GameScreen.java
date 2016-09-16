@@ -22,11 +22,13 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import uk.co.redfruit.gdx.skyisfalling.SkyIsFalling;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
+import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class GameScreen extends RedfruitScreen {
@@ -110,7 +112,7 @@ public class GameScreen extends RedfruitScreen {
 
         rebuildStage();
 
-        //SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
+        SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
         ControllerManager.setLevel(level);
 
         gameInputListener = new GameInputListener(camera, level);
@@ -130,7 +132,7 @@ public class GameScreen extends RedfruitScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         if (level.paused) {
             pauseGame();
-        } else if (state == State.PAUSE && !level.paused) {
+        } else if (state == State.PAUSE && level.unpaused) {
             state = State.RUN;
             rebuildStage();
         }

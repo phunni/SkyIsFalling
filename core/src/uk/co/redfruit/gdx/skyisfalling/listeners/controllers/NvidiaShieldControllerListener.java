@@ -18,11 +18,13 @@ public class NvidiaShieldControllerListener extends SkyIsFallingControllerListen
         if (buttonCode == NvidiaShield.BUTTON_B) {
             if (level.paused) {
                 level.paused = false;
+                level.unpaused = true;
                 if ( Constants.DEBUG ) {
                     Gdx.app.log(TAG, "Game unpaused by 360 controller");
                 }
             } else {
                 level.paused = true;
+                level.unpaused = false;
                 if ( Constants.DEBUG ) {
                     Gdx.app.log(TAG, "Game paused by 360 controller");
                 }

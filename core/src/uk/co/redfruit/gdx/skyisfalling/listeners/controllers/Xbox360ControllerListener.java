@@ -20,11 +20,13 @@ public class Xbox360ControllerListener extends SkyIsFallingControllerListener {
             } else if (buttonCode == XBOX360.BUTTON_B) {
                 if (level.paused) {
                     level.paused = false;
+                    level.unpaused = true;
                     if ( Constants.DEBUG ) {
                         Gdx.app.log(TAG, "Game unpaused by 360 controller");
                     }
                 } else {
                     level.paused = true;
+                    level.unpaused = false;
                     if ( Constants.DEBUG ) {
                         Gdx.app.log(TAG, "Game paused by 360 controller");
                     }
