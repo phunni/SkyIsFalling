@@ -133,6 +133,7 @@ public class GameScreen extends RedfruitScreen {
         if (level.paused) {
             pauseGame();
         } else if (state == State.PAUSE && level.unpaused) {
+            level.unpaused = false;
             state = State.RUN;
             rebuildStage();
         }
