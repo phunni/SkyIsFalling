@@ -3,6 +3,7 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.listeners.PlayButtonListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.QuitButtonListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -62,6 +64,9 @@ public class MenuScreen extends RedfruitScreen {
         stage  = new Stage(new FillViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT));
         Gdx.input.setInputProcessor(stage);
         rebuildStage();
+        Music music = Assets.getInstance().getMusic();
+        music.setLooping(true);
+        music.play();
     }
 
     @Override
