@@ -53,6 +53,7 @@ public class Level {
 
     private Sound playerPew = Assets.getInstance().getPlayerPew();
     private Sound enemyPew = Assets.getInstance().getEnemyPew();
+    private Sound boom = Assets.getInstance().getBoom();
 
 
     public Level(World newWorld) {
@@ -219,7 +220,7 @@ public class Level {
     }
 
     public void blowUp(Vector2 position, Vector2 size) {
-        if (TimeUtils.timeSinceMillis(timeSinceLastExplosion) >250) {
+        if ( TimeUtils.timeSinceMillis(timeSinceLastExplosion) > 250 ) {
             if (Constants.DEBUG) {
                 Gdx.app.log(TAG, "New explosion at: " + position.x + ", " + position.y);
             }
@@ -227,6 +228,7 @@ public class Level {
             explosion.init(position, size);
             explosions.add(explosion);
             timeSinceLastExplosion = TimeUtils.millis();
+            boom.play();
         }
     }
 
