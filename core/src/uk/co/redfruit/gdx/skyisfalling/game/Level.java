@@ -174,7 +174,7 @@ public class Level {
 
         //if on Android we need to shoot the lasers automatically
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            if (TimeUtils.timeSinceNanos(timeSinceLastShot) > 250000000) {
+            if ( TimeUtils.timeSinceNanos(timeSinceLastShot) > Constants.SECOND * 0.186 ) {
                 shootPlayerLaser();
                 timeSinceLastShot = TimeUtils.nanoTime();
             }
@@ -199,7 +199,10 @@ public class Level {
             Laser laser = laserPool.obtain();
             laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
             lasers.add(laser);
-            playerPew.play();
+            long pewID = playerPew.play();
+            if ( Constants.DEBUG ) {
+                Gdx.app.log(TAG, "Pew ID: " + pewID);
+            }
         }
     }
 
@@ -208,7 +211,10 @@ public class Level {
             Laser laser = laserPool.obtain();
             laser.init("green", ship.getCentre(), new Vector2(0, -9));
             lasers.add(laser);
-            enemyPew.play();
+            long enemyPewID = enemyPew.play();
+            if ( Constants.DEBUG ) {
+                Gdx.app.log(TAG, "Pew ID: " + enemyPewID);
+            }
         }
     }
 

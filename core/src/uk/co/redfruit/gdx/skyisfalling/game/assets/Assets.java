@@ -4,9 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
-import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver;
-import com.badlogic.gdx.assets.loaders.resolvers.ResolutionFileResolver.Resolution;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -54,7 +51,7 @@ public class Assets implements Disposable, AssetErrorListener {
         this.assetManager.load("audio/enemyPew.ogg", Sound.class);
         this.assetManager.finishLoading();
         if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Load Time: " + TimeUtils.timeSinceMillis(loadTimeStarted) / 1000);
+            Gdx.app.log(TAG, "Load Time: " + TimeUtils.timeSinceMillis(loadTimeStarted));
         }
 
         Gdx.app.debug(TAG, "# of assets loaded: " + assetManager.getAssetNames().size);
