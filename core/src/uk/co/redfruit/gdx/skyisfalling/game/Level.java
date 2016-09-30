@@ -2,6 +2,7 @@ package uk.co.redfruit.gdx.skyisfalling.game;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
+import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Explosion;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
@@ -48,6 +50,10 @@ public class Level {
 
     public boolean paused;
     public boolean unpaused;
+
+    private Sound playerPew = Assets.getInstance().getPlayerPew();
+    private Sound enemyPew = Assets.getInstance().getEnemyPew();
+    private Sound boom = Assets.getInstance().getBoom();
 
 
     public Level(World newWorld) {
@@ -169,7 +175,7 @@ public class Level {
 
         //if on Android we need to shoot the lasers automatically
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
-            if (TimeUtils.timeSinceNanos(timeSinceLastShot) > 250000000) {
+            if ( TimeUtils.timeSinceNanos(timeSinceLastShot) > Constants.SECOND * 0.186 ) {
                 shootPlayerLaser();
                 timeSinceLastShot = TimeUtils.nanoTime();
             }
@@ -194,6 +200,10 @@ public class Level {
             Laser laser = laserPool.obtain();
             laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
             lasers.add(laser);
+            long pewID = playerPew.play();
+            if ( Constants.DEBUG ) {
+                Gdx.app.log(TAG, "Pew ID: " + pewID);
+            }
         }
     }
 
@@ -202,11 +212,15 @@ public class Level {
             Laser laser = laserPool.obtain();
             laser.init("green", ship.getCentre(), new Vector2(0, -9));
             lasers.add(laser);
+            long enemyPewID = enemyPew.play();
+            if ( Constants.DEBUG ) {
+                Gdx.app.log(TAG, "Pew ID: " + enemyPewID);
+            }
         }
     }
 
     public void blowUp(Vector2 position, Vector2 size) {
-        if (TimeUtils.timeSinceMillis(timeSinceLastExplosion) >250) {
+        if ( TimeUtils.timeSinceMillis(timeSinceLastExplosion) > 250 ) {
             if (Constants.DEBUG) {
                 Gdx.app.log(TAG, "New explosion at: " + position.x + ", " + position.y);
             }
@@ -214,6 +228,7 @@ public class Level {
             explosion.init(position, size);
             explosions.add(explosion);
             timeSinceLastExplosion = TimeUtils.millis();
+            boom.play();
         }
     }
 
