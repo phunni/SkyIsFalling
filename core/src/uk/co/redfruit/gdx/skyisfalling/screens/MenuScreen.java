@@ -4,9 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -21,43 +18,24 @@ public class MenuScreen extends RedfruitScreen {
 
     private final String TAG = "MenuScreen";
 
-    private Stage stage;
-    private Skin skinSkyIsFalling;
-    private Skin skinLibgdx;
-
     private Button playButton;
     private Button quitButton;
 
-    private TextureAtlas menuAtlas;
+
     private Image background;
 
     public MenuScreen(Game game) {
         super(game);
     }
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act();
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-       stage.getViewport().update(width, height);
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
-        skinLibgdx.dispose();
-        skinSkyIsFalling.dispose();
+    //methods start
+    public InputProcessor getInputProcessor() {
+        return stage;
     }
 
     @Override
     public void show() {
+        super.show();
         if (Constants.DEBUG) {
             Gdx.app.log(TAG, "Device density: " + Gdx.graphics.getDensity());
         }
@@ -67,6 +45,11 @@ public class MenuScreen extends RedfruitScreen {
         Music music = Assets.getInstance().getMusic();
         music.setLooping(true);
         music.play();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height);
     }
 
     @Override
@@ -84,13 +67,39 @@ public class MenuScreen extends RedfruitScreen {
         super.hide();
     }
 
-    public InputProcessor getInputProcessor() {
-        return stage;
+    private Table buildControlsLayer() {
+        Table controlsLayer = new Table();
+        controlsLayer.center();
+        playButton = new TextButton("Play", skinLibgdx);
+        controlsLayer.add(playButton).fill().pad(10);
+        controlsLayer.row();
+        Button optionsButton = new TextButton("Options", skinLibgdx);
+        controlsLayer.add(optionsButton).fill().pad(10);
+        controlsLayer.row();
+        Button highScores = new TextButton("High Score", skinLibgdx);
+        controlsLayer.add(highScores).fill().pad(10);
+        controlsLayer.row();
+        Button credits = new TextButton("Credits", skinLibgdx);
+        controlsLayer.add(credits).fill().pad(10);
+        controlsLayer.row();
+        quitButton = new TextButton("Quit", skinLibgdx);
+        controlsLayer.add(quitButton).fill().pad(10);
+
+        playButton.addListener(new PlayButtonListener(game));
+        quitButton.addListener(new QuitButtonListener());
+        optionsButton.addListener(new ChangeListener() {
+            //methods start
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new OptionsScreen(game));
+            }
+//methods end
+        });
+
+        return controlsLayer;
     }
 
     private void rebuildStage() {
-        skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
-        menuAtlas = new TextureAtlas(Constants.TEXTURE_SKY_IS_FALLING);
         Table controlsLayer = buildControlsLayer();
         Table backgroundLayer = buildBackgroundLayer();
 
@@ -101,26 +110,5 @@ public class MenuScreen extends RedfruitScreen {
         stack.add(backgroundLayer);
         stack.add(controlsLayer);
     }
-
-    private Table buildBackgroundLayer() {
-        Table backgroundLayer = new Table();
-        background = new Image(menuAtlas.findRegion("background"));
-        backgroundLayer.add(background);
-        return backgroundLayer;
-    }
-
-    private Table buildControlsLayer() {
-        Table controlsLayer = new Table();
-        controlsLayer.center();
-        playButton = new TextButton("Play", skinLibgdx);
-        controlsLayer.add(playButton);
-        controlsLayer.row();
-        quitButton = new TextButton("Quit", skinLibgdx);
-        controlsLayer.add(quitButton);
-
-        playButton.addListener(new PlayButtonListener(game));
-        quitButton.addListener(new QuitButtonListener());
-
-        return controlsLayer;
-    }
+//methods end
 }

@@ -75,7 +75,7 @@ public class GameScreen extends RedfruitScreen {
     //methods start
     @Override
     public void show() {
-
+        super.show();
         batch = new SpriteBatch();
         camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
         gameViewport = new StretchViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
@@ -226,6 +226,16 @@ public class GameScreen extends RedfruitScreen {
         return layer;
     }
 
+    private Table buildGameOverLayer() {
+        Table layer = new Table();
+        layer.center();
+        gameOverLabel = new Label("Game Over!", new Label.LabelStyle(largeFont, Color.WHITE));
+        layer.add(gameOverLabel);
+        gameOverLabel.setVisible(false);
+
+        return layer;
+    }
+
     private Table buildLivesLayer() {
         Table layer = new Table();
         layer.top().right();
@@ -246,6 +256,7 @@ public class GameScreen extends RedfruitScreen {
         Drawable pauseImage = new SpriteDrawable(Assets.getInstance().getPause());
         ImageButton pauseButton = new ImageButton(pauseImage);
         pauseButton.addListener(new ChangeListener() {
+            //methods start
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 pauseGame();
@@ -253,6 +264,7 @@ public class GameScreen extends RedfruitScreen {
                     Gdx.app.log(TAG, "Pause button pressed");
                 }
             }
+//methods end
         });
 
         layer.add(pauseButton).pad(10);
@@ -271,7 +283,7 @@ public class GameScreen extends RedfruitScreen {
 
         continueButton.addListener(new ChangeListener() {
             //methods start
-            @Override
+//methods end            @Override
             public void changed(ChangeEvent event, Actor actor) {
                 state = State.RUN;
                 level.paused = false;
@@ -281,7 +293,7 @@ public class GameScreen extends RedfruitScreen {
                     Gdx.app.log(TAG, "Game resumed after pause");
                 }
             }
-//methods end
+
         });
         layer.add(continueButton).pad(25).minWidth(250);
         return layer;
@@ -303,16 +315,6 @@ public class GameScreen extends RedfruitScreen {
         waveLabel = new Label("Wave #" + +MathUtils.floor(level.levelNumber), new Label.LabelStyle(largeFont, Color.GREEN));
         waveLabel.setVisible(false);
         layer.add(waveLabel);
-
-        return layer;
-    }
-
-    private Table buildGameOverLayer() {
-        Table layer = new Table();
-        layer.center();
-        gameOverLabel = new Label("Game Over!", new Label.LabelStyle(largeFont, Color.WHITE));
-        layer.add(gameOverLabel);
-        gameOverLabel.setVisible(false);
 
         return layer;
     }
