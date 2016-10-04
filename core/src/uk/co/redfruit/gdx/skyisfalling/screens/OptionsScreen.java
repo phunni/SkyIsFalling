@@ -16,6 +16,12 @@ import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 public class OptionsScreen extends RedfruitScreen {
 
     private GamePreferences prefs;
+    private CheckBox musicCheck;
+    private Slider musicVolumeSlider;
+    private CheckBox sfxCheck;
+    private Slider sfxVolumeSlider;
+    private CheckBox autoShootCheck;
+    private CheckBox fpsCheck;
 
 
     public OptionsScreen(Game game) {
@@ -45,33 +51,33 @@ public class OptionsScreen extends RedfruitScreen {
         layout.center();
         layout.columnLeft();
 
-        CheckBox musicCheck = new CheckBox("Music", skinLibgdx);
+        musicCheck = new CheckBox("Music", skinLibgdx);
         musicCheck.getStyle().font = normalFont;
         musicCheck.setChecked(prefs.music);
         layout.addActor(musicCheck);
 
-        Slider musicVolumeSlider = new Slider(0f, 1f, 0.2f, false, skinLibgdx);
+        musicVolumeSlider = new Slider(0f, 1f, 0.2f, false, skinLibgdx);
         musicVolumeSlider.setValue(prefs.musicVolume);
         layout.addActor(musicVolumeSlider);
 
-        CheckBox sfxCheck = new CheckBox("SFX", skinLibgdx);
+        sfxCheck = new CheckBox("SFX", skinLibgdx);
         sfxCheck.getStyle().font = normalFont;
         sfxCheck.setChecked(prefs.sfx);
         layout.addActor(sfxCheck);
 
 
-        Slider sfxVolumeSlider = new Slider(0f, 1f, 0.2f, false, skinLibgdx);
+        sfxVolumeSlider = new Slider(0f, 1f, 0.2f, false, skinLibgdx);
         sfxVolumeSlider.setValue(prefs.sfxVolume);
         layout.addActor(sfxVolumeSlider);
 
         if ( Gdx.app.getType() == Application.ApplicationType.Desktop ) {
-            CheckBox autoShootCheck = new CheckBox("Auto Shoot", skinLibgdx);
+            autoShootCheck = new CheckBox("Auto Shoot", skinLibgdx);
             autoShootCheck.getStyle().font = normalFont;
             autoShootCheck.setChecked(prefs.autoShoot);
             layout.addActor(autoShootCheck);
         }
 
-        CheckBox fpsCheck = new CheckBox("Show FPS", skinLibgdx);
+        fpsCheck = new CheckBox("Show FPS", skinLibgdx);
         fpsCheck.getStyle().font = normalFont;
         fpsCheck.setChecked(prefs.showFPS);
         layout.addActor(fpsCheck);
