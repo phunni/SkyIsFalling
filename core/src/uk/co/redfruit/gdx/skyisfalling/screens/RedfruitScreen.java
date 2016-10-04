@@ -4,11 +4,13 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public abstract class RedfruitScreen implements Screen {
@@ -17,6 +19,11 @@ public abstract class RedfruitScreen implements Screen {
     protected Stage stage;
     protected TextureAtlas atlas;
     protected Skin skinLibgdx;
+
+    //For use by subclasses
+    protected BitmapFont largeFont = Assets.getInstance().getFonts().defaultBig;
+    protected BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
+    protected BitmapFont smallFont = Assets.getInstance().getFonts().defaultSmall;
 
     public RedfruitScreen(Game game) {
         this.game = game;

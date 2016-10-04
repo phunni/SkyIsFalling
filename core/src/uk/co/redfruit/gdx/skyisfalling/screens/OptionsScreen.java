@@ -1,23 +1,26 @@
 package uk.co.redfruit.gdx.skyisfalling.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
+import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
 /**
  * Created by paul on 03/10/16.
  */
 public class OptionsScreen extends RedfruitScreen {
 
+    private GamePreferences prefs;
+
 
     public OptionsScreen(Game game) {
         super(game);
+        prefs = GamePreferences.getInstance();
     }
 
 
@@ -36,12 +39,42 @@ public class OptionsScreen extends RedfruitScreen {
         skinLibgdx.dispose();
     }
 
-    private Table buildOptionsLayer() {
-        Table layout = new Table();
+    private VerticalGroup buildOptionsLayer() {
+        prefs.load();
+        VerticalGroup layout = new VerticalGroup();
         layout.center();
-        Label title = new Label("Options", skinLibgdx);
-        layout.add(title);
+        layout.columnLeft();
 
+        CheckBox musicCheck = new CheckBox("Music", skinLibgdx);
+        musicCheck.getStyle().font = normalFont;
+        musicCheck.setChecked(prefs.music);
+        layout.addActor(musicCheck);
+
+        Slider musicVolumeSlider = new Slider(0f, 1f, 0.2f, false, skinLibgdx);
+        musicVolumeSlider.setValue(prefs.musicVolume);
+        layout.addActor(musicVolumeSlider);
+
+        CheckBox sfxCheck = new CheckBox("SFX", skinLibgdx);
+        sfxCheck.getStyle().font = normalFont;
+        sfxCheck.setChecked(prefs.sfx);
+        layout.addActor(sfxCheck);
+
+
+        Slider sfxVolumeSlider = new Slider(0f, 1f, 0.2f, false, skinLibgdx);
+        sfxVolumeSlider.setValue(prefs.sfxVolume);
+        layout.addActor(sfxVolumeSlider);
+
+        if ( Gdx.app.getType() == Application.ApplicationType.Desktop ) {
+            CheckBox autoShootCheck = new CheckBox("Auto Shoot", skinLibgdx);
+            autoShootCheck.getStyle().font = normalFont;
+            autoShootCheck.setChecked(prefs.autoShoot);
+            layout.addActor(autoShootCheck);
+        }
+
+        CheckBox fpsCheck = new CheckBox("Show FPS", skinLibgdx);
+        fpsCheck.getStyle().font = normalFont;
+        fpsCheck.setChecked(prefs.showFPS);
+        layout.addActor(fpsCheck);
         return layout;
     }
 
@@ -53,7 +86,18 @@ public class OptionsScreen extends RedfruitScreen {
         stage.addActor(stack);
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.addActor(buildBackgroundLayer());
+        stack.add(buildTitleLayer());
         stack.add(buildOptionsLayer());
+    }
+
+    private Table buildTitleLayer() {
+        Table layout = new Table();
+        layout.center().top();
+        Label.LabelStyle titleStyle = new Label.LabelStyle(largeFont, Color.WHITE);
+        Label title = new Label("Options", titleStyle);
+        layout.add(title);
+
+        return layout;
     }
 //methods end
 }

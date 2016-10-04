@@ -29,4 +29,5 @@ public class Constants {
     public static final long SECOND = 1000000000;
 
 
+    public static final String PREFERENCES = "sky_is_falling.prefs";
 }
