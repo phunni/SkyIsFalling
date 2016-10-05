@@ -6,26 +6,30 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.listeners.PlayButtonListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.QuitButtonListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
+import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
 public class MenuScreen extends RedfruitScreen {
 
     private final String TAG = "MenuScreen";
 
-    private Button playButton;
-    private Button quitButton;
+    private TextButton playButton;
+    private TextButton quitButton;
 
+    private GamePreferences preferences = GamePreferences.getInstance();
 
-    private Image background;
 
     public MenuScreen(Game game) {
         super(game);
+        preferences.load();
     }
 
     //methods start
@@ -44,7 +48,10 @@ public class MenuScreen extends RedfruitScreen {
         rebuildStage();
         Music music = Assets.getInstance().getMusic();
         music.setLooping(true);
-        music.play();
+        if ( preferences.music ) {
+            music.setVolume(preferences.musicVolume);
+            music.play();
+        }
     }
 
     @Override
@@ -71,18 +78,23 @@ public class MenuScreen extends RedfruitScreen {
         Table controlsLayer = new Table();
         controlsLayer.center();
         playButton = new TextButton("Play", skinLibgdx);
+        playButton.getLabel().getStyle().font = normalFont;
         controlsLayer.add(playButton).fill().pad(10);
         controlsLayer.row();
-        Button optionsButton = new TextButton("Options", skinLibgdx);
+        TextButton optionsButton = new TextButton("Options", skinLibgdx);
+        optionsButton.getLabel().getStyle().font = normalFont;
         controlsLayer.add(optionsButton).fill().pad(10);
         controlsLayer.row();
-        Button highScores = new TextButton("High Score", skinLibgdx);
+        TextButton highScores = new TextButton("High Score", skinLibgdx);
+        highScores.getLabel().getStyle().font = normalFont;
         controlsLayer.add(highScores).fill().pad(10);
         controlsLayer.row();
-        Button credits = new TextButton("Credits", skinLibgdx);
+        TextButton credits = new TextButton("Credits", skinLibgdx);
+        credits.getLabel().getStyle().font = normalFont;
         controlsLayer.add(credits).fill().pad(10);
         controlsLayer.row();
         quitButton = new TextButton("Quit", skinLibgdx);
+        quitButton.getLabel().getStyle().font = normalFont;
         controlsLayer.add(quitButton).fill().pad(10);
 
         playButton.addListener(new PlayButtonListener(game));

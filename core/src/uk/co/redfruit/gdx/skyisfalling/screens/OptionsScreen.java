@@ -3,10 +3,14 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
@@ -22,11 +26,14 @@ public class OptionsScreen extends RedfruitScreen {
     private Slider sfxVolumeSlider;
     private CheckBox autoShootCheck;
     private CheckBox fpsCheck;
+    private Music music = Assets.getInstance().getMusic();
+    private TextButton back;
 
 
     public OptionsScreen(Game game) {
         super(game);
         prefs = GamePreferences.getInstance();
+        prefs.load();
     }
 
 
@@ -37,6 +44,7 @@ public class OptionsScreen extends RedfruitScreen {
         stage = new Stage(new FillViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT));
         Gdx.input.setInputProcessor(stage);
         buildStage();
+        handleEvents();
     }
 
     @Override
@@ -81,6 +89,12 @@ public class OptionsScreen extends RedfruitScreen {
         fpsCheck.getStyle().font = normalFont;
         fpsCheck.setChecked(prefs.showFPS);
         layout.addActor(fpsCheck);
+
+        back = new TextButton("Back", skinLibgdx);
+        back.getLabel().getStyle().font = normalFont;
+        layout.addActor(back);
+
+
         return layout;
     }
 
@@ -104,6 +118,65 @@ public class OptionsScreen extends RedfruitScreen {
         layout.add(title);
 
         return layout;
+    }
+
+    private void handleEvents() {
+        musicCheck.addListener(new ChangeListener() {
+            //methods start
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                prefs.music = musicCheck.isChecked();
+                if ( music.isPlaying() && !musicCheck.isChecked() ) {
+                    music.stop();
+                } else if ( !music.isPlaying() && musicCheck.isChecked() ) {
+                    music.play();
+                }
+                prefs.save();
+            }
+//methods end
+        });
+
+        musicVolumeSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                float volume = musicVolumeSlider.getValue();
+                prefs.musicVolume = volume;
+                music.setVolume(volume);
+                prefs.save();
+            }
+        });
+
+        sfxCheck.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                prefs.sfx = sfxCheck.isChecked();
+                prefs.save();
+            }
+        });
+
+        sfxVolumeSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                prefs.sfxVolume = sfxVolumeSlider.getValue();
+                prefs.save();
+            }
+        });
+
+        autoShootCheck.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                prefs.autoShoot = autoShootCheck.isChecked();
+                prefs.save();
+            }
+        });
+
+
+        back.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new MenuScreen(game));
+            }
+        });
     }
 //methods end
 }

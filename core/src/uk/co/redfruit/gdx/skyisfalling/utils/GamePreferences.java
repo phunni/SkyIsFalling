@@ -44,6 +44,7 @@ public class GamePreferences {
         preferences.putFloat("sfxVolume", sfxVolume);
         preferences.putBoolean("autoShoot", autoShoot);
         preferences.putBoolean("showFPS", showFPS);
+        preferences.flush();
     }
 //methods end
 

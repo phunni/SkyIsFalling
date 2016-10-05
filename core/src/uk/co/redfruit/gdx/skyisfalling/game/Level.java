@@ -17,43 +17,39 @@ import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
 import uk.co.redfruit.gdx.skyisfalling.screens.GameScreen;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
+import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
 public class Level {
 
     private static final String TAG = "Level";
-
+    private final World world;
+    public float levelNumber;
+    public long gameOverStartTime;
+    public boolean gameOver;
+    public boolean showingWaveNumber;
+    public boolean paused;
+    public boolean unpaused;
     private PlayerShip playerShip;
     private Array<EnemyShip> enemyShips = new Array<>();
     private Array<Laser> lasers = new Array<>();
     private Array<Explosion> explosions = new Array<>();
-
-    private final World world;
-
-
-
     private float difficulty;
-    public float levelNumber;
     private long startTimeForMovingShips;
-    public long gameOverStartTime;
     private float score;
-    public boolean gameOver;
     private long timeStartedShowingWaveNumber;
-    public boolean showingWaveNumber;
-
     private Pool<EnemyShip> enemyShipPool;
     private Pool<Laser> laserPool;
     private Pool<Explosion> explosionPool;
-
     private long timeSinceLastShot;
     private long lastEnemyShot;
     private long timeSinceLastExplosion = TimeUtils.millis();
-
-    public boolean paused;
-    public boolean unpaused;
+    private boolean isAndroid = false;
 
     private Sound playerPew = Assets.getInstance().getPlayerPew();
     private Sound enemyPew = Assets.getInstance().getEnemyPew();
     private Sound boom = Assets.getInstance().getBoom();
+
+    private GamePreferences preferences = GamePreferences.getInstance();
 
 
     public Level(World newWorld) {
@@ -61,18 +57,39 @@ public class Level {
         init();
 
         playerShip = new PlayerShip(world);
+        preferences.load();
+
+        if ( Gdx.app.getType() == Application.ApplicationType.Android ) {
+            isAndroid = true;
+        }
     }
 
-    private void setDifficulty() {
-        if (levelNumber < 2) {
-            difficulty = 0;
-        } else if (levelNumber < 5) {
-            difficulty = 1;
-        } else if (levelNumber < 8) {
-            difficulty = 2;
-        } else if (levelNumber < 12) {
-            difficulty = 3;
+    //methods start
+    public void blowUp(Vector2 position, Vector2 size) {
+        if ( TimeUtils.timeSinceMillis(timeSinceLastExplosion) > 250 ) {
+            if ( Constants.DEBUG ) {
+                Gdx.app.log(TAG, "New explosion at: " + position.x + ", " + position.y);
+            }
+            Explosion explosion = explosionPool.obtain();
+            explosion.init(position, size);
+            explosions.add(explosion);
+            timeSinceLastExplosion = TimeUtils.millis();
+            if ( preferences.sfx ) {
+                boom.play(preferences.sfxVolume);
+            }
         }
+    }
+
+    public PlayerShip getPlayerShip() {
+        return playerShip;
+    }
+
+    public int getScore() {
+        return (int) score;
+    }
+
+    public void increaseScore(int increase) {
+        score += increase;
     }
 
     public void render(SpriteBatch batch) {
@@ -116,6 +133,21 @@ public class Level {
             }
         }
 
+    }
+
+    public void shootPlayerLaser() {
+
+        if ( !gameOver && !showingWaveNumber ) {
+            Laser laser = laserPool.obtain();
+            laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
+            lasers.add(laser);
+            if ( preferences.sfx ) {
+                long pewID = playerPew.play(preferences.sfxVolume);
+                if ( Constants.DEBUG ) {
+                    Gdx.app.log(TAG, "Pew ID: " + pewID);
+                }
+            }
+        }
     }
 
     public void update(float deltaTime) {
@@ -174,81 +206,11 @@ public class Level {
         }
 
         //if on Android we need to shoot the lasers automatically
-        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+        if ( isAndroid || preferences.autoShoot ) {
             if ( TimeUtils.timeSinceNanos(timeSinceLastShot) > Constants.SECOND * 0.186 ) {
                 shootPlayerLaser();
                 timeSinceLastShot = TimeUtils.nanoTime();
             }
-        }
-    }
-
-    public PlayerShip getPlayerShip() {
-        return playerShip;
-    }
-
-    public void increaseScore(int increase){
-        score += increase;
-    }
-
-    public int getScore() {
-        return (int)score;
-    }
-
-    public void shootPlayerLaser() {
-
-        if (!gameOver && !showingWaveNumber) {
-            Laser laser = laserPool.obtain();
-            laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
-            lasers.add(laser);
-            long pewID = playerPew.play();
-            if ( Constants.DEBUG ) {
-                Gdx.app.log(TAG, "Pew ID: " + pewID);
-            }
-        }
-    }
-
-    private void shootEnemyLaser(EnemyShip ship) {
-        if (!ship.isFalling()) {
-            Laser laser = laserPool.obtain();
-            laser.init("green", ship.getCentre(), new Vector2(0, -9));
-            lasers.add(laser);
-            long enemyPewID = enemyPew.play();
-            if ( Constants.DEBUG ) {
-                Gdx.app.log(TAG, "Pew ID: " + enemyPewID);
-            }
-        }
-    }
-
-    public void blowUp(Vector2 position, Vector2 size) {
-        if ( TimeUtils.timeSinceMillis(timeSinceLastExplosion) > 250 ) {
-            if (Constants.DEBUG) {
-                Gdx.app.log(TAG, "New explosion at: " + position.x + ", " + position.y);
-            }
-            Explosion explosion = explosionPool.obtain();
-            explosion.init(position, size);
-            explosions.add(explosion);
-            timeSinceLastExplosion = TimeUtils.millis();
-            boom.play();
-        }
-    }
-
-    private void setUpEnemyShips() {
-        if (difficulty == 0) {
-            addShips("black", 0.0f);
-            addShips("black", 1.5f);
-            addShips("black", 3.0f);
-        } else if (difficulty == 1) {
-            addShips("blue", 0.0f);
-            addShips("black", 1.5f);
-            addShips("black", 3.0f);
-        } else if (difficulty == 2) {
-            addShips("green", 0.0f);
-            addShips("blue", 1.5f);
-            addShips("black", 3.0f);
-        } else if (difficulty >= 3) {
-            addShips("red", 0.0f);
-            addShips("green", 1.5f);
-            addShips("blue", 3.0f);
         }
     }
 
@@ -307,11 +269,58 @@ public class Level {
         showingWaveNumber = true;
     }
 
+    private void setDifficulty() {
+        if ( levelNumber < 2 ) {
+            difficulty = 0;
+        } else if ( levelNumber < 5 ) {
+            difficulty = 1;
+        } else if ( levelNumber < 8 ) {
+            difficulty = 2;
+        } else if ( levelNumber < 12 ) {
+            difficulty = 3;
+        }
+    }
+
+    private void setUpEnemyShips() {
+        if ( difficulty == 0 ) {
+            addShips("black", 0.0f);
+            addShips("black", 1.5f);
+            addShips("black", 3.0f);
+        } else if ( difficulty == 1 ) {
+            addShips("blue", 0.0f);
+            addShips("black", 1.5f);
+            addShips("black", 3.0f);
+        } else if ( difficulty == 2 ) {
+            addShips("green", 0.0f);
+            addShips("blue", 1.5f);
+            addShips("black", 3.0f);
+        } else if ( difficulty >= 3 ) {
+            addShips("red", 0.0f);
+            addShips("green", 1.5f);
+            addShips("blue", 3.0f);
+        }
+    }
+
+    private void shootEnemyLaser(EnemyShip ship) {
+        if ( !ship.isFalling() ) {
+            Laser laser = laserPool.obtain();
+            laser.init("green", ship.getCentre(), new Vector2(0, -9));
+            lasers.add(laser);
+            if ( preferences.sfx ) {
+                long enemyPewID = enemyPew.play(preferences.sfxVolume);
+                if ( Constants.DEBUG ) {
+                    Gdx.app.log(TAG, "Pew ID: " + enemyPewID);
+                }
+            }
+        }
+    }
+
     private void stopShips(EnemyShip enemy) {
         enemy.movingLeft = false;
         enemy.movingRight = false;
         enemy.movingDown = false;
     }
+//methods end
 
 
 }
