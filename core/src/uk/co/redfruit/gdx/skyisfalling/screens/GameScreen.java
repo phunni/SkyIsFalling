@@ -30,6 +30,7 @@ import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
+import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
 public class GameScreen extends RedfruitScreen {
 
@@ -60,11 +61,14 @@ public class GameScreen extends RedfruitScreen {
     private Body rightWall;
     private float physicsStepAccumulator = 0;
 
+    private GamePreferences preferences = GamePreferences.getInstance();
+
     private State state = State.RUN;
 
 
     public GameScreen(Game game) {
         super((game));
+        preferences.load();
     }
 
     private enum State {
@@ -415,14 +419,14 @@ public class GameScreen extends RedfruitScreen {
                 stack.add(pauseLayer);
                 stack.add(waveLayer);
                 stack.add(gameOverLayer);
-                if ( Constants.DEBUG ) {
+                if ( preferences.showFPS ) {
                     stack.add(buildFPSLayer());
                 }
                 break;
             case PAUSE:
                 Table pausedLayer = buildPausedLayer();
                 stack.add(pausedLayer);
-                if ( Constants.DEBUG ) {
+                if ( preferences.showFPS ) {
                     stack.add(buildFPSLayer());
                 }
                 break;
@@ -450,7 +454,7 @@ public class GameScreen extends RedfruitScreen {
     private void renderGameHUD(SpriteBatch batch) {
         livesLabel.setText("" + level.getPlayerShip().lives);
         scoreLabel.setText("" + level.getScore());
-        if ( Constants.DEBUG ) {
+        if ( preferences.showFPS ) {
             int fps = Gdx.graphics.getFramesPerSecond();
             fpsLabel.setText("FPS: " + fps);
             if ( fps >= 45 ) {

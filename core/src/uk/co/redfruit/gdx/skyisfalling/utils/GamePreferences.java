@@ -34,7 +34,7 @@ public class GamePreferences {
         musicVolume = MathUtils.clamp(preferences.getFloat("musicVolume", 1), 0.0f, 1.0f);
         sfxVolume = MathUtils.clamp(preferences.getFloat("sfxVolume", 1), 0.0f, 1.0f);
         autoShoot = preferences.getBoolean("autoShoot", false);
-        showFPS = preferences.getBoolean("Show FPS", false);
+        showFPS = preferences.getBoolean("showFPS", false);
     }
 
     public void save() {
