@@ -107,6 +107,12 @@ public class MenuScreen extends RedfruitScreen {
             }
 //methods end
         });
+        credits.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new CreditsScreen(game));
+            }
+        });
 
         return controlsLayer;
     }
