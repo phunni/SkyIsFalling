@@ -54,6 +54,7 @@ public class OptionsScreen extends RedfruitScreen {
     }
 
     private VerticalGroup buildOptionsLayer() {
+        float pad = 7.5f;
         prefs.load();
         VerticalGroup layout = new VerticalGroup();
         layout.center();
@@ -62,19 +63,21 @@ public class OptionsScreen extends RedfruitScreen {
         musicCheck = new CheckBox("Music", skinLibgdx);
         musicCheck.getStyle().font = normalFont;
         musicCheck.setChecked(prefs.music);
+        musicCheck.pad(pad);
         layout.addActor(musicCheck);
 
-        musicVolumeSlider = new Slider(0f, 1f, 0.2f, false, skinLibgdx);
+        musicVolumeSlider = new Slider(0f, 1f, 0.1f, false, skinLibgdx);
         musicVolumeSlider.setValue(prefs.musicVolume);
         layout.addActor(musicVolumeSlider);
 
         sfxCheck = new CheckBox("SFX", skinLibgdx);
         sfxCheck.getStyle().font = normalFont;
         sfxCheck.setChecked(prefs.sfx);
+        sfxCheck.pad(pad);
         layout.addActor(sfxCheck);
 
 
-        sfxVolumeSlider = new Slider(0f, 1f, 0.2f, false, skinLibgdx);
+        sfxVolumeSlider = new Slider(0f, 1f, 0.1f, false, skinLibgdx);
         sfxVolumeSlider.setValue(prefs.sfxVolume);
         layout.addActor(sfxVolumeSlider);
 
@@ -82,16 +85,19 @@ public class OptionsScreen extends RedfruitScreen {
             autoShootCheck = new CheckBox("Auto Shoot", skinLibgdx);
             autoShootCheck.getStyle().font = normalFont;
             autoShootCheck.setChecked(prefs.autoShoot);
+            autoShootCheck.pad(pad);
             layout.addActor(autoShootCheck);
         }
 
         fpsCheck = new CheckBox("Show FPS", skinLibgdx);
         fpsCheck.getStyle().font = normalFont;
         fpsCheck.setChecked(prefs.showFPS);
+        fpsCheck.pad(pad);
         layout.addActor(fpsCheck);
 
         back = new TextButton("Back", skinLibgdx);
         back.getLabel().getStyle().font = normalFont;
+        back.pad(pad);
         layout.addActor(back);
 
 
