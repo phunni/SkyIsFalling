@@ -47,12 +47,6 @@ public class OptionsScreen extends RedfruitScreen {
         handleEvents();
     }
 
-    @Override
-    public void dispose() {
-        stage.dispose();
-        skinLibgdx.dispose();
-    }
-
     private VerticalGroup buildOptionsLayer() {
         float pad = 7.5f;
         prefs.load();
@@ -105,8 +99,6 @@ public class OptionsScreen extends RedfruitScreen {
     }
 
     private void buildStage() {
-        skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
-
         stage.clear();
         Stack stack = new Stack();
         stage.addActor(stack);
@@ -167,14 +159,15 @@ public class OptionsScreen extends RedfruitScreen {
                 prefs.save();
             }
         });
-
-        autoShootCheck.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                prefs.autoShoot = autoShootCheck.isChecked();
-                prefs.save();
-            }
-        });
+        if ( autoShootCheck != null ) {
+            autoShootCheck.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    prefs.autoShoot = autoShootCheck.isChecked();
+                    prefs.save();
+                }
+            });
+        }
 
         fpsCheck.addListener(new ChangeListener() {
             @Override
