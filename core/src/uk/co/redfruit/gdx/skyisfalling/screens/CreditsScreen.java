@@ -2,11 +2,10 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -37,6 +36,35 @@ public class CreditsScreen extends RedfruitScreen {
     private Table buildBackButtonLayer() {
         Table layout = new Table();
         layout.center().bottom();
+
+        return layout;
+    }
+
+    private VerticalGroup buildCreditsLayer() {
+        VerticalGroup layout = new VerticalGroup();
+        layout.center();
+
+        Label.LabelStyle titleStyle = new Label.LabelStyle(largeFont, Color.GREEN);
+        Label.LabelStyle creditsStyle = new Label.LabelStyle(normalFont, Color.WHITE);
+
+        Label programming = new Label("Programming", titleStyle);
+        layout.addActor(programming);
+
+        Label hunnisett = new Label("Paul Hunnisett", creditsStyle);
+        layout.addActor(hunnisett);
+
+        Label graphics = new Label("Graphics", titleStyle);
+        layout.addActor(graphics);
+
+        Label kenney = new Label("Kenney", creditsStyle);
+        layout.addActor(kenney);
+
+        Label music = new Label("Music", titleStyle);
+        layout.addActor(music);
+
+        Label modine = new Label("Frederic Modine", creditsStyle);
+        layout.addActor(modine);
+
         TextButton back = new TextButton("Back", skinLibgdx);
         back.getLabel().getStyle().font = normalFont;
         back.pad(10f);
@@ -46,9 +74,10 @@ public class CreditsScreen extends RedfruitScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 game.setScreen(new MenuScreen(game));
             }
-//methods end
         });
-        layout.add(back);
+        layout.addActor(back);
+
+
         return layout;
     }
 
@@ -59,7 +88,7 @@ public class CreditsScreen extends RedfruitScreen {
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(buildBackgroundLayer());
 
-        stack.add(buildBackButtonLayer());
+        stack.add(buildCreditsLayer());
     }
 //methods end
 }
