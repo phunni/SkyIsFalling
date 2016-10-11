@@ -4,8 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -117,15 +119,30 @@ public class MenuScreen extends RedfruitScreen {
         return controlsLayer;
     }
 
+    private Table buildTitleLayer() {
+        Table layer = new Table();
+        layer.center().top();
+        Label.LabelStyle titleStyle = new Label.LabelStyle(largeFont, Color.CHARTREUSE);
+        Label title = new Label("The Sky is Falling", titleStyle);
+        layer.add(title).pad(25);
+        return layer;
+    }
+
     private void rebuildStage() {
         Table controlsLayer = buildControlsLayer();
         Table backgroundLayer = buildBackgroundLayer();
+        Table titleTable = buildTitleLayer();
+
 
         stage.clear();
+        if ( Constants.DEBUG ) {
+            //stage.setDebugAll(true);
+        }
         Stack stack = new Stack();
         stage.addActor(stack);
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(backgroundLayer);
+        stack.add(titleTable);
         stack.add(controlsLayer);
     }
 //methods end
