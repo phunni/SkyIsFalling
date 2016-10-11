@@ -2,12 +2,10 @@ package uk.co.redfruit.gdx.skyisfalling.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -21,6 +19,7 @@ import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
 public class MenuScreen extends RedfruitScreen {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final String TAG = "MenuScreen";
 
     private GamePreferences preferences = GamePreferences.getInstance();
@@ -32,9 +31,6 @@ public class MenuScreen extends RedfruitScreen {
     }
 
     //methods start
-    public InputProcessor getInputProcessor() {
-        return stage;
-    }
 
     @Override
     public void show() {
@@ -119,9 +115,8 @@ public class MenuScreen extends RedfruitScreen {
     private Table buildTitleLayer() {
         Table layer = new Table();
         layer.center().top();
-        Label.LabelStyle titleStyle = new Label.LabelStyle(largeFont, Color.CHARTREUSE);
-        Label title = new Label("The Sky is Falling", titleStyle);
-        layer.add(title).pad(25);
+        Image title = new Image(atlas.findRegion("icon"));
+        layer.add(title).maxSize(75).pad(12);
         return layer;
     }
 
