@@ -23,9 +23,6 @@ public class MenuScreen extends RedfruitScreen {
 
     private final String TAG = "MenuScreen";
 
-    private TextButton playButton;
-    private TextButton quitButton;
-
     private GamePreferences preferences = GamePreferences.getInstance();
 
 
@@ -79,7 +76,7 @@ public class MenuScreen extends RedfruitScreen {
     private Table buildControlsLayer() {
         Table controlsLayer = new Table();
         controlsLayer.center();
-        playButton = new TextButton("Play", skinLibgdx);
+        TextButton playButton = new TextButton("Play", skinLibgdx);
         playButton.getLabel().getStyle().font = normalFont;
         controlsLayer.add(playButton).fill().pad(10);
         controlsLayer.row();
@@ -95,7 +92,7 @@ public class MenuScreen extends RedfruitScreen {
         credits.getLabel().getStyle().font = normalFont;
         controlsLayer.add(credits).fill().pad(10);
         controlsLayer.row();
-        quitButton = new TextButton("Quit", skinLibgdx);
+        TextButton quitButton = new TextButton("Quit", skinLibgdx);
         quitButton.getLabel().getStyle().font = normalFont;
         controlsLayer.add(quitButton).fill().pad(10);
 
@@ -136,7 +133,7 @@ public class MenuScreen extends RedfruitScreen {
 
         stage.clear();
         if ( Constants.DEBUG ) {
-            //stage.setDebugAll(true);
+            stage.setDebugAll(true);
         }
         Stack stack = new Stack();
         stage.addActor(stack);
