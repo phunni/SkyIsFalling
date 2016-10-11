@@ -43,6 +43,7 @@ public class CreditsScreen extends RedfruitScreen {
     private VerticalGroup buildCreditsLayer() {
         VerticalGroup layout = new VerticalGroup();
         layout.center();
+        layout.space(10);
 
         Label.LabelStyle titleStyle = new Label.LabelStyle(largeFont, Color.GREEN);
         Label.LabelStyle creditsStyle = new Label.LabelStyle(normalFont, Color.WHITE);
@@ -59,11 +60,21 @@ public class CreditsScreen extends RedfruitScreen {
         Label kenney = new Label("Kenney", creditsStyle);
         layout.addActor(kenney);
 
+        Label openGameArt = new Label("opengameart.org", creditsStyle);
+        layout.addActor(openGameArt);
+
         Label music = new Label("Music", titleStyle);
         layout.addActor(music);
 
         Label modine = new Label("Frederic Modine", creditsStyle);
         layout.addActor(modine);
+
+        Label sfx = new Label("Sound Effects", titleStyle);
+        layout.addActor(sfx);
+
+        //This is required because simply reusing the above label breaks the layout
+        Label hunnisett_2 = new Label("Paul Hunnisett", creditsStyle);
+        layout.addActor(hunnisett_2);
 
         TextButton back = new TextButton("Back", skinLibgdx);
         back.getLabel().getStyle().font = normalFont;
@@ -87,7 +98,6 @@ public class CreditsScreen extends RedfruitScreen {
         stage.addActor(stack);
         stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
         stack.add(buildBackgroundLayer());
-
         stack.add(buildCreditsLayer());
     }
 //methods end
