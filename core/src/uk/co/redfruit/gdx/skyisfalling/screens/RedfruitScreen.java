@@ -76,6 +76,7 @@ public abstract class RedfruitScreen implements Screen {
     public void dispose() {
         stage.dispose();
         skinLibgdx.dispose();
+        atlas.dispose();
     }
 //methods end
 }
