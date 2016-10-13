@@ -49,3 +49,8 @@
    boolean reportFixture(long);
    float   reportRayFixture(long, float, float, float, float, float);
 }
+
+-keep class com.badlogic.gdx.graphics.g2d.BitmapFont
+-keep class com.badlogic.gdx.graphics.Color
+-keep class com.badlogic.gdx.scenes.scene2d.ui.*$*Style { *; }
+-keep class com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable
