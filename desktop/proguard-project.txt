@@ -1,3 +1,5 @@
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
 -verbose
 
 -dontwarn org.objectweb.**
@@ -35,10 +37,8 @@
 
 -dontwarn com.badlogic.gdx.graphics.g2d.freetype.FreetypeBuild
 
--dontwarn net.dermetfan.gdx.maps.tiled.TileAnimator
--dontwarn net.dermetfan.gdx.scenes.scene2d.ui.**
+-keep class com.badlogic.gdx.controllers.**.**
 
-
--keep class com.badlogic.gdx.controllers.android.AndroidControllers
+-keep class net.java.games.**
 
 -keepclassmembers class com.badlogic.gdx.graphics.GL* { *; }

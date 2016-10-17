@@ -1,6 +1,5 @@
 package uk.co.redfruit.gdx.skyisfalling;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -24,8 +23,6 @@ public class SkyIsFalling extends Game {
     //methods start
     @Override
 	public void create () {
-		// Set Libgdx log level 
-        Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		Assets.getInstance().init(new AssetManager());
 
 		if (Constants.DEBUG) {
