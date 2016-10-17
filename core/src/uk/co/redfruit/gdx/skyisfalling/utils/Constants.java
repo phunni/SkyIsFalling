@@ -2,10 +2,6 @@ package uk.co.redfruit.gdx.skyisfalling.utils;
 
 public class Constants {
 
-    //Window Dimensions
-    public static final int WINDOW_WIDTH = 800;
-    public static final int WINDOW_HEIGHT = 480;
-
     //World dimensions
     public static final float WORLD_WIDTH = 20f;
     public static final float WORLD_HEIGHT = 10f;
@@ -24,10 +20,9 @@ public class Constants {
 
     public static final float SHIP_WIDTH = 1.0f;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final long SECOND = 1000000000;
-
 
     public static final String PREFERENCES = "sky_is_falling.prefs";
 }
