@@ -43,6 +43,7 @@ public class AndroidLauncher extends AndroidApplication {
 
             @Override
             public void onSignInSucceeded() {
+                Gdx.app.log("hunnisett", "Sign in failed");
             }
         };
 
@@ -75,11 +76,11 @@ public class AndroidLauncher extends AndroidApplication {
         gameHelper.onStart(this);
     }
 
-    /*@Override
+    @Override
     protected void onStop() {
         super.onStop();
         gameHelper.onStop();
-    }*/
+    }
 
     public class AndroidGooglePlayServices implements GooglePlayServices {
 
