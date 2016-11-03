@@ -21,8 +21,6 @@ public class AndroidLauncher extends AndroidApplication {
     private static final String TAG = "GPGS";
     private final static int REQUEST_CODE = 1;
     private GameHelper gameHelper;
-    private RelativeLayout layout;
-    private View gameView;
 
 
     @Override
@@ -53,9 +51,9 @@ public class AndroidLauncher extends AndroidApplication {
         config.useImmersiveMode = true;
         config.useAccelerometer = false;
         config.useCompass = false;
-        gameView = initializeForView(new SkyIsFalling(new AndroidGooglePlayServices()), config);
+        View gameView = initializeForView(new SkyIsFalling(new AndroidGooglePlayServices()), config);
 
-        layout = new RelativeLayout(this);
+        RelativeLayout layout = new RelativeLayout(this);
         layout.addView(gameView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         setContentView(layout);
 
