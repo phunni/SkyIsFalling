@@ -7,10 +7,18 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
+import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
@@ -29,9 +37,12 @@ public class OptionsScreen extends RedfruitScreen {
     private Music music = Assets.getInstance().getMusic();
     private TextButton back;
 
+    private GooglePlayServices googlePlayServices;
 
-    public OptionsScreen(Game game) {
+
+    public OptionsScreen(Game game, GooglePlayServices googlePlayServices) {
         super(game);
+        this.googlePlayServices = googlePlayServices;
         prefs = GamePreferences.getInstance();
         prefs.load();
     }
@@ -181,7 +192,7 @@ public class OptionsScreen extends RedfruitScreen {
         back.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new MenuScreen(game));
+                game.setScreen(new MenuScreen(game, googlePlayServices));
             }
         });
     }

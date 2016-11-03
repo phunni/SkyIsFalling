@@ -10,11 +10,13 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
+
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Explosion;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
+import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.screens.GameScreen;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
@@ -22,6 +24,7 @@ import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 public class Level {
 
     private static final String TAG = "Level";
+
     private final World world;
     public float levelNumber;
     public long gameOverStartTime;
@@ -50,10 +53,12 @@ public class Level {
     private Sound boom = Assets.getInstance().getBoom();
 
     private GamePreferences preferences = GamePreferences.getInstance();
+    private GooglePlayServices googlePlayServices;
 
 
-    public Level(World newWorld) {
+    public Level(World newWorld, GooglePlayServices googlePlayServices) {
         this.world = newWorld;
+        this.googlePlayServices = googlePlayServices;
         init();
 
         playerShip = new PlayerShip(world);
@@ -267,6 +272,9 @@ public class Level {
 
         timeStartedShowingWaveNumber = TimeUtils.millis();
         showingWaveNumber = true;
+        if (levelNumber == 2) {
+            googlePlayServices.unlockAchievement("achievement_first_wave");
+        }
     }
 
     private void setDifficulty() {

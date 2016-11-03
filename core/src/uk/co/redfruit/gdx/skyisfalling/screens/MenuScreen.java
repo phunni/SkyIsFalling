@@ -1,5 +1,6 @@
 package uk.co.redfruit.gdx.skyisfalling.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -11,7 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
+import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.listeners.PlayButtonListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.QuitButtonListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -23,11 +26,18 @@ public class MenuScreen extends RedfruitScreen {
     private final String TAG = "MenuScreen";
 
     private GamePreferences preferences = GamePreferences.getInstance();
+    private GooglePlayServices googlePlayServices;
+
+    private boolean isAndroid = false;
 
 
-    public MenuScreen(Game game) {
+    public MenuScreen(Game game, GooglePlayServices googlePlayServices) {
         super(game);
         preferences.load();
+        this.googlePlayServices = googlePlayServices;
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            isAndroid = true;
+        }
     }
 
     //methods start
@@ -54,20 +64,6 @@ public class MenuScreen extends RedfruitScreen {
         stage.getViewport().update(width, height);
     }
 
-    @Override
-    public void pause() {
-        super.pause();
-    }
-
-    @Override
-    public void resume() {
-        super.resume();
-    }
-
-    @Override
-    public void hide() {
-        super.hide();
-    }
 
     private Table buildControlsLayer() {
         Table controlsLayer = new Table();
@@ -82,6 +78,14 @@ public class MenuScreen extends RedfruitScreen {
         controlsLayer.row();
         TextButton highScores = new TextButton("High Score", skinLibgdx);
         highScores.getLabel().getStyle().font = normalFont;
+        highScores.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (isAndroid) {
+                    googlePlayServices.showScore();
+                }
+            }
+        });
         controlsLayer.add(highScores).fill().pad(10);
         controlsLayer.row();
         TextButton credits = new TextButton("Credits", skinLibgdx);
@@ -92,20 +96,20 @@ public class MenuScreen extends RedfruitScreen {
         quitButton.getLabel().getStyle().font = normalFont;
         controlsLayer.add(quitButton).fill().pad(10);
 
-        playButton.addListener(new PlayButtonListener(game));
+        playButton.addListener(new PlayButtonListener(game, googlePlayServices));
         quitButton.addListener(new QuitButtonListener());
         optionsButton.addListener(new ChangeListener() {
             //methods start
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new OptionsScreen(game));
+                game.setScreen(new OptionsScreen(game, googlePlayServices));
             }
 //methods end
         });
         credits.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new CreditsScreen(game));
+                game.setScreen(new CreditsScreen(game, googlePlayServices));
             }
         });
 

@@ -6,12 +6,17 @@ package uk.co.redfruit.gdx.skyisfalling.google.play.services;
 
 public interface GooglePlayServices {
 
-    public void signIn();
-    public void signOut();
-   // public void unlockAchievement();
-   // public void submitScore(int highScore);
-   // public void showAchievement();
-   // public void showScore();
-    public boolean isSignedIn();
+    void signIn();
+
+    void signOut();
+
+    void unlockAchievement(String achievement);
+
+    void submitScore(int highScore);
+
+    //public void showAchievement();
+    void showScore();
+
+    boolean isSignedIn();
 
 }
