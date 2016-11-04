@@ -117,22 +117,43 @@ public class AndroidLauncher extends AndroidApplication {
         @Override
         public void unlockAchievement(String achievement_id) {
             if (Constants.DEBUG) {
-                Gdx.app.log(TAG, "unlockAchievement called");
+                Gdx.app.log(TAG, "unlockAchievement called: " + achievement_id);
             }
-            /*String achievement = "";
-            if (achievement_id.equals("achievement_first_wave")) {
-                achievement = getString(R.string.achievement_first_wave);
-            } else if (achievement_id.equals(""))
-            Games.Achievements.unlock(gameHelper.getApiClient(), achievement);*/
+            if (gameHelper.isSignedIn()) {
+                String achievement = "";
+                if ("achievement_first_wave".equals(achievement_id)) {
+                    achievement = getString(R.string.achievement_first_wave);
+                } else if ("achievement_1k_club".equals(achievement_id)) {
+                    achievement = getString(R.string.achievement_1k_club);
+                } else if ("achievement_fifth_wave".equals(achievement_id)) {
+                    achievement = getString(R.string.achievement_fifth_wave);
+                } else if ("achievement_7th_wave".equals(achievement_id)) {
+                    achievement = getString(R.string.achievement_7th_wave);
+                } else if ("achievement_5k_club".equals(achievement_id)) {
+                    achievement = getString(R.string.achievement_5k_club);
+                }
+                Games.Achievements.unlock(gameHelper.getApiClient(), achievement);
+            } else {
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Achievement not unlocked because user not signed in");
+                }
+            }
         }
 
         @Override
         public void submitScore(int highScore) {
             if (Constants.DEBUG) {
-                Gdx.app.log(TAG, "submitScore called");
+                Gdx.app.log(TAG, "submitScore called: " + highScore);
             }
-            Games.Leaderboards.submitScore(gameHelper.getApiClient(),
-                    getString(R.string.leaderboard_most_awesome_sky_is_falling_players), highScore);
+            if (gameHelper.isSignedIn()) {
+                Games.Leaderboards.submitScore(gameHelper.getApiClient()
+                        , getString(R.string.leaderboard_most_awesome_sky_is_falling_players)
+                        , highScore);
+            } else {
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Could not submit score because user is not signed in");
+                }
+            }
         }
 
         @Override

@@ -95,6 +95,11 @@ public class Level {
 
     public void increaseScore(int increase) {
         score += increase;
+        if (score == 1000) {
+            googlePlayServices.unlockAchievement("achievement_1k_club");
+        } else if (score == 5000) {
+            googlePlayServices.unlockAchievement("achievement_5k_club");
+        }
     }
 
     public void render(SpriteBatch batch) {
@@ -274,6 +279,10 @@ public class Level {
         showingWaveNumber = true;
         if (levelNumber == 2) {
             googlePlayServices.unlockAchievement("achievement_first_wave");
+        } else if (levelNumber == 6) {
+            googlePlayServices.unlockAchievement("achievement_fifth_wave");
+        } else if (levelNumber == 8) {
+            googlePlayServices.unlockAchievement("achievement_7th_wave");
         }
     }
 
