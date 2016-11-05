@@ -22,7 +22,6 @@ import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
 public class MenuScreen extends RedfruitScreen {
 
-    @SuppressWarnings("FieldCanBeLocal")
     private final String TAG = "MenuScreen";
 
     private GamePreferences preferences = GamePreferences.getInstance();
@@ -68,13 +67,13 @@ public class MenuScreen extends RedfruitScreen {
     private Table buildControlsLayer() {
         Table controlsLayer = new Table();
         controlsLayer.center();
-        TextButton playButton = new TextButton("Play", skinLibgdx);
-        playButton.getLabel().getStyle().font = normalFont;
-        controlsLayer.add(playButton).fill().pad(10);
+        TextButton play = new TextButton("Play", skinLibgdx);
+        play.getLabel().getStyle().font = normalFont;
+        controlsLayer.add(play).fill().pad(10);
         controlsLayer.row();
-        TextButton optionsButton = new TextButton("Options", skinLibgdx);
-        optionsButton.getLabel().getStyle().font = normalFont;
-        controlsLayer.add(optionsButton).fill().pad(10);
+        TextButton options = new TextButton("Options", skinLibgdx);
+        options.getLabel().getStyle().font = normalFont;
+        controlsLayer.add(options).fill().pad(10);
         controlsLayer.row();
         TextButton highScores = new TextButton("High Score", skinLibgdx);
         highScores.getLabel().getStyle().font = normalFont;
@@ -88,17 +87,29 @@ public class MenuScreen extends RedfruitScreen {
         });
         controlsLayer.add(highScores).fill().pad(10);
         controlsLayer.row();
+        if (isAndroid) {
+            TextButton achievements = new TextButton("Achievements", skinLibgdx);
+            achievements.getLabel().getStyle().font = normalFont;
+            achievements.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    googlePlayServices.showAchievements();
+                }
+            });
+            controlsLayer.add(achievements).fill().pad(10);
+            controlsLayer.row();
+        }
         TextButton credits = new TextButton("Credits", skinLibgdx);
         credits.getLabel().getStyle().font = normalFont;
         controlsLayer.add(credits).fill().pad(10);
         controlsLayer.row();
-        TextButton quitButton = new TextButton("Quit", skinLibgdx);
-        quitButton.getLabel().getStyle().font = normalFont;
-        controlsLayer.add(quitButton).fill().pad(10);
+        TextButton quit = new TextButton("Quit", skinLibgdx);
+        quit.getLabel().getStyle().font = normalFont;
+        controlsLayer.add(quit).fill().pad(10);
 
-        playButton.addListener(new PlayButtonListener(game, googlePlayServices));
-        quitButton.addListener(new QuitButtonListener());
-        optionsButton.addListener(new ChangeListener() {
+        play.addListener(new PlayButtonListener(game, googlePlayServices));
+        quit.addListener(new QuitButtonListener());
+        options.addListener(new ChangeListener() {
             //methods start
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -120,7 +131,7 @@ public class MenuScreen extends RedfruitScreen {
         Table layer = new Table();
         layer.center().top();
         Image title = new Image(atlas.findRegion("icon"));
-        layer.add(title).maxSize(75).pad(12);
+        layer.add(title).maxSize(75);
         return layer;
     }
 
@@ -128,6 +139,9 @@ public class MenuScreen extends RedfruitScreen {
         Table controlsLayer = buildControlsLayer();
         Table backgroundLayer = buildBackgroundLayer();
         Table titleTable = buildTitleLayer();
+
+        //titleTable.pad(5);
+        //controlsLayer.pad(50);
 
 
         stage.clear();

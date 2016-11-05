@@ -14,7 +14,8 @@ public interface GooglePlayServices {
 
     void submitScore(int highScore);
 
-    //public void showAchievement();
+    void showAchievements();
+
     void showScore();
 
     boolean isSignedIn();

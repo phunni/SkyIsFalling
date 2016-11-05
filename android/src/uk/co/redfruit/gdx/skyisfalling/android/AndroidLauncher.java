@@ -20,6 +20,7 @@ public class AndroidLauncher extends AndroidApplication {
 
     private static final String TAG = "GPGS";
     private final static int REQUEST_CODE = 1;
+    private static final int REQUEST_ACHIEVEMENTS = 2;
     private GameHelper gameHelper;
 
 
@@ -153,6 +154,19 @@ public class AndroidLauncher extends AndroidApplication {
                 if (Constants.DEBUG) {
                     Gdx.app.log(TAG, "Could not submit score because user is not signed in");
                 }
+            }
+        }
+
+        @Override
+        public void showAchievements() {
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "showAchievements called");
+            }
+            if (gameHelper.isSignedIn()) {
+                startActivityForResult(Games.Achievements
+                        .getAchievementsIntent(gameHelper.getApiClient()), REQUEST_ACHIEVEMENTS);
+            } else {
+                Gdx.app.log(TAG, "Attempt to access achievements while not connected/signed in");
             }
         }
 

@@ -53,6 +53,13 @@ public class DesktopLauncher {
         }
 
         @Override
+        public void showAchievements() {
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "showAchievments called for GPGS");
+            }
+        }
+
+        @Override
         public void showScore() {
             if (Constants.DEBUG) {
                 Gdx.app.log(TAG, "showScore called for GPGS");
