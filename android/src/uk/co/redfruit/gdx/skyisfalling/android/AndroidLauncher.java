@@ -150,7 +150,7 @@ public class AndroidLauncher extends AndroidApplication {
             }
             if (gameHelper.isSignedIn()) {
                 Games.Leaderboards.submitScore(gameHelper.getApiClient()
-                        , getString(R.string.leaderboard_most_awesome_sky_is_falling_players)
+                        , getString(R.string.leaderboard_most_awesome_players)
                         , highScore);
             } else {
                 if (Constants.DEBUG) {
@@ -179,7 +179,7 @@ public class AndroidLauncher extends AndroidApplication {
             }
             if (gameHelper.getApiClient().isConnected() && gameHelper.isSignedIn()) {
                 startActivityForResult(Games.Leaderboards.getLeaderboardIntent(gameHelper.getApiClient()
-                        , getString(R.string.leaderboard_most_awesome_sky_is_falling_players))
+                        , getString(R.string.leaderboard_most_awesome_players))
                         , REQUEST_CODE);
             } else {
                 Gdx.app.log(TAG, "Attempt to access leaderboard while not connected/signed in");
