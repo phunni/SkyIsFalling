@@ -132,6 +132,8 @@ public class AndroidLauncher extends AndroidApplication {
                     achievement = getString(R.string.achievement_7th_wave);
                 } else if ("achievement_5k_club".equals(achievement_id)) {
                     achievement = getString(R.string.achievement_5k_club);
+                } else if ("achievement_10k_club".equals(achievement_id)) {
+                    achievement = getString(R.string.achievement_10k_club);
                 }
                 Games.Achievements.unlock(gameHelper.getApiClient(), achievement);
             } else {

@@ -99,6 +99,8 @@ public class Level {
             googlePlayServices.unlockAchievement("achievement_1k_club");
         } else if (score == 5000) {
             googlePlayServices.unlockAchievement("achievement_5k_club");
+        } else if (score == 10000) {
+            googlePlayServices.unlockAchievement("achievement_10k_club");
         }
     }
 

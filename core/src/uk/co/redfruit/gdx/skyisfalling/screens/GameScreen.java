@@ -114,10 +114,6 @@ public class GameScreen extends RedfruitScreen {
             debugRenderer = new Box2DDebugRenderer();
         }
 
-        /*if ( Gdx.app.getType() == Application.ApplicationType.Android) {
-            background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        }*/
-
         background.setPosition(0, 0);
         background.setSize(camera.viewportWidth, camera.viewportHeight);
         if ( Constants.DEBUG ) {
