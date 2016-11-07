@@ -11,10 +11,21 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
@@ -22,10 +33,12 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 import uk.co.redfruit.gdx.skyisfalling.SkyIsFalling;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
+import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
@@ -65,15 +78,13 @@ public class GameScreen extends RedfruitScreen {
 
     private State state = State.RUN;
 
+    private GooglePlayServices googlePlayServices;
 
-    public GameScreen(Game game) {
+
+    public GameScreen(Game game, GooglePlayServices googlePlayServices) {
         super((game));
         preferences.load();
-    }
-
-    private enum State {
-        PAUSE,
-        RUN
+        this.googlePlayServices = googlePlayServices;
     }
 
     //methods start
@@ -97,15 +108,11 @@ public class GameScreen extends RedfruitScreen {
         world = new World(new Vector2(0, -9.8f), true);
         createGround();
         createSideWalls();
-        level = new Level(world);
+        level = new Level(world, googlePlayServices);
         world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
         if ( Constants.DEBUG ) {
             debugRenderer = new Box2DDebugRenderer();
         }
-
-        /*if ( Gdx.app.getType() == Application.ApplicationType.Android) {
-            background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        }*/
 
         background.setPosition(0, 0);
         background.setSize(camera.viewportWidth, camera.viewportHeight);
@@ -433,7 +440,6 @@ public class GameScreen extends RedfruitScreen {
         }
     }
 
-
     private void refreshInputMultiplexer() {
         if (inputMultiplexer != null) {
             inputMultiplexer.clear();
@@ -475,10 +481,10 @@ public class GameScreen extends RedfruitScreen {
         batch.setProjectionMatrix(cameraGUI.combined);
 
         if ( level.gameOver && TimeUtils.timeSinceNanos(level.gameOverStartTime) > 2000000000 ) {
-            game.setScreen(new MenuScreen(game));
+            googlePlayServices.submitScore(level.getScore());
+            game.setScreen(new MenuScreen(game, googlePlayServices));
         }
     }
-
 
     private void renderNewWaveAndGameOver() {
         if (level.showingWaveNumber) {
@@ -509,6 +515,11 @@ public class GameScreen extends RedfruitScreen {
         if ( Constants.DEBUG ) {
             debugRenderer.render(world, camera.combined);
         }
+    }
+
+    private enum State {
+        PAUSE,
+        RUN
     }
 //methods end
 }
