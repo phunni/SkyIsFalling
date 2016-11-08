@@ -27,6 +27,8 @@ import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
  */
 public class OptionsScreen extends RedfruitScreen {
 
+    private static final String TAG = "OptionsScreen";
+
     private GamePreferences prefs;
     private CheckBox musicCheck;
     private Slider musicVolumeSlider;
@@ -39,10 +41,20 @@ public class OptionsScreen extends RedfruitScreen {
 
     private GooglePlayServices googlePlayServices;
 
+    private GameScreen gameScreen = null;
+
 
     public OptionsScreen(Game game, GooglePlayServices googlePlayServices) {
         super(game);
         this.googlePlayServices = googlePlayServices;
+        prefs = GamePreferences.getInstance();
+        prefs.load();
+    }
+
+    public OptionsScreen(Game game, GooglePlayServices googlePlayServices, GameScreen gameScreen) {
+        super(game);
+        this.googlePlayServices = googlePlayServices;
+        this.gameScreen = gameScreen;
         prefs = GamePreferences.getInstance();
         prefs.load();
     }
@@ -56,6 +68,14 @@ public class OptionsScreen extends RedfruitScreen {
         Gdx.input.setInputProcessor(stage);
         buildStage();
         handleEvents();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "OptionsScreen disposed");
+        }
     }
 
     private VerticalGroup buildOptionsLayer() {
@@ -192,7 +212,13 @@ public class OptionsScreen extends RedfruitScreen {
         back.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new MenuScreen(game, googlePlayServices));
+                if (gameScreen == null) {
+                    OptionsScreen.this.dispose();
+                    game.setScreen(new MenuScreen(game, googlePlayServices));
+                } else {
+                    OptionsScreen.this.dispose();
+                    game.setScreen(gameScreen);
+                }
             }
         });
     }

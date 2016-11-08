@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -21,7 +20,10 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
  */
 public class CreditsScreen extends RedfruitScreen {
 
+    private static final String TAG = "CreditsScreen";
+
     private GooglePlayServices googlePlayServices;
+
 
     public CreditsScreen(Game game, GooglePlayServices googlePlayServices) {
         super(game);
@@ -42,11 +44,12 @@ public class CreditsScreen extends RedfruitScreen {
         super.resize(width, height);
     }
 
-    private Table buildBackButtonLayer() {
-        Table layout = new Table();
-        layout.center().bottom();
-
-        return layout;
+    @Override
+    public void dispose() {
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "CreditsScreen disposed");
+        }
+        super.dispose();
     }
 
     private VerticalGroup buildCreditsLayer() {
@@ -92,6 +95,7 @@ public class CreditsScreen extends RedfruitScreen {
             //methods start
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                CreditsScreen.this.dispose();
                 game.setScreen(new MenuScreen(game, googlePlayServices));
             }
         });

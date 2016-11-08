@@ -15,8 +15,6 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
-import uk.co.redfruit.gdx.skyisfalling.listeners.PlayButtonListener;
-import uk.co.redfruit.gdx.skyisfalling.listeners.QuitButtonListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
@@ -63,6 +61,13 @@ public class MenuScreen extends RedfruitScreen {
         stage.getViewport().update(width, height);
     }
 
+    @Override
+    public void dispose() {
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "MenuScreen disposed");
+        }
+        super.dispose();
+    }
 
     private Table buildControlsLayer() {
         Table controlsLayer = new Table();
@@ -107,19 +112,34 @@ public class MenuScreen extends RedfruitScreen {
         quit.getLabel().getStyle().font = normalFont;
         controlsLayer.add(quit).fill().pad(10);
 
-        play.addListener(new PlayButtonListener(game, googlePlayServices));
-        quit.addListener(new QuitButtonListener());
-        options.addListener(new ChangeListener() {
-            //methods start
+        play.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MenuScreen.this.dispose();
+                game.setScreen(new GameScreen(game, googlePlayServices));
+            }
+        });
+        quit.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MenuScreen.this.dispose();
+                Gdx.app.exit();
+            }
+        });
+
+        options.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MenuScreen.this.dispose();
                 game.setScreen(new OptionsScreen(game, googlePlayServices));
             }
-//methods end
+
         });
         credits.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MenuScreen.this.dispose();
                 game.setScreen(new CreditsScreen(game, googlePlayServices));
             }
         });
@@ -139,10 +159,6 @@ public class MenuScreen extends RedfruitScreen {
         Table controlsLayer = buildControlsLayer();
         Table backgroundLayer = buildBackgroundLayer();
         Table titleTable = buildTitleLayer();
-
-        //titleTable.pad(5);
-        //controlsLayer.pad(50);
-
 
         stage.clear();
         if ( Constants.DEBUG ) {

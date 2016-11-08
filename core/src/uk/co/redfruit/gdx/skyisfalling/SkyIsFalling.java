@@ -52,6 +52,9 @@ public class SkyIsFalling extends Game {
 
     @Override
     public void dispose() {
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Sky is Falling Game class disposed");
+        }
         Assets.getInstance().dispose();
     }
 //methods end
