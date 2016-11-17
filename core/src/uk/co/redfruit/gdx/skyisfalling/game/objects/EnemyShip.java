@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pool.Poolable;
 import com.badlogic.gdx.utils.TimeUtils;
+
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.EnemyShipAsset;
@@ -21,17 +22,13 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 public class EnemyShip extends GameObject implements Poolable {
 
     private static final String TAG = "EnemyShip";
-
-    private EnemyShipAsset enemyShipRegion;
     private static final float SHIP_WIDTH = Constants.SHIP_WIDTH;
     private static float SHIP_SPEED = 2;
-
     public boolean movingLeft;
     public boolean movingRight;
     public boolean movingDown;
-
     public float lastDirection;
-
+    private EnemyShipAsset enemyShipRegion;
     private Sprite sprite;
     private Level level;
 
@@ -40,16 +37,11 @@ public class EnemyShip extends GameObject implements Poolable {
 
     private boolean hit;
     private long hitFlash;
-    private long lastShot;
 
     private boolean isFalling;
 
     public EnemyShip(World world) {
         super(world);
-    }
-
-    public EnemyShip(){
-        super();
     }
 
 
@@ -158,6 +150,10 @@ public class EnemyShip extends GameObject implements Poolable {
         body.setLinearVelocity(0, body.getLinearVelocity().y);
     }
 
+    public void fullStop() {
+        body.setLinearVelocity(0, 0);
+    }
+
     public float getHitPoints() {
         return hitPoints;
     }
@@ -180,13 +176,13 @@ public class EnemyShip extends GameObject implements Poolable {
         return destroyed;
     }
 
-    public boolean isFalling() {
-        return isFalling;
-    }
-
     public void setDestroyed(boolean destroyed) {
         this.destroyed = destroyed;
         level.blowUp(position.cpy(), new Vector2(sprite.getWidth(), sprite.getHeight()));
+    }
+
+    public boolean isFalling() {
+        return isFalling;
     }
 
     public Vector2 getCentre() {

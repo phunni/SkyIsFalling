@@ -162,7 +162,7 @@ public class GameScreen extends RedfruitScreen {
                     debugRenderer.render(world, camera.combined);
                 }
 
-                if (!level.gameOver) {
+                if (!level.gameOver && !level.showingWaveNumber) {
                     doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
                 }
                 break;
@@ -222,7 +222,9 @@ public class GameScreen extends RedfruitScreen {
         super.dispose();
         world.dispose();
         batch.dispose();
-        debugRenderer.dispose();
+        if (debugRenderer != null) {
+            debugRenderer.dispose();
+        }
     }
 
     private Table buildFPSLayer() {
@@ -470,12 +472,11 @@ public class GameScreen extends RedfruitScreen {
     }
 
     private void renderBackground(SpriteBatch batch) {
-        /*if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Background Position: " + background.getX() + " ," + background.getY());
-        }*/
+        batch.disableBlending();
         batch.begin();
         background.draw(batch);
         batch.end();
+        batch.enableBlending();
     }
 
     private void renderGameHUD(SpriteBatch batch) {

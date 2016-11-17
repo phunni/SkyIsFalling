@@ -6,12 +6,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
+
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
+import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 /**
  * Created by paul on 09/10/15.
  */
 public class Explosion extends GameObject implements Pool.Poolable {
+
+    private static final String TAG = "Explosion";
 
     private Animation animation = Assets.getInstance().getExplosion().explosionAnimation;
     private float stateTime = 0f;
@@ -44,6 +48,9 @@ public class Explosion extends GameObject implements Pool.Poolable {
     }
 
     public void init(Vector2 position, Vector2 size) {
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Explosion length: " + animation.getAnimationDuration());
+        }
         this.position = position;
         this.size = size;
         loader = null;
