@@ -5,6 +5,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
+
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
@@ -65,7 +66,6 @@ public class SkyIsFallingControllerListener implements ControllerListener {
         }
         return true;
     }
-
 
 
     @Override

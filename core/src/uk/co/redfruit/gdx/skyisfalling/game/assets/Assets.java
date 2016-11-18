@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.TimeUtils;
+
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class Assets implements Disposable, AssetErrorListener {
@@ -38,11 +39,15 @@ public class Assets implements Disposable, AssetErrorListener {
 
     private Assets(){}
 
+    public static Assets getInstance() {
+        return instance;
+    }
+
     public void init(AssetManager assetManager) {
         this.assetManager = assetManager;
         this.assetManager.setErrorListener(this);
         long loadTimeStarted;
-        if(Constants.DEBUG) {
+        if (Constants.DEBUG) {
             loadTimeStarted = TimeUtils.millis();
             Gdx.app.log(TAG, "Asset Loading started: " + loadTimeStarted);
         }
@@ -95,10 +100,6 @@ public class Assets implements Disposable, AssetErrorListener {
         fonts.defaultSmall.dispose();
         fonts.defaultNormal.dispose();
         fonts.defaultBig.dispose();
-    }
-
-    public static Assets getInstance() {
-        return instance;
     }
 
     public AssetFonts getFonts() {
