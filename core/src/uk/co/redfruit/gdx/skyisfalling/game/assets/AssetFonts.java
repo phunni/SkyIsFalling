@@ -1,62 +1,28 @@
 package uk.co.redfruit.gdx.skyisfalling.game.assets;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.math.Vector2;
+import org.jrenner.smartfont.SmartFontGenerator;
 
 public class AssetFonts {
 
+    private static final int SMALL_FONT = 16;
+    private static final int NORMAL_FONT = 18;
+    private static final int BIG_FONT = 28;
     public final BitmapFont defaultSmall;
     public final BitmapFont defaultNormal;
     public final BitmapFont defaultBig;
 
-    private static final float FONT_SIZE_BASE = 0.004f;
-    private static final float SMALL_FONT = 4;
-    private static final float NORMAL_FONT = 5;
-    private static final float BIG_FONT = 8;
-
     public AssetFonts() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("skins/DroidSans.ttf"));
-        FreeTypeFontParameter smallParameter = new FreeTypeFontParameter();
-        FreeTypeFontParameter normalParameter = new FreeTypeFontParameter();
-        FreeTypeFontParameter bigParameter = new FreeTypeFontParameter();
 
-        smallParameter.size = getSmallFontSize();
-        normalParameter.size = getNormalFontSize();
-        bigParameter.size = getBigFontSize();
+        SmartFontGenerator generator = new SmartFontGenerator();
+        FileHandle fontFile = Gdx.files.internal("skins/Gidolinya-Regular.otf");
 
-        defaultSmall = generator.generateFont(smallParameter);
-        defaultNormal = generator.generateFont(normalParameter);
-        defaultBig = generator.generateFont(bigParameter);
+        defaultSmall = generator.createFont(fontFile, "defaultSmall", SMALL_FONT);
+        defaultNormal = generator.createFont(fontFile, "defaultNormal", NORMAL_FONT);
+        defaultBig = generator.createFont(fontFile, "defaultLarge", BIG_FONT);
 
-        generator.dispose();
-
-        defaultSmall.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        defaultNormal.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        defaultBig.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-    }
-
-    private int getSmallFontSize() {
-        return (int) (getBaseFontSize() * SMALL_FONT);
-    }
-
-    private int getNormalFontSize() {
-        return (int) (getBaseFontSize() * NORMAL_FONT);
-    }
-
-    private int getBigFontSize() {
-        return (int) (getBaseFontSize() * BIG_FONT);
-    }
-
-    private float getBaseFontSize() {
-        return getViewportSize().x * FONT_SIZE_BASE;
-    }
-
-    private Vector2 getViewportSize() {
-        return new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_id">855574239929</string>
+    <string name="package_name">uk.co.redfruit.gdx.skyisfalling.android</string>
+    <string name="achievement_first_wave">CgkIubXLofMYEAIQAQ</string>
+    <string name="achievement_1k_club">CgkIubXLofMYEAIQAg</string>
+    <string name="achievement_fifth_wave">CgkIubXLofMYEAIQAw</string>
+    <string name="achievement_7th_wave">CgkIubXLofMYEAIQBA</string>
+    <string name="achievement_5k_club">CgkIubXLofMYEAIQBQ</string>
+    <string name="achievement_10k_club">CgkIubXLofMYEAIQBw</string>
+    <string name="leaderboard_most_awesome_players">CgkIubXLofMYEAIQBg</string>
+</resources>

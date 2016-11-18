@@ -1,11 +1,15 @@
 package uk.co.redfruit.gdx.skyisfalling.game.objects;
 
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.Timer;
+
+import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.PlayerShipAsset;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -14,20 +18,19 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 public class PlayerShip extends GameObject {
 
     private static final String TAG = "PlayerShip";
-
-    private PlayerShipAsset playerShipRegion;
     private static final float SHIP_WIDTH = Constants.SHIP_WIDTH;
     private static float SHIP_SPEED = 4;
-
     public boolean movingLeft;
     public boolean movingRight;
     public boolean destroyed;
     public long lastTimeLifeLost = TimeUtils.millis();
-
     public int lives;
+    private PlayerShipAsset playerShipRegion;
+    private Level level;
 
-    public PlayerShip(World world) {
+    public PlayerShip(World world, Level level) {
         super(world);
+        this.level = level;
         lives = 3;
         playerShipRegion = Assets.getInstance().getPlayer();
         position.set(Constants.WORLD_WIDTH / 2, 0.1f);
@@ -80,6 +83,18 @@ public class PlayerShip extends GameObject {
         if (!(TimeUtils.timeSinceMillis(lastTimeLifeLost) < 250)) {
             lives--;
             lastTimeLifeLost = TimeUtils.millis();
+            Sprite ship = playerShipRegion.ship;
+            level.playerExploding = true;
+
+            level.blowUp(position.cpy()
+                    , new Vector2(playerShipRegion.ship.getWidth(), ship.getHeight()));
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    level.playerDied();
+                }
+            }, 1);
+
         }
     }
 

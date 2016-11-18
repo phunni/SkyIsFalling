@@ -2,9 +2,10 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:2.2.2'
     }
 }
 
@@ -14,8 +15,7 @@ allprojects {
     version = '1.0'
     ext {
         appName = 'The Sky is Falling'
-        gdxVersion = '1.9.3'
-        box2DLightsVersion = '1.4'
+        gdxVersion = '1.9.4'
     }
 
     repositories {

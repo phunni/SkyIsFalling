@@ -1,117 +1,166 @@
 package uk.co.redfruit.gdx.skyisfalling.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
-import uk.co.redfruit.gdx.skyisfalling.listeners.PlayButtonListener;
-import uk.co.redfruit.gdx.skyisfalling.listeners.QuitButtonListener;
+
+import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
+import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
+import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
 public class MenuScreen extends RedfruitScreen {
 
     private final String TAG = "MenuScreen";
 
-    private Stage stage;
-    private Skin skinSkyIsFalling;
-    private Skin skinLibgdx;
+    private GamePreferences preferences = GamePreferences.getInstance();
+    private GooglePlayServices googlePlayServices;
 
-    private Button playButton;
-    private Button quitButton;
+    private boolean isAndroid = false;
 
-    private TextureAtlas menuAtlas;
-    private Image background;
 
-    public MenuScreen(Game game) {
+    public MenuScreen(Game game, GooglePlayServices googlePlayServices) {
         super(game);
+        preferences.load();
+        this.googlePlayServices = googlePlayServices;
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            isAndroid = true;
+        }
     }
 
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    //methods start
 
-        stage.act();
-        stage.draw();
+    @Override
+    public void show() {
+        super.show();
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Device density: " + Gdx.graphics.getDensity());
+        }
+        stage  = new Stage(new FillViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT));
+        Gdx.input.setInputProcessor(stage);
+        rebuildStage();
+        Music music = Assets.getInstance().getMusic();
+        music.setLooping(true);
+        if ( preferences.music ) {
+            music.setVolume(preferences.musicVolume);
+            music.play();
+        }
     }
 
     @Override
     public void resize(int width, int height) {
-       stage.getViewport().update(width, height);
+        stage.getViewport().update(width, height);
     }
 
     @Override
     public void dispose() {
-        stage.dispose();
-        skinLibgdx.dispose();
-        skinSkyIsFalling.dispose();
-    }
-
-    @Override
-    public void show() {
-        stage  = new Stage(new FillViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT));
-        Gdx.input.setInputProcessor(stage);
-        rebuildStage();
-    }
-
-    @Override
-    public void pause() {
-        super.pause();
-    }
-
-    @Override
-    public void resume() {
-        super.resume();
-    }
-
-    @Override
-    public void hide() {
-        super.hide();
-    }
-
-    public InputProcessor getInputProcessor() {
-        return stage;
-    }
-
-    private void rebuildStage() {
-        skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
-        menuAtlas = new TextureAtlas(Constants.TEXTURE_SKY_IS_FALLING);
-        Table controlsLayer = buildControlsLayer();
-        Table backgroundLayer = buildBackgroundLayer();
-
-        stage.clear();
-        Stack stack = new Stack();
-        stage.addActor(stack);
-        stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-        stack.add(backgroundLayer);
-        stack.add(controlsLayer);
-    }
-
-    private Table buildBackgroundLayer() {
-        Table backgroundLayer = new Table();
-        background = new Image(menuAtlas.findRegion("background"));
-        backgroundLayer.add(background);
-        return backgroundLayer;
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "MenuScreen disposed");
+        }
+        super.dispose();
     }
 
     private Table buildControlsLayer() {
         Table controlsLayer = new Table();
         controlsLayer.center();
-        playButton = new TextButton("Play", skinLibgdx);
-        controlsLayer.add(playButton);
+        controlsLayer.setFillParent(true);
+        Image title = new Image(atlas.findRegion("icon"));
+        controlsLayer.add(title).maxSize(75).padBottom(15);
         controlsLayer.row();
-        quitButton = new TextButton("Quit", skinLibgdx);
-        controlsLayer.add(quitButton);
+        TextButton play = new TextButton("Play", skinLibgdx);
+        play.getLabel().getStyle().font = normalFont;
+        controlsLayer.add(play).fill().pad(10);
+        controlsLayer.row();
+        TextButton options = new TextButton("Options", skinLibgdx);
+        options.getLabel().getStyle().font = normalFont;
+        controlsLayer.add(options).fill().pad(10);
+        controlsLayer.row();
+        TextButton highScores = new TextButton("High Score", skinLibgdx);
+        highScores.getLabel().getStyle().font = normalFont;
+        highScores.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (isAndroid) {
+                    googlePlayServices.showScore();
+                }
+            }
+        });
+        controlsLayer.add(highScores).fill().pad(10);
+        controlsLayer.row();
+        if (isAndroid) {
+            TextButton achievements = new TextButton("Achievements", skinLibgdx);
+            achievements.getLabel().getStyle().font = normalFont;
+            achievements.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    googlePlayServices.showAchievements();
+                }
+            });
+            controlsLayer.add(achievements).fill().pad(10);
+            controlsLayer.row();
+        }
+        TextButton credits = new TextButton("Credits", skinLibgdx);
+        credits.getLabel().getStyle().font = normalFont;
+        controlsLayer.add(credits).fill().pad(10);
+        controlsLayer.row();
+        TextButton quit = new TextButton("Quit", skinLibgdx);
+        quit.getLabel().getStyle().font = normalFont;
+        controlsLayer.add(quit).fill().pad(10);
 
-        playButton.addListener(new PlayButtonListener(game));
-        quitButton.addListener(new QuitButtonListener());
+        play.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MenuScreen.this.dispose();
+                game.setScreen(new GameScreen(game, googlePlayServices));
+            }
+        });
+        quit.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MenuScreen.this.dispose();
+                Gdx.app.exit();
+            }
+        });
+
+        options.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MenuScreen.this.dispose();
+                game.setScreen(new OptionsScreen(game, googlePlayServices));
+            }
+
+        });
+        credits.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                MenuScreen.this.dispose();
+                game.setScreen(new CreditsScreen(game, googlePlayServices));
+            }
+        });
 
         return controlsLayer;
     }
+
+    private void rebuildStage() {
+        Table controlsLayer = buildControlsLayer();
+        Table backgroundLayer = buildBackgroundLayer();
+
+
+        stage.clear();
+        if ( Constants.DEBUG ) {
+            stage.setDebugAll(true);
+        }
+        stage.addActor(backgroundLayer);
+        stage.addActor(controlsLayer);
+    }
+//methods end
 }

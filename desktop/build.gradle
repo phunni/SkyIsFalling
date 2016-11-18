@@ -20,7 +20,16 @@ task dist(type: Jar) {
         attributes 'Main-Class': project.mainClassName
     }
 }
+
+task obfuscate(type: proguard.gradle.ProGuardTask) {
+    configuration files("proguard-project.txt")
+    libraryjars files("/usr/lib/jvm/default-runtime/lib/rt.jar", "/usr/lib/jvm/default-runtime/lib/jce.jar")
+    injars files("build/libs/desktop-1.0.jar")
+    outjars files("build/libs/obfuscated.jar")
+}
+
 dist.dependsOn classes
+obfuscate {}.dependsOn dist
 
 dependencies {
     compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
