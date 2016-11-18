@@ -32,6 +32,7 @@ public abstract class RedfruitScreen implements Screen {
 
     protected Table buildBackgroundLayer() {
         Table backgroundLayer = new Table();
+        backgroundLayer.setFillParent(true);
         Image background = new Image(atlas.findRegion("background"));
         backgroundLayer.add(background);
         return backgroundLayer;

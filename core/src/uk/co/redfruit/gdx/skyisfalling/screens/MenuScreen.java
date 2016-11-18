@@ -7,7 +7,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -72,6 +71,10 @@ public class MenuScreen extends RedfruitScreen {
     private Table buildControlsLayer() {
         Table controlsLayer = new Table();
         controlsLayer.center();
+        controlsLayer.setFillParent(true);
+        Image title = new Image(atlas.findRegion("icon"));
+        controlsLayer.add(title).maxSize(75).padBottom(15);
+        controlsLayer.row();
         TextButton play = new TextButton("Play", skinLibgdx);
         play.getLabel().getStyle().font = normalFont;
         controlsLayer.add(play).fill().pad(10);
@@ -147,29 +150,17 @@ public class MenuScreen extends RedfruitScreen {
         return controlsLayer;
     }
 
-    private Table buildTitleLayer() {
-        Table layer = new Table();
-        layer.center().top();
-        Image title = new Image(atlas.findRegion("icon"));
-        layer.add(title).maxSize(75);
-        return layer;
-    }
-
     private void rebuildStage() {
         Table controlsLayer = buildControlsLayer();
         Table backgroundLayer = buildBackgroundLayer();
-        Table titleTable = buildTitleLayer();
+
 
         stage.clear();
         if ( Constants.DEBUG ) {
             stage.setDebugAll(true);
         }
-        Stack stack = new Stack();
-        stage.addActor(stack);
-        stack.setSize(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-        stack.add(backgroundLayer);
-        stack.add(titleTable);
-        stack.add(controlsLayer);
+        stage.addActor(backgroundLayer);
+        stage.addActor(controlsLayer);
     }
 //methods end
 }

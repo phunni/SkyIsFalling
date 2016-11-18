@@ -1,7 +1,11 @@
 package uk.co.redfruit.gdx.skyisfalling.listeners;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
+
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.GameObject;
@@ -41,9 +45,13 @@ public class WorldContactListener implements ContactListener {
             } else if (bUserData instanceof Laser && aUserData instanceof EnemyShip) {
                 laserEnemyCollision((Laser) bUserData, (EnemyShip) aUserData);
             } else if (aUserData instanceof PlayerShip && bUserData instanceof EnemyShip) {
-                ((PlayerShip) aUserData).loseALife();
+                if (!level.playerExploding) {
+                    ((PlayerShip) aUserData).loseALife();
+                }
             } else if (bUserData instanceof PlayerShip && aUserData instanceof EnemyShip) {
-                ((PlayerShip) bUserData).loseALife();
+                if (!level.playerExploding) {
+                    ((PlayerShip) bUserData).loseALife();
+                }
             } else if (aUserData instanceof Laser && bUserData instanceof PlayerShip) {
                 if (((Laser) aUserData).isEnemyLaser) {
                     playerShipHitByLaser((Laser) aUserData, (PlayerShip) bUserData);
@@ -105,7 +113,7 @@ public class WorldContactListener implements ContactListener {
     }
 
     private void playerShipHitByLaser(Laser laser, PlayerShip ship) {
-        if (laser.isEnemyLaser) {
+        if (laser.isEnemyLaser && !level.playerExploding) {
             laser.setCullable(true);
             ship.loseALife();
         }
