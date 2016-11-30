@@ -1,6 +1,7 @@
 package uk.co.redfruit.gdx.skyisfalling.desktop;
 
 import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -8,20 +9,25 @@ import com.badlogic.gdx.utils.Json;
 
 import uk.co.redfruit.gdx.skyisfalling.SkyIsFalling;
 import uk.co.redfruit.gdx.skyisfalling.desktop.scores.HighScores;
+import uk.co.redfruit.gdx.skyisfalling.desktop.screens.DesktopHighScoresScreen;
 import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 public class DesktopLauncher {
 
     private static final String TAG = "DesktopLauncher";
+    private static Game game;
+    private static GooglePlayServices playServices;
 
 	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        playServices = new DesktopGooglePlayServices();
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "The Sky is Falling";
 		config.width = 800;
 		config.height = 480;
         config.addIcon("images/desktop_icon.png", Files.FileType.Internal);
-        new LwjglApplication(new SkyIsFalling(new DesktopGooglePlayServices()), config);
+        game = new SkyIsFalling(playServices);
+        new LwjglApplication(game, config);
     }
 
 	public static class DesktopGooglePlayServices implements GooglePlayServices {
@@ -91,6 +97,9 @@ public class DesktopLauncher {
                     Gdx.app.log(TAG, "Score: " + i);
                 }
             }
+
+            game.getScreen().dispose();
+            game.setScreen(new DesktopHighScoresScreen(game, playServices, highScores));
 
 
         }

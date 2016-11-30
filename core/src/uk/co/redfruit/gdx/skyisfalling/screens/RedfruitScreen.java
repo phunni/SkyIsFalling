@@ -28,6 +28,7 @@ public abstract class RedfruitScreen implements Screen {
 
     public RedfruitScreen(Game game) {
         this.game = game;
+        atlas = new TextureAtlas(Constants.TEXTURE_SKY_IS_FALLING);
     }
 
     protected Table buildBackgroundLayer() {
@@ -42,7 +43,6 @@ public abstract class RedfruitScreen implements Screen {
     @Override
     public void show() {
         skinLibgdx = new Skin(Gdx.files.internal(Constants.SKIN_LIBGDX));
-        atlas = new TextureAtlas(Constants.TEXTURE_SKY_IS_FALLING);
     }
 
     @Override
@@ -56,7 +56,7 @@ public abstract class RedfruitScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height);
     }
 
     @Override
