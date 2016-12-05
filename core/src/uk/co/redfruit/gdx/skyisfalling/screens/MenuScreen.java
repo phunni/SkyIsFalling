@@ -88,9 +88,7 @@ public class MenuScreen extends RedfruitScreen {
         highScores.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (isAndroid) {
                     googlePlayServices.showScore();
-                }
             }
         });
         controlsLayer.add(highScores).fill().pad(10);

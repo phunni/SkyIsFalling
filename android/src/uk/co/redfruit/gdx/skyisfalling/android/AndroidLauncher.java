@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -19,6 +20,8 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 public class AndroidLauncher extends AndroidApplication {
 
     private static final String TAG = "GPGS";
+    private static final String GPGS_NOT_SIGNED_IN = "You need to be signed into Google Play " +
+            "Services to use this feature";
     private final static int REQUEST_CODE = 1;
     private static final int REQUEST_ACHIEVEMENTS = 2;
     private GameHelper gameHelper;
@@ -55,7 +58,8 @@ public class AndroidLauncher extends AndroidApplication {
         View gameView = initializeForView(new SkyIsFalling(new AndroidGooglePlayServices()), config);
 
         RelativeLayout layout = new RelativeLayout(this);
-        layout.addView(gameView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layout.addView(gameView, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
         setContentView(layout);
 
 
@@ -140,6 +144,7 @@ public class AndroidLauncher extends AndroidApplication {
                 if (Constants.DEBUG) {
                     Gdx.app.log(TAG, "Achievement not unlocked because user not signed in");
                 }
+
             }
         }
 
@@ -168,7 +173,17 @@ public class AndroidLauncher extends AndroidApplication {
                 startActivityForResult(Games.Achievements
                         .getAchievementsIntent(gameHelper.getApiClient()), REQUEST_ACHIEVEMENTS);
             } else {
-                Gdx.app.log(TAG, "Attempt to access achievements while not connected/signed in");
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Attempt to access achievements while not connected/signed in");
+                }
+                AndroidLauncher.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(AndroidLauncher.this, GPGS_NOT_SIGNED_IN, Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                });
+
             }
         }
 
@@ -182,7 +197,16 @@ public class AndroidLauncher extends AndroidApplication {
                         , getString(R.string.leaderboard_most_awesome_players))
                         , REQUEST_CODE);
             } else {
-                Gdx.app.log(TAG, "Attempt to access leaderboard while not connected/signed in");
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Attempt to access leaderboard while not connected/signed in");
+                }
+                AndroidLauncher.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(AndroidLauncher.this, GPGS_NOT_SIGNED_IN, Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                });
             }
         }
 

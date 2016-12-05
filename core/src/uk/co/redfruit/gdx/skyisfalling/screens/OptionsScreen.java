@@ -83,7 +83,7 @@ public class OptionsScreen extends RedfruitScreen {
         prefs.load();
         VerticalGroup layout = new VerticalGroup();
         layout.center();
-        layout.columnLeft();
+        //layout.
 
         musicCheck = new CheckBox("Music", skinLibgdx);
         musicCheck.getStyle().font = normalFont;
