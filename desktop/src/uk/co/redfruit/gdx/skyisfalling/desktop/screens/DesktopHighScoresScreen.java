@@ -66,7 +66,7 @@ public class DesktopHighScoresScreen extends RedfruitScreen {
         highScoresLayer.center();
         highScoresLayer.setFillParent(true);
         highScoresLayer.space(10);
-        highScoresLayer.columnLeft();
+        //highScoresLayer.columnLeft();
 
         Label.LabelStyle titleStyle = new Label.LabelStyle(largeFont, Color.GREEN);
         Label.LabelStyle scoresStyle = new Label.LabelStyle(normalFont, Color.WHITE);
@@ -75,7 +75,7 @@ public class DesktopHighScoresScreen extends RedfruitScreen {
 
         for (int i = 0; i < scores.scores.size; i++) {
             int score = scores.scores.get(i);
-            highScoresLayer.addActor(new Label((i + 1) + ". " + score, scoresStyle));
+            highScoresLayer.addActor(new Label((i + 1) + ") " + score, scoresStyle));
         }
 
         TextButton backButton = new TextButton("Back", skinLibgdx);
@@ -88,6 +88,7 @@ public class DesktopHighScoresScreen extends RedfruitScreen {
             }
         });
 
+        backButton.center();
         highScoresLayer.addActor(backButton);
 
         highScoresLayer.pack();
