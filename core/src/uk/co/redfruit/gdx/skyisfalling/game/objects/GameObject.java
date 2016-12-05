@@ -1,6 +1,5 @@
 package uk.co.redfruit.gdx.skyisfalling.game.objects;
 
-import aurelienribon.bodyeditor.BodyEditorLoader;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -8,18 +7,15 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-import java.util.zip.CheckedInputStream;
+import aurelienribon.bodyeditor.BodyEditorLoader;
 
 public abstract class GameObject {
 
+    protected static BodyEditorLoader loader;
     protected Vector2 position;
     protected Vector2 origin;
-
     protected Body body;
-
     protected World world;
-
-    protected static BodyEditorLoader loader;
     protected BodyDef defaultDynamicBodyDef;
 
     protected boolean cullable;
@@ -48,16 +44,16 @@ public abstract class GameObject {
         return position;
     }
 
-    public void setCullable(boolean cullable) {
-        this.cullable = cullable;
-    }
-
     public Vector2 getOrigin() {
         return origin;
     }
 
     public boolean isCullable() {
         return cullable;
+    }
+
+    public void setCullable(boolean cullable) {
+        this.cullable = cullable;
     }
 
     public Body getBody() {

@@ -16,7 +16,7 @@ import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 public class SkyIsFalling extends Game {
 
 	private static final String TAG = "SkyIsFalling";
-    private static final SkyIsFallingControllerListener controllerListener = new SkyIsFallingControllerListener();
+	private static final SkyIsFallingControllerListener controllerListener = new SkyIsFallingControllerListener();
 
 	private GooglePlayServices googlePlayServices;
 
@@ -25,11 +25,11 @@ public class SkyIsFalling extends Game {
 	}
 
 	public static SkyIsFallingControllerListener getControllerListener() {
-        return controllerListener;
-    }
+		return controllerListener;
+	}
 
-    //methods start
-    @Override
+	//methods start
+	@Override
 	public void create () {
 		Assets.getInstance().init(new AssetManager());
 
@@ -50,13 +50,13 @@ public class SkyIsFalling extends Game {
 		setScreen(new MenuScreen(this, googlePlayServices));
 	}
 
-    @Override
-    public void dispose() {
-        if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Sky is Falling Game class disposed");
-        }
-        Assets.getInstance().dispose();
-    }
+	@Override
+	public void dispose() {
+		if (Constants.DEBUG) {
+			Gdx.app.log(TAG, "Sky is Falling Game class disposed");
+		}
+		Assets.getInstance().dispose();
+	}
 //methods end
 
 }

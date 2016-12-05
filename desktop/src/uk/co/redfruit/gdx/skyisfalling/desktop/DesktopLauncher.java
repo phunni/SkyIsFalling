@@ -16,13 +16,13 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "The Sky is Falling";
-		config.width = 800;
-		config.height = 480;
+        config.width = 800;
+        config.height = 480;
         config.addIcon("images/desktop_icon.png", Files.FileType.Internal);
         new LwjglApplication(new SkyIsFalling(new DesktopGooglePlayServices()), config);
     }
 
-	public static class DesktopGooglePlayServices implements GooglePlayServices {
+    public static class DesktopGooglePlayServices implements GooglePlayServices {
 
         @Override
         public void signIn() {

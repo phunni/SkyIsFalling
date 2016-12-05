@@ -106,7 +106,7 @@ public class OptionsScreen extends RedfruitScreen {
         sfxVolumeSlider.setValue(prefs.sfxVolume);
         layout.addActor(sfxVolumeSlider);
 
-        if ( Gdx.app.getType() == Application.ApplicationType.Desktop ) {
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             autoShootCheck = new CheckBox("Auto Shoot", skinLibgdx);
             autoShootCheck.getStyle().font = normalFont;
             autoShootCheck.setChecked(prefs.autoShoot);
@@ -155,9 +155,9 @@ public class OptionsScreen extends RedfruitScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 prefs.music = musicCheck.isChecked();
-                if ( music.isPlaying() && !musicCheck.isChecked() ) {
+                if (music.isPlaying() && !musicCheck.isChecked()) {
                     music.stop();
-                } else if ( !music.isPlaying() && musicCheck.isChecked() ) {
+                } else if (!music.isPlaying() && musicCheck.isChecked()) {
                     music.play();
                 }
                 prefs.save();
@@ -190,7 +190,7 @@ public class OptionsScreen extends RedfruitScreen {
                 prefs.save();
             }
         });
-        if ( autoShootCheck != null ) {
+        if (autoShootCheck != null) {
             autoShootCheck.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
