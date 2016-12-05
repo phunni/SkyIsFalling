@@ -23,14 +23,14 @@ public class DesktopLauncher {
         playServices = new DesktopGooglePlayServices();
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "The Sky is Falling";
-		config.width = 800;
-		config.height = 480;
+        config.width = 800;
+        config.height = 480;
         config.addIcon("images/desktop_icon.png", Files.FileType.Internal);
         game = new SkyIsFalling(playServices);
         new LwjglApplication(game, config);
     }
 
-	public static class DesktopGooglePlayServices implements GooglePlayServices {
+    public static class DesktopGooglePlayServices implements GooglePlayServices {
 
         public Json highScoreJson = new Json();
         public HighScores highScores;

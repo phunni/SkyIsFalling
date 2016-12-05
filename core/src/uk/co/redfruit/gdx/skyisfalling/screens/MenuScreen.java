@@ -49,7 +49,7 @@ public class MenuScreen extends RedfruitScreen {
         rebuildStage();
         Music music = Assets.getInstance().getMusic();
         music.setLooping(true);
-        if ( preferences.music ) {
+        if (preferences.music) {
             music.setVolume(preferences.musicVolume);
             music.play();
         }
@@ -154,7 +154,7 @@ public class MenuScreen extends RedfruitScreen {
 
 
         stage.clear();
-        if ( Constants.DEBUG ) {
+        if (Constants.DEBUG) {
             stage.setDebugAll(true);
         }
         stage.addActor(backgroundLayer);
