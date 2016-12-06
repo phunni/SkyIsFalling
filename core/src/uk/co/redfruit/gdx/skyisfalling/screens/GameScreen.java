@@ -71,6 +71,7 @@ public class GameScreen extends RedfruitScreen {
     private Body leftWall;
     private Body rightWall;
     private float physicsStepAccumulator = 0;
+    private boolean suspended = false;
 
     private GamePreferences preferences = GamePreferences.getInstance();
 
@@ -88,49 +89,60 @@ public class GameScreen extends RedfruitScreen {
     //methods start
     @Override
     public void show() {
+
         super.show();
-        batch = new SpriteBatch();
-        camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
-        gameViewport = new StretchViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-        camera.update();
-        batch.setProjectionMatrix(camera.combined);
+        if (!suspended) {
+            batch = new SpriteBatch();
+            camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
+            gameViewport = new StretchViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
+            camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+            camera.update();
+            batch.setProjectionMatrix(camera.combined);
 
-        cameraGUI = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-        guiViewport = new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-        guiViewport.setCamera(cameraGUI);
-        cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
-        cameraGUI.setToOrtho(false);
-        cameraGUI.update();
+            cameraGUI = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+            guiViewport = new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+            guiViewport.setCamera(cameraGUI);
+            cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
+            cameraGUI.setToOrtho(false);
+            cameraGUI.update();
 
-        world = new World(new Vector2(0, -9.8f), true);
-        createGround();
-        createSideWalls();
-        level = new Level(world, googlePlayServices);
-        world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
-        if (Constants.DEBUG) {
-            debugRenderer = new Box2DDebugRenderer();
+            world = new World(new Vector2(0, -9.8f), true);
+            createGround();
+            createSideWalls();
+            level = new Level(world, googlePlayServices);
+            world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
+            if (Constants.DEBUG) {
+                debugRenderer = new Box2DDebugRenderer();
+            }
+
+            background.setPosition(0, 0);
+            background.setSize(camera.viewportWidth, camera.viewportHeight);
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "Background initial size: " + background.getWidth() + "  x " + background.getHeight());
+            }
+
+
+            rebuildStage();
+
+            SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
+            ControllerManager.setLevel(level);
+
+            gameInputListener = new GameInputListener(camera, level);
+
+            inputMultiplexer = new InputMultiplexer();
+            inputMultiplexer.addProcessor(stage);
+            inputMultiplexer.addProcessor(gameInputListener);
+            Gdx.input.setInputProcessor(inputMultiplexer);
+            //Gdx.input.setCatchBackKey(true);
+        } else {
+            suspended = false;
+            gameInputListener = new GameInputListener(camera, level);
+
+            inputMultiplexer = new InputMultiplexer();
+            inputMultiplexer.addProcessor(stage);
+            inputMultiplexer.addProcessor(gameInputListener);
+            Gdx.input.setInputProcessor(inputMultiplexer);
         }
-
-        background.setPosition(0, 0);
-        background.setSize(camera.viewportWidth, camera.viewportHeight);
-        if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Background initial size: " + background.getWidth() + "  x " + background.getHeight());
-        }
-
-
-        rebuildStage();
-
-        SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
-        ControllerManager.setLevel(level);
-
-        gameInputListener = new GameInputListener(camera, level);
-
-        inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(gameInputListener);
-        Gdx.input.setInputProcessor(inputMultiplexer);
-        //Gdx.input.setCatchBackKey(true);
 
 
     }
@@ -316,6 +328,7 @@ public class GameScreen extends RedfruitScreen {
         options.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                suspended = true;
                 game.setScreen(new OptionsScreen(game, googlePlayServices, GameScreen.this));
             }
         });
