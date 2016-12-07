@@ -28,7 +28,6 @@ public class EnemyShip extends GameObject implements Poolable {
     public boolean movingRight;
     public boolean movingDown;
     public float lastDirection;
-    private EnemyShipAsset enemyShipRegion;
     private Sprite sprite;
     private Level level;
 
@@ -47,7 +46,7 @@ public class EnemyShip extends GameObject implements Poolable {
 
     public void init(World world, Level level, String colour, Vector2 position) {
         this.level = level;
-        enemyShipRegion = Assets.getInstance().getEnemies();
+        EnemyShipAsset enemyShipRegion = Assets.getInstance().getEnemies();
         switch (colour) {
             case "green":
                 sprite = enemyShipRegion.greenEnemy;
@@ -123,26 +122,21 @@ public class EnemyShip extends GameObject implements Poolable {
     }
 
 
-
-    public boolean isAWake() {
-        return body.isAwake();
-    }
-
     public Body getBody() {
         return body;
     }
 
-    public void moveRight() {
+    private void moveRight() {
         Vector2 velocity = body.getLinearVelocity();
         body.setLinearVelocity(SHIP_SPEED, velocity.y);
     }
 
-    public void moveLeft(){
+    private void moveLeft() {
         Vector2 velocity = body.getLinearVelocity();
         body.setLinearVelocity(-SHIP_SPEED, velocity.y);
     }
 
-    public  void moveDown() {
+    private void moveDown() {
         body.setLinearVelocity(0, -0.2f);
     }
 
@@ -152,10 +146,6 @@ public class EnemyShip extends GameObject implements Poolable {
 
     public void fullStop() {
         body.setLinearVelocity(0, 0);
-    }
-
-    public float getHitPoints() {
-        return hitPoints;
     }
 
     public void reduceHitPoints() {
