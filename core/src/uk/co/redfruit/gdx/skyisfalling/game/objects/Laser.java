@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pool;
+
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.LaserAsset;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -22,17 +23,10 @@ public class Laser extends GameObject implements Pool.Poolable {
     private static final String TAG = "Laser";
 
     private final float LASER_WIDTH = 0.1f;
-
+    public boolean isEnemyLaser;
     private LaserAsset laserRegion;
     private OrthographicCamera camera;
-
     private Sprite sprite;
-
-    public boolean isEnemyLaser;
-
-    public Laser() {
-        super();
-    }
 
     public Laser(World world, OrthographicCamera camera) {
         super(world);
@@ -52,10 +46,15 @@ public class Laser extends GameObject implements Pool.Poolable {
             case "red":
                 sprite = laserRegion.redLaser;
         }
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Sprites Initial flip: " + sprite.isFlipX() + " : " + sprite.isFlipY());
+            Gdx.app.log(TAG, "Sprite colour is:" + colour + " and is enemy is: " + isEnemyLaser);
+        }
         sprite.setOriginCenter();
         this.origin = new Vector2(sprite.getOriginX(), sprite.getOriginY());
-        if (isEnemyLaser) {
-            sprite.rotate(180);
+        if (isEnemyLaser && !sprite.isFlipY()) {
+            //sprite.rotate(180);
+            sprite.flip(false, true);
         }
         this.position = position;
         defaultDynamicBodyDef.position.set(position.x, position.y);
@@ -98,14 +97,24 @@ public class Laser extends GameObject implements Pool.Poolable {
 
     @Override
     public void reset() {
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "reset called on laser");
+        }
         for (Fixture fixture : body.getFixtureList()) {
             body.destroyFixture(fixture);
         }
-        sprite.setRotation(0);
         world.destroyBody(body);
         sprite = null;
         cullable = false;
         isEnemyLaser = false;
+    }
+
+    public boolean isFlipX() {
+        return sprite.isFlipX();
+    }
+
+    public boolean isFlipY() {
+        return sprite.isFlipY();
     }
 
 

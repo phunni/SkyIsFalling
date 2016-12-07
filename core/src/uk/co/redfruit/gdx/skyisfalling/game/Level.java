@@ -157,7 +157,7 @@ public class Level {
 
         if (!gameOver && !showingWaveNumber) {
             Laser laser = laserPool.obtain();
-            laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
+            laser.init("red", playerShip.getPosition(), new Vector2(0, 15));
             lasers.add(laser);
             if (preferences.sfx) {
                 long pewID = playerPew.play(preferences.sfxVolume);
@@ -204,12 +204,6 @@ public class Level {
         }
 
         if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100) {
-            if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
-                if (enemyShips.size > 0) {
-                    shootEnemyLaser(getRandomEnemyShip());
-                    lastEnemyShot = TimeUtils.millis();
-                }
-            }
 
             if (MathUtils.randomBoolean(0.01f * difficulty)) {
                 if (enemyShips.size > 0) {
@@ -217,6 +211,14 @@ public class Level {
                     lastEnemyShot = TimeUtils.millis();
                 }
             }
+
+            if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
+                if (enemyShips.size > 0) {
+                    shootEnemyLaser(getRandomEnemyShip());
+                    lastEnemyShot = TimeUtils.millis();
+                }
+            }
+
         }
 
         if (enemyShips.size <= 0 && !playerExploding) {
@@ -339,6 +341,9 @@ public class Level {
             Laser laser = laserPool.obtain();
             laser.init("green", ship.getCentre(), new Vector2(0, -9));
             lasers.add(laser);
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "Sprites flip: " + laser.isFlipX() + " : " + laser.isFlipY());
+            }
             if (preferences.sfx) {
                 long enemyPewID = enemyPew.play(preferences.sfxVolume);
                 if (Constants.DEBUG) {
