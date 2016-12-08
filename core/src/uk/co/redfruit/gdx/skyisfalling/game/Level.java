@@ -59,6 +59,26 @@ public class Level {
     public Level(World newWorld, GooglePlayServices googlePlayServices) {
         this.world = newWorld;
         this.googlePlayServices = googlePlayServices;
+
+        enemyShipPool = new Pool<EnemyShip>(18) {
+            @Override
+            protected EnemyShip newObject() {
+                return new EnemyShip(world);
+            }
+        };
+        laserPool = new Pool<Laser>(6) {
+            @Override
+            protected Laser newObject() {
+                return new Laser(world, GameScreen.camera);
+            }
+        };
+        explosionPool = new Pool<Explosion>(6) {
+            @Override
+            protected Explosion newObject() {
+                return new Explosion();
+            }
+        };
+
         init();
 
         playerShip = new PlayerShip(world, this);
@@ -67,6 +87,8 @@ public class Level {
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             isAndroid = true;
         }
+
+
     }
 
     //methods start
@@ -255,24 +277,6 @@ public class Level {
     }
 
     private void init() {
-        enemyShipPool = new Pool<EnemyShip>() {
-            @Override
-            protected EnemyShip newObject() {
-                return new EnemyShip(world);
-            }
-        };
-        laserPool = new Pool<Laser>() {
-            @Override
-            protected Laser newObject() {
-                return new Laser(world, GameScreen.camera);
-            }
-        };
-        explosionPool = new Pool<Explosion>() {
-            @Override
-            protected Explosion newObject() {
-                return new Explosion();
-            }
-        };
 
         for (Laser laser : lasers) {
             laser.setCullable(true);
