@@ -157,7 +157,7 @@ public class Level {
 
         if (!gameOver && !showingWaveNumber) {
             Laser laser = laserPool.obtain();
-            laser.init("red", playerShip.getPosition(), new Vector2(0, 15));
+            laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
             lasers.add(laser);
             if (preferences.sfx) {
                 long pewID = playerPew.play(preferences.sfxVolume);
