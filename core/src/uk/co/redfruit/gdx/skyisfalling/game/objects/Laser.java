@@ -103,6 +103,13 @@ public class Laser extends GameObject implements Pool.Poolable {
         for (Fixture fixture : body.getFixtureList()) {
             body.destroyFixture(fixture);
         }
+        if (sprite != null) {
+            sprite.flip(false, false);
+        } else {
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "why is sprite null?");
+            }
+        }
         world.destroyBody(body);
         sprite = null;
         cullable = false;
