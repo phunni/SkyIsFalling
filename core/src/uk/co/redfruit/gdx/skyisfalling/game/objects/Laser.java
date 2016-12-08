@@ -24,7 +24,7 @@ public class Laser extends GameObject implements Pool.Poolable {
 
     private final float LASER_WIDTH = 0.1f;
     public boolean isEnemyLaser;
-    private LaserAsset laserRegion;
+    private LaserAsset laserRegion = Assets.getInstance().getLasers();
     private OrthographicCamera camera;
     private Sprite sprite;
 
@@ -34,7 +34,6 @@ public class Laser extends GameObject implements Pool.Poolable {
     }
 
     public void init(String colour, Vector2 position, Vector2 linearVelocity) {
-        laserRegion = Assets.getInstance().getLasers();
         switch (colour) {
             case "green":
                 sprite = laserRegion.greenLaser;
