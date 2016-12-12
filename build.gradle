@@ -15,7 +15,7 @@ allprojects {
     version = '1.0'
     ext {
         appName = 'The Sky is Falling'
-        gdxVersion = '1.9.4'
+        gdxVersion = '1.9.5'
     }
 
     repositories {

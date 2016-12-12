@@ -1,7 +1,5 @@
 package uk.co.redfruit.gdx.skyisfalling.game.assets;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,7 +12,7 @@ public class ExplosionAsset {
     public Animation explosionAnimation;
 
     public ExplosionAsset(TextureAtlas atlas) {
-        explosionAnimation = new Animation(0.05f, atlas.findRegions("explosion"));
+        explosionAnimation = new Animation<TextureRegion>(0.05f, atlas.findRegions("explosion"));
     }
 
 

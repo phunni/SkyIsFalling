@@ -17,7 +17,8 @@ public class Explosion extends GameObject implements Pool.Poolable {
 
     private static final String TAG = "Explosion";
 
-    private Animation animation = Assets.getInstance().getExplosion().explosionAnimation;
+    private Animation<TextureRegion> animation =
+            Assets.getInstance().getExplosion().explosionAnimation;
     private float stateTime = 0f;
     private TextureRegion currentFrame;
     private Vector2 size;
