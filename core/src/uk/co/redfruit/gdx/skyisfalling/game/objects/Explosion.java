@@ -44,7 +44,6 @@ public class Explosion extends GameObject implements Pool.Poolable {
         size = null;
         position = null;
         origin = new Vector2();
-        loader = null;
         defaultDynamicBodyDef = null;
     }
 
@@ -54,7 +53,6 @@ public class Explosion extends GameObject implements Pool.Poolable {
         }
         this.position = position;
         this.size = size;
-        loader = null;
         defaultDynamicBodyDef = null;
     }
 }

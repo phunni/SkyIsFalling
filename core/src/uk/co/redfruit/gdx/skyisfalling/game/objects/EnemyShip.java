@@ -92,6 +92,7 @@ public class EnemyShip extends GameObject implements Poolable {
         destroyed = false;
         hitPoints = 0;
         isFalling = false;
+        lastDirection = 0;
     }
 
 
