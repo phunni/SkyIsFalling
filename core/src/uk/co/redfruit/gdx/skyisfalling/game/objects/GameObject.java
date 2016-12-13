@@ -11,7 +11,8 @@ import aurelienribon.bodyeditor.BodyEditorLoader;
 
 public abstract class GameObject {
 
-    protected static BodyEditorLoader loader;
+    protected final static BodyEditorLoader loader =
+            new BodyEditorLoader(Gdx.files.internal("box2d/sky_is_falling.json"));
     protected Vector2 position;
     protected Vector2 origin;
     protected Body body;
@@ -24,7 +25,6 @@ public abstract class GameObject {
         position = new Vector2();
         origin = new Vector2();
         this.world = world;
-        loader = new BodyEditorLoader(Gdx.files.internal("box2d/sky_is_falling.json"));
         defaultDynamicBodyDef = new BodyDef();
         defaultDynamicBodyDef.type = BodyDef.BodyType.DynamicBody;
         defaultDynamicBodyDef.position.set(position.x, position.y);
