@@ -141,10 +141,6 @@ public class EnemyShip extends GameObject implements Poolable {
         body.setLinearVelocity(0, -0.2f);
     }
 
-    public void stop() {
-        body.setLinearVelocity(0, body.getLinearVelocity().y);
-    }
-
     public void fullStop() {
         body.setLinearVelocity(0, 0);
     }
