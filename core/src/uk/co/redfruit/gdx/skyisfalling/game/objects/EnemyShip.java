@@ -23,7 +23,7 @@ public class EnemyShip extends GameObject implements Poolable {
 
     private static final String TAG = "EnemyShip";
     private static final float SHIP_WIDTH = Constants.SHIP_WIDTH;
-    private static float SHIP_SPEED = 2;
+    private static float SHIP_SPEED = 3f;
     public boolean movingLeft;
     public boolean movingRight;
     public boolean movingDown;
