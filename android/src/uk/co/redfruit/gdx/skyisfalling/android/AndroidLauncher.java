@@ -55,6 +55,7 @@ public class AndroidLauncher extends AndroidApplication {
         config.useImmersiveMode = true;
         config.useAccelerometer = false;
         config.useCompass = false;
+        config.useWakelock = true;
         View gameView = initializeForView(new SkyIsFalling(new AndroidGooglePlayServices()), config);
 
         RelativeLayout layout = new RelativeLayout(this);
