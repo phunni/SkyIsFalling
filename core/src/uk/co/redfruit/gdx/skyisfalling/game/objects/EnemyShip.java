@@ -23,13 +23,16 @@ public class EnemyShip extends GameObject implements Poolable {
 
     private static final String TAG = "EnemyShip";
     private static final float SHIP_WIDTH = Constants.SHIP_WIDTH;
-    private static float SHIP_SPEED = 3f;
+    private static float SHIP_SPEED = 2f;
     public boolean movingLeft;
     public boolean movingRight;
     public boolean movingDown;
     public float lastDirection;
     private Sprite sprite;
     private Level level;
+
+    private byte framesMoved;
+
 
     private float hitPoints;
     private boolean destroyed;
@@ -46,6 +49,7 @@ public class EnemyShip extends GameObject implements Poolable {
 
     public void init(World world, Level level, String colour, Vector2 position) {
         this.level = level;
+        framesMoved = 0;
         EnemyShipAsset enemyShipRegion = Assets.getInstance().getEnemies();
         switch (colour) {
             case "green":
@@ -78,6 +82,8 @@ public class EnemyShip extends GameObject implements Poolable {
         body.setUserData(this);
         Vector2 bodyOrigin = loader.getOrigin("enemy_ship", SHIP_WIDTH).cpy();
         origin.set(bodyOrigin);
+        movingRight = true;
+        lastDirection = 1;
     }
 
 
@@ -93,11 +99,13 @@ public class EnemyShip extends GameObject implements Poolable {
         hitPoints = 0;
         isFalling = false;
         lastDirection = 0;
+        framesMoved = 0;
     }
 
 
     @Override
     public void render(SpriteBatch batch) {
+        framesMoved++;
         Color original  = sprite.getColor();
         position = body.getPosition().sub(origin);
         sprite.setPosition(position.x, position.y);
@@ -111,6 +119,26 @@ public class EnemyShip extends GameObject implements Poolable {
         }
 
         sprite.draw(batch);
+
+        if (!isFalling) {
+            if (framesMoved == 120) {
+                framesMoved = 0;
+                if (lastDirection == 0) {
+                    movingDown = false;
+                    movingRight = true;
+                    lastDirection = 1;
+                } else if (lastDirection == 1) {
+                    movingRight = false;
+                    movingLeft = true;
+                    lastDirection = 2;
+                } else if (lastDirection == 2) {
+                    movingLeft = false;
+                    movingDown = true;
+                    lastDirection = 0;
+                }
+            }
+        }
+
         if (movingLeft) {
             moveLeft();
         } else if (movingRight) {
@@ -155,6 +183,7 @@ public class EnemyShip extends GameObject implements Poolable {
         if (hitPoints == 0) {
             level.increaseScore(50);
             body.setGravityScale(1);
+            fullStop();
             isFalling = true;
         }
     }

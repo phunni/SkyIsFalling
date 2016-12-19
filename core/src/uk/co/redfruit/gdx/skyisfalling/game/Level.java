@@ -129,15 +129,13 @@ public class Level {
         if (!gameOver && !showingWaveNumber) {
             if (!playerExploding) {
                 playerShip.render(batch);
-            }
-            for (EnemyShip enemy : enemyShips) {
-                enemy.render(batch);
-                if (playerExploding) {
-                    enemy.fullStop();
+
+                for (EnemyShip enemy : enemyShips) {
+                    enemy.render(batch);
                 }
-            }
-            for (Laser laser : lasers) {
-                laser.render(batch);
+                for (Laser laser : lasers) {
+                    laser.render(batch);
+                }
             }
 
             for (Explosion explosion : explosions) {
