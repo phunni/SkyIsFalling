@@ -166,7 +166,9 @@ public class EnemyShip extends GameObject implements Poolable {
     }
 
     private void moveDown() {
-        body.setLinearVelocity(0, -0.2f);
+        if (!isFalling) {
+            body.setLinearVelocity(0, -0.2f);
+        }
     }
 
     private void fullStop() {
@@ -181,9 +183,9 @@ public class EnemyShip extends GameObject implements Poolable {
             Gdx.app.log(TAG, "hit points: " + hitPoints);
         }
         if (hitPoints == 0) {
+            movingDown = false;
             level.increaseScore(50);
             body.setGravityScale(1);
-            fullStop();
             isFalling = true;
         }
     }
