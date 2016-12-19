@@ -24,10 +24,10 @@ public class EnemyShip extends GameObject implements Poolable {
     private static final String TAG = "EnemyShip";
     private static final float SHIP_WIDTH = Constants.SHIP_WIDTH;
     private static float SHIP_SPEED = 2f;
-    public boolean movingLeft;
-    public boolean movingRight;
-    public boolean movingDown;
-    public float lastDirection;
+    private boolean movingLeft;
+    private boolean movingRight;
+    private boolean movingDown;
+    private float lastDirection;
     private Sprite sprite;
     private Level level;
 
@@ -169,7 +169,7 @@ public class EnemyShip extends GameObject implements Poolable {
         body.setLinearVelocity(0, -0.2f);
     }
 
-    public void fullStop() {
+    private void fullStop() {
         body.setLinearVelocity(0, 0);
     }
 
