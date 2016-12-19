@@ -176,7 +176,7 @@ public class GameScreen extends RedfruitScreen {
                     debugRenderer.render(world, camera.combined);
                 }
 
-                if (!level.gameOver && !level.showingWaveNumber) {
+                if (!level.gameOver && !level.showingWaveNumber && !level.playerExploding) {
                     double frameTime = Gdx.graphics.getDeltaTime();
 
                     accumulator += frameTime;
@@ -433,16 +433,6 @@ public class GameScreen extends RedfruitScreen {
     private void doPhysicsWorldStep(int totalElapsedTime) {
         world.step(FIXED_TIME_STEP, 6, 2);
     }
-
-    /*private void doPhysicsWorldStep(float deltaTime) {
-        float frameTime = Math.min(deltaTime, 0.25f);
-        physicsStepAccumulator += frameTime;
-        float TIME_STEP = 1f / 60f;
-        while (physicsStepAccumulator >= TIME_STEP) {
-            world.step(TIME_STEP, 6, 2);
-            physicsStepAccumulator -= TIME_STEP;
-        }
-    }*/
 
     private void pauseGame() {
         state = State.PAUSE;

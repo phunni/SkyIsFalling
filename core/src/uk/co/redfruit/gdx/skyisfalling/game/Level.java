@@ -196,7 +196,8 @@ public class Level {
             }
         }
 
-        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100) {
+        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100
+                && !playerExploding) {
 
             if (MathUtils.randomBoolean(0.01f * difficulty)) {
                 if (enemyShips.size > 0) {
