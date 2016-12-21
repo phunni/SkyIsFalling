@@ -183,6 +183,8 @@ public class EnemyShip extends GameObject implements Poolable {
             Gdx.app.log(TAG, "hit points: " + hitPoints);
         }
         if (hitPoints == 0) {
+            movingLeft = false;
+            movingRight = false;
             movingDown = false;
             level.increaseScore(50);
             body.setGravityScale(1);
