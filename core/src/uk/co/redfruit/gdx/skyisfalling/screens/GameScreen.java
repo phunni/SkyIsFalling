@@ -47,8 +47,11 @@ import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 public class GameScreen extends RedfruitScreen {
 
     private static final String TAG = "GameScreen";
+    private static final float FIXED_TIME_STEP = 1f / 60f;
     public static OrthographicCamera camera;
     private static OrthographicCamera cameraGUI;
+    double accumulator = 0.0;
+    private int totalElapsedTime = 0;
     private SpriteBatch batch;
     private Viewport gameViewport;
     private Viewport guiViewport;
@@ -70,7 +73,6 @@ public class GameScreen extends RedfruitScreen {
     private Body groundBody;
     private Body leftWall;
     private Body rightWall;
-    private float physicsStepAccumulator = 0;
     private boolean suspended = false;
 
     private GamePreferences preferences = GamePreferences.getInstance();
@@ -164,7 +166,7 @@ public class GameScreen extends RedfruitScreen {
             case RUN:
 
 
-                level.update(deltaTime);
+                level.update();
 
                 renderWorld(batch);
                 renderGameHUD(batch);
@@ -174,8 +176,16 @@ public class GameScreen extends RedfruitScreen {
                     debugRenderer.render(world, camera.combined);
                 }
 
-                if (!level.gameOver && !level.showingWaveNumber) {
-                    doPhysicsWorldStep(Gdx.graphics.getDeltaTime());
+                if (!level.gameOver && !level.showingWaveNumber && !level.playerExploding) {
+                    double frameTime = Gdx.graphics.getDeltaTime();
+
+                    accumulator += frameTime;
+
+                    while (accumulator >= FIXED_TIME_STEP) {
+                        doPhysicsWorldStep(totalElapsedTime);
+                        accumulator -= FIXED_TIME_STEP;
+                        totalElapsedTime += FIXED_TIME_STEP;
+                    }
                 }
                 break;
             case PAUSE:
@@ -183,6 +193,7 @@ public class GameScreen extends RedfruitScreen {
                 break;
         }
     }
+
 
     @Override
     public void resize(int width, int height) {
@@ -419,14 +430,8 @@ public class GameScreen extends RedfruitScreen {
         wallBox.dispose();
     }
 
-    private void doPhysicsWorldStep(float deltaTime) {
-        float frameTime = Math.min(deltaTime, 0.25f);
-        physicsStepAccumulator += frameTime;
-        float TIME_STEP = 1f / 60f;
-        while (physicsStepAccumulator >= TIME_STEP) {
-            world.step(TIME_STEP, 6, 2);
-            physicsStepAccumulator -= TIME_STEP;
-        }
+    private void doPhysicsWorldStep(int totalElapsedTime) {
+        world.step(FIXED_TIME_STEP, 6, 2);
     }
 
     private void pauseGame() {

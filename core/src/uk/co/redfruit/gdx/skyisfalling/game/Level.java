@@ -38,7 +38,6 @@ public class Level {
     private Array<Laser> lasers = new Array<>();
     private Array<Explosion> explosions = new Array<>();
     private float difficulty;
-    private long startTimeForMovingShips;
     private float score;
     private long timeStartedShowingWaveNumber;
     private Pool<EnemyShip> enemyShipPool;
@@ -128,47 +127,19 @@ public class Level {
 
     public void render(SpriteBatch batch) {
         if (!gameOver && !showingWaveNumber) {
-            boolean moving = false;
             if (!playerExploding) {
                 playerShip.render(batch);
-            }
-            if (TimeUtils.timeSinceNanos(startTimeForMovingShips) > 1400000000) {
-                moving = true;
-            }
-            for (EnemyShip enemy : enemyShips) {
-                enemy.render(batch);
-                if (playerExploding) {
-                    enemy.fullStop();
-                    continue;
+
+                for (EnemyShip enemy : enemyShips) {
+                    enemy.render(batch);
                 }
-                if (!enemy.isFalling()) {
-                    if (moving) {
-                        if (enemy.lastDirection == 0) {
-                            enemy.movingRight = true;
-                            enemy.lastDirection = 1;
-                        } else if (enemy.lastDirection == 1) {
-                            enemy.movingLeft = true;
-                            enemy.lastDirection = 2;
-                        } else if (enemy.lastDirection == 2) {
-                            enemy.movingDown = true;
-                            enemy.lastDirection = 0;
-                        }
-                    } else {
-                        stopShips(enemy);
-                    }
-                } else {
-                    stopShips(enemy);
+                for (Laser laser : lasers) {
+                    laser.render(batch);
                 }
-            }
-            for (Laser laser : lasers) {
-                laser.render(batch);
             }
 
             for (Explosion explosion : explosions) {
                 explosion.render(batch);
-            }
-            if (moving) {
-                startTimeForMovingShips = TimeUtils.nanoTime();
             }
 
         }
@@ -190,7 +161,7 @@ public class Level {
         }
     }
 
-    public void update(float deltaTime) {
+    public void update() {
         if (playerShip.movingLeft) {
             playerShip.moveLeft();
         } else if (playerShip.movingRight) {
@@ -225,7 +196,8 @@ public class Level {
             }
         }
 
-        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100) {
+        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100
+                && !playerExploding) {
 
             if (MathUtils.randomBoolean(0.01f * difficulty)) {
                 if (enemyShips.size > 0) {
@@ -260,9 +232,6 @@ public class Level {
         for (int i = 0; i < 6; i++) {
             EnemyShip enemy = enemyShipPool.obtain();
             enemy.init(world, this, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
-            /*if (Constants.DEBUG) {
-                Gdx.app.log(TAG, "Body is awake: " + enemy.isAWake());
-            }*/
             enemyShips.add(enemy);
         }
     }
@@ -286,7 +255,6 @@ public class Level {
         setDifficulty();
 
         setUpEnemyShips();
-        startTimeForMovingShips = 1200000000;
         timeSinceLastShot = TimeUtils.nanoTime();
 
         timeStartedShowingWaveNumber = TimeUtils.millis();
@@ -357,11 +325,6 @@ public class Level {
         }
     }
 
-    private void stopShips(EnemyShip enemy) {
-        enemy.movingLeft = false;
-        enemy.movingRight = false;
-        enemy.movingDown = false;
-    }
 //methods end
 
 

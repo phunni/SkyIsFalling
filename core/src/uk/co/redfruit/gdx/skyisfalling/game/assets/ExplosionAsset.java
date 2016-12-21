@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  */
 public class ExplosionAsset {
 
-    public Animation explosionAnimation;
+    public Animation<TextureRegion> explosionAnimation;
 
     public ExplosionAsset(TextureAtlas atlas) {
         explosionAnimation = new Animation<TextureRegion>(0.05f, atlas.findRegions("explosion"));
