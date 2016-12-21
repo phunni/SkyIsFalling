@@ -34,6 +34,8 @@
 
 -keep class com.badlogic.gdx.controllers.android.AndroidControllers
 
+-keepattributes Signature
+
 -keepclassmembers class com.badlogic.gdx.graphics.GL* { *; }
 
 -keepclassmembers class com.badlogic.gdx.backends.android.AndroidInput* {
@@ -54,3 +56,5 @@
 -keep class com.badlogic.gdx.graphics.Color
 -keep class com.badlogic.gdx.scenes.scene2d.ui.*$*Style { *; }
 -keep class com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable
+-keep class com.badlogic.gdx.graphics.g2d.TextureRegion
+-keep class com.badlogic.gdx.graphics.g2d.Animation
