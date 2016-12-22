@@ -33,7 +33,6 @@ public class PlayerShip extends GameObject {
         this.level = level;
         lives = 3;
         playerShipRegion = Assets.getInstance().getPlayer();
-        position.set(Constants.WORLD_WIDTH / 2, 0.1f);
         defaultDynamicBodyDef.position.set(position.x, position.y);
         defaultDynamicBodyDef.fixedRotation = true;
         FixtureDef playerShipFixtureDef = new FixtureDef();
