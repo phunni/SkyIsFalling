@@ -25,7 +25,7 @@ public class PlayerShip extends GameObject {
     public boolean destroyed;
     public long lastTimeLifeLost = TimeUtils.millis();
     public int lives;
-    private PlayerShipAsset playerShipRegion;
+    public PlayerShipAsset playerShipRegion;
     private Level level;
 
     public PlayerShip(World world, Level level) {
