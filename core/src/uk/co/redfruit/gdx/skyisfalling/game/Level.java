@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -15,6 +16,7 @@ import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Explosion;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
+import uk.co.redfruit.gdx.skyisfalling.game.objects.NewLifePowerUp;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
 import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.screens.GameScreen;
@@ -37,12 +39,14 @@ public class Level {
     private Array<EnemyShip> enemyShips = new Array<>();
     private Array<Laser> lasers = new Array<>();
     private Array<Explosion> explosions = new Array<>();
+    private Array<NewLifePowerUp> newLifePowerUps = new Array<>();
     private float difficulty;
     private float score;
     private long timeStartedShowingWaveNumber;
     private Pool<EnemyShip> enemyShipPool;
     private Pool<Laser> laserPool;
     private Pool<Explosion> explosionPool;
+    private Pool<NewLifePowerUp> newLifePowerUpPool;
     private long timeSinceLastShot;
     private long lastEnemyShot;
     private long timeSinceLastExplosion = TimeUtils.millis();
@@ -50,6 +54,8 @@ public class Level {
     private Sound playerPew = Assets.getInstance().getPlayerPew();
     private Sound enemyPew = Assets.getInstance().getEnemyPew();
     private Sound boom = Assets.getInstance().getBoom();
+    private boolean timeForNewLifePowerup;
+    private Vector2 powerUpPosition;
 
     private GamePreferences preferences = GamePreferences.getInstance();
     private GooglePlayServices googlePlayServices;
@@ -77,6 +83,12 @@ public class Level {
                 return new Explosion();
             }
         };
+        newLifePowerUpPool = new Pool<NewLifePowerUp>(4) {
+            @Override
+            protected NewLifePowerUp newObject() {
+                return new NewLifePowerUp();
+            }
+        };
 
         init();
 
@@ -102,6 +114,11 @@ public class Level {
             timeSinceLastExplosion = TimeUtils.millis();
             if (preferences.sfx) {
                 boom.play(preferences.sfxVolume);
+            }
+            int showPowerUp = MathUtils.random(0, 5);
+            if (showPowerUp == 0) {
+                timeForNewLifePowerup = true;
+                powerUpPosition = position.cpy();
             }
         }
     }
@@ -142,6 +159,10 @@ public class Level {
                 explosion.render(batch);
             }
 
+            for (NewLifePowerUp powerUp : newLifePowerUps) {
+                powerUp.render(batch);
+            }
+
         }
 
     }
@@ -162,6 +183,12 @@ public class Level {
     }
 
     public void update() {
+        if (timeForNewLifePowerup) {
+            NewLifePowerUp newLifePowerUp = newLifePowerUpPool.obtain();
+            newLifePowerUp.init(powerUpPosition);
+            newLifePowerUps.add(newLifePowerUp);
+            timeForNewLifePowerup = false;
+        }
         if (playerShip.movingLeft) {
             playerShip.moveLeft();
         } else if (playerShip.movingRight) {
@@ -193,6 +220,13 @@ public class Level {
                 }
                 enemyShips.removeValue(ship, false);
                 enemyShipPool.free(ship);
+            }
+        }
+
+        for (NewLifePowerUp powerUp : newLifePowerUps) {
+            if (Intersector.overlaps(playerShip.playerShipRegion.ship.getBoundingRectangle()
+                    , powerUp.sprite.getBoundingRectangle())) {
+                Gdx.app.log(TAG, "Player has collided with power up");
             }
         }
 
@@ -231,7 +265,7 @@ public class Level {
     private void addShips(String colour, float height) {
         for (int i = 0; i < 6; i++) {
             EnemyShip enemy = enemyShipPool.obtain();
-            enemy.init(world, this, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
+            enemy.init(this, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
             enemyShips.add(enemy);
         }
     }
