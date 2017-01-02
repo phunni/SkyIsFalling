@@ -18,6 +18,7 @@ import uk.co.redfruit.gdx.skyisfalling.game.objects.Explosion;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.NewLifePowerUp;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
+import uk.co.redfruit.gdx.skyisfalling.game.objects.PowerUp;
 import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.screens.GameScreen;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -39,7 +40,7 @@ public class Level {
     private Array<EnemyShip> enemyShips = new Array<>();
     private Array<Laser> lasers = new Array<>();
     private Array<Explosion> explosions = new Array<>();
-    private Array<NewLifePowerUp> newLifePowerUps = new Array<>();
+    private Array<PowerUp> powerUps = new Array<>();
     private float difficulty;
     private float score;
     private long timeStartedShowingWaveNumber;
@@ -83,7 +84,7 @@ public class Level {
                 return new Explosion();
             }
         };
-        newLifePowerUpPool = new Pool<NewLifePowerUp>(4) {
+        newLifePowerUpPool = new Pool<NewLifePowerUp>(6) {
             @Override
             protected NewLifePowerUp newObject() {
                 return new NewLifePowerUp();
@@ -159,7 +160,7 @@ public class Level {
                 explosion.render(batch);
             }
 
-            for (NewLifePowerUp powerUp : newLifePowerUps) {
+            for (PowerUp powerUp : powerUps) {
                 powerUp.render(batch);
             }
 
@@ -185,9 +186,11 @@ public class Level {
     public void update() {
         if (timeForNewLifePowerup) {
             NewLifePowerUp newLifePowerUp = newLifePowerUpPool.obtain();
-            newLifePowerUp.init(powerUpPosition);
-            newLifePowerUps.add(newLifePowerUp);
+            newLifePowerUp.init(powerUpPosition.cpy());
+            powerUpPosition = null;
+            powerUps.add(newLifePowerUp);
             timeForNewLifePowerup = false;
+            Gdx.app.log(TAG, "Number of power ups: " + powerUps.size);
         }
         if (playerShip.movingLeft) {
             playerShip.moveLeft();
@@ -223,10 +226,12 @@ public class Level {
             }
         }
 
-        for (NewLifePowerUp powerUp : newLifePowerUps) {
+        for (PowerUp powerUp : powerUps) {
             if (Intersector.overlaps(playerShip.playerShipRegion.ship.getBoundingRectangle()
                     , powerUp.sprite.getBoundingRectangle())) {
-                Gdx.app.log(TAG, "Player has collided with power up");
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Player has collided with power up");
+                }
             }
         }
 

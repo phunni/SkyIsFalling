@@ -9,6 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -26,6 +27,7 @@ public class Assets implements Disposable, AssetErrorListener {
 
     private Sprite background;
     private Sprite playerLife;
+    private TextureRegion newLifePowerup;
     private PlayerShipAsset player;
     private EnemyShipAsset enemies;
     private LaserAsset lasers;
@@ -80,6 +82,7 @@ public class Assets implements Disposable, AssetErrorListener {
         fonts = new AssetFonts();
         explosion = new ExplosionAsset(atlas);
         pause = atlas.createSprite("pause");
+        newLifePowerup = atlas.findRegion("playerLife");
 
         //audio
         music = this.assetManager.get("audio/music.mp3");
@@ -148,5 +151,9 @@ public class Assets implements Disposable, AssetErrorListener {
 
     public Sound getBoom() {
         return boom;
+    }
+
+    public TextureRegion getNewLifePowerup() {
+        return newLifePowerup;
     }
 }
