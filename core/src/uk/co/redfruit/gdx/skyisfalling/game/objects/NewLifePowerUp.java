@@ -34,7 +34,7 @@ public class NewLifePowerUp extends PowerUp {
 
     @Override
     public void reset() {
-
+        setCullable(false);
     }
 
 }

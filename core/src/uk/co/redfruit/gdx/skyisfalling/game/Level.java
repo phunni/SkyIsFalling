@@ -55,7 +55,7 @@ public class Level {
     private Sound playerPew = Assets.getInstance().getPlayerPew();
     private Sound enemyPew = Assets.getInstance().getEnemyPew();
     private Sound boom = Assets.getInstance().getBoom();
-    private boolean timeForNewLifePowerup;
+    private boolean timeForNewPowerup;
     private Vector2 powerUpPosition;
 
     private GamePreferences preferences = GamePreferences.getInstance();
@@ -118,7 +118,7 @@ public class Level {
             }
             int showPowerUp = MathUtils.random(0, 5);
             if (showPowerUp == 0) {
-                timeForNewLifePowerup = true;
+                timeForNewPowerup = true;
                 powerUpPosition = position.cpy();
             }
         }
@@ -184,12 +184,14 @@ public class Level {
     }
 
     public void update() {
-        if (timeForNewLifePowerup) {
-            NewLifePowerUp newLifePowerUp = newLifePowerUpPool.obtain();
-            newLifePowerUp.init(powerUpPosition.cpy());
+        if (timeForNewPowerup) {
+            if (playerShip.lives < 9) {
+                NewLifePowerUp newLifePowerUp = newLifePowerUpPool.obtain();
+                newLifePowerUp.init(powerUpPosition.cpy());
+                powerUps.add(newLifePowerUp);
+            }
             powerUpPosition = null;
-            powerUps.add(newLifePowerUp);
-            timeForNewLifePowerup = false;
+            timeForNewPowerup = false;
             Gdx.app.log(TAG, "Number of power ups: " + powerUps.size);
         }
         if (playerShip.movingLeft) {
@@ -229,8 +231,18 @@ public class Level {
         for (PowerUp powerUp : powerUps) {
             if (Intersector.overlaps(playerShip.playerShipRegion.ship.getBoundingRectangle()
                     , powerUp.sprite.getBoundingRectangle())) {
+                powerUp.setCullable(true);
+                if (playerShip.lives < 9) {
+                    playerShip.lives++;
+                }
                 if (Constants.DEBUG) {
                     Gdx.app.log(TAG, "Player has collided with power up");
+                }
+            }
+            if (powerUp.isCullable()) {
+                powerUps.removeIndex(powerUps.indexOf(powerUp, false));
+                if (powerUp instanceof NewLifePowerUp) {
+                    newLifePowerUpPool.free((NewLifePowerUp) powerUp);
                 }
             }
         }

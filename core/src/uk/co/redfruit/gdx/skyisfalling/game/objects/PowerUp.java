@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Pool;
 public abstract class PowerUp implements Pool.Poolable {
 
     public Sprite sprite;
+    private boolean cullable;
 
     public void render(SpriteBatch batch) {
         if (sprite.getY() > 0) {
@@ -19,5 +20,13 @@ public abstract class PowerUp implements Pool.Poolable {
 
         sprite.draw(batch);
 
+    }
+
+    public boolean isCullable() {
+        return cullable;
+    }
+
+    public void setCullable(boolean cullable) {
+        this.cullable = cullable;
     }
 }
