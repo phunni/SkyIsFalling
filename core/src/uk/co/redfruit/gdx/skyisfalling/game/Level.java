@@ -234,6 +234,9 @@ public class Level {
                 powerUp.setCullable(true);
                 if (playerShip.lives < 9) {
                     playerShip.lives++;
+                    if (preferences.sfx) {
+                        Assets.getInstance().getOneUp().play(preferences.sfxVolume);
+                    }
                 }
                 if (Constants.DEBUG) {
                     Gdx.app.log(TAG, "Player has collided with power up");
