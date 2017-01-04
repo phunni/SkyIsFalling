@@ -116,10 +116,13 @@ public class Level {
             if (preferences.sfx) {
                 boom.play(preferences.sfxVolume);
             }
-            int showPowerUp = MathUtils.random(0, 5);
-            if (showPowerUp == 0) {
-                timeForNewPowerup = true;
-                powerUpPosition = position.cpy();
+            if (position.y > 3) {
+                //TODO: change the end number to a much higher one - it's low for testing
+                int showPowerUp = MathUtils.random(0, 2);
+                if (showPowerUp == 0) {
+                    timeForNewPowerup = true;
+                    powerUpPosition = position.cpy();
+                }
             }
         }
     }
