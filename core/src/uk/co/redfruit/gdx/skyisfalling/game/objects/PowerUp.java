@@ -12,10 +12,28 @@ public abstract class PowerUp implements Pool.Poolable {
 
     public Sprite sprite;
     private boolean cullable;
+    private byte frames;
 
     public void render(SpriteBatch batch) {
         if (sprite.getY() > 0) {
             sprite.setY(sprite.getY() - 0.02f);
+        }
+        if ((sprite.getY() <= 0)) {
+            frames++;
+        }
+        if (frames >= 1) {
+            if (frames % 10 == 0) {
+                if (frames % 20 == 0) {
+                    sprite.setAlpha(1);
+                } else {
+                    sprite.setAlpha(0);
+                }
+            }
+            if (frames % 70 == 0) {
+                sprite.setAlpha(1);
+                frames = 0;
+                cullable = true;
+            }
         }
 
         sprite.draw(batch);
