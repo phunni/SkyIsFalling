@@ -232,18 +232,20 @@ public class Level {
         }
 
         for (PowerUp powerUp : powerUps) {
-            if (Intersector.overlaps(playerShip.playerShipRegion.ship.getBoundingRectangle()
-                    , powerUp.sprite.getBoundingRectangle())) {
-                powerUp.setCullable(true);
-                if (playerShip.lives < 9) {
+            if (playerShip.lives < 9) {
+                if (Intersector.overlaps(playerShip.playerShipRegion.ship.getBoundingRectangle()
+                        , powerUp.sprite.getBoundingRectangle())) {
+                    powerUp.setCullable(true);
                     playerShip.lives++;
                     if (preferences.sfx) {
                         Assets.getInstance().getOneUp().play(preferences.sfxVolume);
                     }
+                    if (Constants.DEBUG) {
+                        Gdx.app.log(TAG, "Player has collided with power up");
+                    }
                 }
-                if (Constants.DEBUG) {
-                    Gdx.app.log(TAG, "Player has collided with power up");
-                }
+            } else if (playerShip.lives == 9) {
+                powerUp.setCullable(true);
             }
             if (powerUp.isCullable()) {
                 powerUps.removeIndex(powerUps.indexOf(powerUp, false));
