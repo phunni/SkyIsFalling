@@ -18,7 +18,7 @@ public abstract class PowerUp implements Pool.Poolable {
 
     public void render(SpriteBatch batch) {
         if (sprite.getY() > 0) {
-            sprite.setY(sprite.getY() - 0.02f);
+            sprite.setY(sprite.getY() - 0.04f);
         }
         if ((sprite.getY() <= 0)) {
             frames++;
