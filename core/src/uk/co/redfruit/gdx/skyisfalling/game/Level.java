@@ -130,7 +130,7 @@ public class Level {
             if (position.y > 3 && difficulty >= 1) {
                 int dice = 0;
                 if (laserPowerUpActive) {
-                    dice = 12;
+                    dice = 15;
                 } else if (difficulty == 1) {
                     dice = 10;
                 } else if (difficulty == 2) {
