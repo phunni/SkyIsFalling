@@ -8,16 +8,15 @@ import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 
 /**
- * Created by paul on 22/12/16.
+ * Created by paul on 05/01/17.
  */
 
-public class NewLifePowerUp extends PowerUp {
+public class LaserPowerUp extends PowerUp {
 
-    private static final String TAG = "NewLifePowerUp";
+    public static final String TAG = "LaserPowerUp";
 
-
-    public NewLifePowerUp() {
-        sprite = new Sprite(Assets.getInstance().getNewLifePowerup());
+    public LaserPowerUp() {
+        sprite = new Sprite(Assets.getInstance().getLaserPowerUp());
     }
 
     public void init(Vector2 position) {
@@ -28,8 +27,6 @@ public class NewLifePowerUp extends PowerUp {
             Gdx.app.log(TAG, "Position: " + sprite.getX() + " x " + sprite.getY());
         }
     }
-
-
 
     @Override
     public void reset() {

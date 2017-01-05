@@ -16,6 +16,7 @@ import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Explosion;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
+import uk.co.redfruit.gdx.skyisfalling.game.objects.LaserPowerUp;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.NewLifePowerUp;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PowerUp;
@@ -48,6 +49,7 @@ public class Level {
     private Pool<Laser> laserPool;
     private Pool<Explosion> explosionPool;
     private Pool<NewLifePowerUp> newLifePowerUpPool;
+    private Pool<LaserPowerUp> laserPowerUpPool;
     private long timeSinceLastShot;
     private long lastEnemyShot;
     private long timeSinceLastExplosion = TimeUtils.millis();
@@ -55,8 +57,11 @@ public class Level {
     private Sound playerPew = Assets.getInstance().getPlayerPew();
     private Sound enemyPew = Assets.getInstance().getEnemyPew();
     private Sound boom = Assets.getInstance().getBoom();
+    private Sound redPew = Assets.getInstance().getRedPew();
     private boolean timeForNewPowerup;
     private Vector2 powerUpPosition;
+    private boolean laserPowerUpActive = false;
+    private int laserPowerUpFrames;
 
     private GamePreferences preferences = GamePreferences.getInstance();
     private GooglePlayServices googlePlayServices;
@@ -88,6 +93,12 @@ public class Level {
             @Override
             protected NewLifePowerUp newObject() {
                 return new NewLifePowerUp();
+            }
+        };
+        laserPowerUpPool = new Pool<LaserPowerUp>() {
+            @Override
+            protected LaserPowerUp newObject() {
+                return new LaserPowerUp();
             }
         };
 
@@ -175,10 +186,19 @@ public class Level {
 
         if (!gameOver && !showingWaveNumber) {
             Laser laser = laserPool.obtain();
-            laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
+            if (!laserPowerUpActive) {
+                laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
+            } else {
+                laser.init("red", playerShip.getPosition(), new Vector2(0, 15));
+            }
             lasers.add(laser);
             if (preferences.sfx) {
-                long pewID = playerPew.play(preferences.sfxVolume);
+                long pewID;
+                if (!laserPowerUpActive) {
+                    pewID = playerPew.play(preferences.sfxVolume);
+                } else {
+                    pewID = redPew.play(preferences.sfxVolume);
+                }
                 if (Constants.DEBUG) {
                     Gdx.app.log(TAG, "Pew ID: " + pewID);
                 }
@@ -188,15 +208,31 @@ public class Level {
 
     public void update() {
         if (timeForNewPowerup) {
-            if (playerShip.lives < 9) {
-                NewLifePowerUp newLifePowerUp = newLifePowerUpPool.obtain();
-                newLifePowerUp.init(powerUpPosition.cpy());
-                powerUps.add(newLifePowerUp);
+            if (MathUtils.random(0, 2) == 0) {
+                if (playerShip.lives < 9) {
+                    NewLifePowerUp newLifePowerUp = newLifePowerUpPool.obtain();
+                    newLifePowerUp.init(powerUpPosition.cpy());
+                    powerUps.add(newLifePowerUp);
+                }
+            } else {
+                LaserPowerUp laserPowerUp = laserPowerUpPool.obtain();
+                laserPowerUp.init(powerUpPosition.cpy());
+                powerUps.add(laserPowerUp);
             }
             powerUpPosition = null;
             timeForNewPowerup = false;
             Gdx.app.log(TAG, "Number of power ups: " + powerUps.size);
         }
+
+        if (laserPowerUpActive) {
+            laserPowerUpFrames++;
+        }
+
+        if (laserPowerUpFrames >= 180) {
+            laserPowerUpActive = false;
+            laserPowerUpFrames = 0;
+        }
+
         if (playerShip.movingLeft) {
             playerShip.moveLeft();
         } else if (playerShip.movingRight) {
@@ -232,20 +268,23 @@ public class Level {
         }
 
         for (PowerUp powerUp : powerUps) {
-            if (playerShip.lives < 9) {
-                if (Intersector.overlaps(playerShip.playerShipRegion.ship.getBoundingRectangle()
-                        , powerUp.sprite.getBoundingRectangle())) {
-                    powerUp.setCullable(true);
-                    playerShip.lives++;
+            if (Intersector.overlaps(playerShip.playerShipRegion.ship.getBoundingRectangle()
+                    , powerUp.sprite.getBoundingRectangle())) {
+                powerUp.setCullable(true);
+                if (powerUp instanceof NewLifePowerUp) {
+                    if (playerShip.lives < 9) {
+                        playerShip.lives++;
+                    }
                     if (preferences.sfx) {
                         Assets.getInstance().getOneUp().play(preferences.sfxVolume);
                     }
-                    if (Constants.DEBUG) {
-                        Gdx.app.log(TAG, "Player has collided with power up");
-                    }
+                } else if (powerUp instanceof LaserPowerUp) {
+                    laserPowerUpActive = true;
+                    laserPowerUpFrames = 0;
                 }
-            } else if (playerShip.lives == 9) {
-                powerUp.setCullable(true);
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Player has collided with power up");
+                }
             }
             if (powerUp.isCullable()) {
                 powerUps.removeIndex(powerUps.indexOf(powerUp, false));
@@ -309,6 +348,17 @@ public class Level {
         for (Laser laser : lasers) {
             laser.setCullable(true);
         }
+
+        for (PowerUp powerUp : powerUps) {
+            powerUp.setCullable(true);
+        }
+
+        for (Explosion explosion : explosions) {
+            explosion.setCullable(true);
+        }
+
+        laserPowerUpActive = false;
+        laserPowerUpFrames = 0;
 
         levelNumber++;
         setDifficulty();

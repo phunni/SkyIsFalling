@@ -28,6 +28,7 @@ public class Assets implements Disposable, AssetErrorListener {
     private Sprite background;
     private Sprite playerLife;
     private TextureRegion newLifePowerup;
+    private TextureRegion laserPowerUp;
     private PlayerShipAsset player;
     private EnemyShipAsset enemies;
     private LaserAsset lasers;
@@ -38,6 +39,7 @@ public class Assets implements Disposable, AssetErrorListener {
     private Sound enemyPew;
     private Sound boom;
     private Sound oneUp;
+    private Sound redPew;
 
 
     private Assets(){}
@@ -60,6 +62,7 @@ public class Assets implements Disposable, AssetErrorListener {
         this.assetManager.load("audio/enemyPew.ogg", Sound.class);
         this.assetManager.load("audio/explosion.ogg", Sound.class);
         this.assetManager.load("audio/1up.ogg", Sound.class);
+        this.assetManager.load("audio/pew-red.ogg", Sound.class);
         this.assetManager.finishLoading();
         if (Constants.DEBUG) {
             Gdx.app.log(TAG, "Load Time: " + TimeUtils.timeSinceMillis(loadTimeStarted));
@@ -85,6 +88,7 @@ public class Assets implements Disposable, AssetErrorListener {
         explosion = new ExplosionAsset(atlas);
         pause = atlas.createSprite("pause");
         newLifePowerup = atlas.findRegion("playerLife");
+        laserPowerUp = atlas.findRegion("laserPowerUp");
 
         //audio
         music = this.assetManager.get("audio/music.mp3");
@@ -92,6 +96,7 @@ public class Assets implements Disposable, AssetErrorListener {
         enemyPew = this.assetManager.get("audio/enemyPew.ogg");
         boom = this.assetManager.get("audio/explosion.ogg");
         oneUp = this.assetManager.get("audio/1up.ogg");
+        redPew = this.assetManager.get("audio/pew-red.ogg");
 
     }
 
@@ -160,7 +165,15 @@ public class Assets implements Disposable, AssetErrorListener {
         return oneUp;
     }
 
+    public Sound getRedPew() {
+        return redPew;
+    }
+
     public TextureRegion getNewLifePowerup() {
         return newLifePowerup;
+    }
+
+    public TextureRegion getLaserPowerUp() {
+        return laserPowerUp;
     }
 }

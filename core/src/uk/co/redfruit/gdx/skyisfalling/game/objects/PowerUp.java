@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.Pool;
 
 public abstract class PowerUp implements Pool.Poolable {
 
+    protected static final float SIZE = 0.5f;
+
     public Sprite sprite;
     private boolean cullable;
     private byte frames;
