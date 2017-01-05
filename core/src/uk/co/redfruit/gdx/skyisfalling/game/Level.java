@@ -127,9 +127,18 @@ public class Level {
             if (preferences.sfx) {
                 boom.play(preferences.sfxVolume);
             }
-            if (position.y > 3) {
-                //TODO: change the end number to a much higher one - it's low for testing
-                int showPowerUp = MathUtils.random(0, 2);
+            if (position.y > 3 && difficulty >= 1) {
+                int dice = 0;
+                if (laserPowerUpActive) {
+                    dice = 12;
+                } else if (difficulty == 1) {
+                    dice = 10;
+                } else if (difficulty == 2) {
+                    dice = 8;
+                } else if (difficulty == 3) {
+                    dice = 6;
+                }
+                int showPowerUp = MathUtils.random(0, dice);
                 if (showPowerUp == 0) {
                     timeForNewPowerup = true;
                     powerUpPosition = position.cpy();
