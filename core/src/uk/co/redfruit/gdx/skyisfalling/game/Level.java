@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -15,7 +16,10 @@ import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.EnemyShip;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Explosion;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.Laser;
+import uk.co.redfruit.gdx.skyisfalling.game.objects.LaserPowerUp;
+import uk.co.redfruit.gdx.skyisfalling.game.objects.NewLifePowerUp;
 import uk.co.redfruit.gdx.skyisfalling.game.objects.PlayerShip;
+import uk.co.redfruit.gdx.skyisfalling.game.objects.PowerUp;
 import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.screens.GameScreen;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
@@ -37,13 +41,15 @@ public class Level {
     private Array<EnemyShip> enemyShips = new Array<>();
     private Array<Laser> lasers = new Array<>();
     private Array<Explosion> explosions = new Array<>();
+    private Array<PowerUp> powerUps = new Array<>();
     private float difficulty;
-    private long startTimeForMovingShips;
     private float score;
     private long timeStartedShowingWaveNumber;
     private Pool<EnemyShip> enemyShipPool;
     private Pool<Laser> laserPool;
     private Pool<Explosion> explosionPool;
+    private Pool<NewLifePowerUp> newLifePowerUpPool;
+    private Pool<LaserPowerUp> laserPowerUpPool;
     private long timeSinceLastShot;
     private long lastEnemyShot;
     private long timeSinceLastExplosion = TimeUtils.millis();
@@ -51,6 +57,11 @@ public class Level {
     private Sound playerPew = Assets.getInstance().getPlayerPew();
     private Sound enemyPew = Assets.getInstance().getEnemyPew();
     private Sound boom = Assets.getInstance().getBoom();
+    private Sound redPew = Assets.getInstance().getRedPew();
+    private boolean timeForNewPowerup;
+    private Vector2 powerUpPosition;
+    private boolean laserPowerUpActive = false;
+    private int laserPowerUpFrames;
 
     private GamePreferences preferences = GamePreferences.getInstance();
     private GooglePlayServices googlePlayServices;
@@ -59,6 +70,38 @@ public class Level {
     public Level(World newWorld, GooglePlayServices googlePlayServices) {
         this.world = newWorld;
         this.googlePlayServices = googlePlayServices;
+
+        enemyShipPool = new Pool<EnemyShip>(18) {
+            @Override
+            protected EnemyShip newObject() {
+                return new EnemyShip(world);
+            }
+        };
+        laserPool = new Pool<Laser>(6) {
+            @Override
+            protected Laser newObject() {
+                return new Laser(world, GameScreen.camera);
+            }
+        };
+        explosionPool = new Pool<Explosion>(6) {
+            @Override
+            protected Explosion newObject() {
+                return new Explosion();
+            }
+        };
+        newLifePowerUpPool = new Pool<NewLifePowerUp>(6) {
+            @Override
+            protected NewLifePowerUp newObject() {
+                return new NewLifePowerUp();
+            }
+        };
+        laserPowerUpPool = new Pool<LaserPowerUp>() {
+            @Override
+            protected LaserPowerUp newObject() {
+                return new LaserPowerUp();
+            }
+        };
+
         init();
 
         playerShip = new PlayerShip(world, this);
@@ -67,6 +110,8 @@ public class Level {
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             isAndroid = true;
         }
+
+
     }
 
     //methods start
@@ -81,6 +126,23 @@ public class Level {
             timeSinceLastExplosion = TimeUtils.millis();
             if (preferences.sfx) {
                 boom.play(preferences.sfxVolume);
+            }
+            if (position.y > 3 && difficulty >= 1) {
+                int dice = 0;
+                if (laserPowerUpActive) {
+                    dice = 15;
+                } else if (difficulty == 1) {
+                    dice = 10;
+                } else if (difficulty == 2) {
+                    dice = 8;
+                } else if (difficulty == 3) {
+                    dice = 6;
+                }
+                int showPowerUp = MathUtils.random(0, dice);
+                if (showPowerUp == 0) {
+                    timeForNewPowerup = true;
+                    powerUpPosition = position.cpy();
+                }
             }
         }
     }
@@ -106,47 +168,23 @@ public class Level {
 
     public void render(SpriteBatch batch) {
         if (!gameOver && !showingWaveNumber) {
-            boolean moving = false;
             if (!playerExploding) {
                 playerShip.render(batch);
-            }
-            if (TimeUtils.timeSinceNanos(startTimeForMovingShips) > 1400000000) {
-                moving = true;
-            }
-            for (EnemyShip enemy : enemyShips) {
-                enemy.render(batch);
-                if (playerExploding) {
-                    enemy.fullStop();
-                    continue;
+
+                for (EnemyShip enemy : enemyShips) {
+                    enemy.render(batch);
                 }
-                if (!enemy.isFalling()) {
-                    if (moving) {
-                        if (enemy.lastDirection == 0) {
-                            enemy.movingRight = true;
-                            enemy.lastDirection = 1;
-                        } else if (enemy.lastDirection == 1) {
-                            enemy.movingLeft = true;
-                            enemy.lastDirection = 2;
-                        } else if (enemy.lastDirection == 2) {
-                            enemy.movingDown = true;
-                            enemy.lastDirection = 0;
-                        }
-                    } else {
-                        stopShips(enemy);
-                    }
-                } else {
-                    stopShips(enemy);
+                for (Laser laser : lasers) {
+                    laser.render(batch);
                 }
-            }
-            for (Laser laser : lasers) {
-                laser.render(batch);
             }
 
             for (Explosion explosion : explosions) {
                 explosion.render(batch);
             }
-            if (moving) {
-                startTimeForMovingShips = TimeUtils.nanoTime();
+
+            for (PowerUp powerUp : powerUps) {
+                powerUp.render(batch);
             }
 
         }
@@ -157,10 +195,19 @@ public class Level {
 
         if (!gameOver && !showingWaveNumber) {
             Laser laser = laserPool.obtain();
-            laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
+            if (!laserPowerUpActive) {
+                laser.init("blue", playerShip.getPosition(), new Vector2(0, 15));
+            } else {
+                laser.init("red", playerShip.getPosition(), new Vector2(0, 15));
+            }
             lasers.add(laser);
             if (preferences.sfx) {
-                long pewID = playerPew.play(preferences.sfxVolume);
+                long pewID;
+                if (!laserPowerUpActive) {
+                    pewID = playerPew.play(preferences.sfxVolume);
+                } else {
+                    pewID = redPew.play(preferences.sfxVolume);
+                }
                 if (Constants.DEBUG) {
                     Gdx.app.log(TAG, "Pew ID: " + pewID);
                 }
@@ -168,7 +215,33 @@ public class Level {
         }
     }
 
-    public void update(float deltaTime) {
+    public void update() {
+        if (timeForNewPowerup) {
+            if (MathUtils.random(0, 2) == 0) {
+                if (playerShip.lives < 9) {
+                    NewLifePowerUp newLifePowerUp = newLifePowerUpPool.obtain();
+                    newLifePowerUp.init(powerUpPosition.cpy());
+                    powerUps.add(newLifePowerUp);
+                }
+            } else {
+                LaserPowerUp laserPowerUp = laserPowerUpPool.obtain();
+                laserPowerUp.init(powerUpPosition.cpy());
+                powerUps.add(laserPowerUp);
+            }
+            powerUpPosition = null;
+            timeForNewPowerup = false;
+            Gdx.app.log(TAG, "Number of power ups: " + powerUps.size);
+        }
+
+        if (laserPowerUpActive) {
+            laserPowerUpFrames++;
+        }
+
+        if (laserPowerUpFrames >= 180) {
+            laserPowerUpActive = false;
+            laserPowerUpFrames = 0;
+        }
+
         if (playerShip.movingLeft) {
             playerShip.moveLeft();
         } else if (playerShip.movingRight) {
@@ -203,13 +276,35 @@ public class Level {
             }
         }
 
-        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100) {
-            if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
-                if (enemyShips.size > 0) {
-                    shootEnemyLaser(getRandomEnemyShip());
-                    lastEnemyShot = TimeUtils.millis();
+        for (PowerUp powerUp : powerUps) {
+            if (Intersector.overlaps(playerShip.playerShipRegion.ship.getBoundingRectangle()
+                    , powerUp.sprite.getBoundingRectangle())) {
+                powerUp.setCullable(true);
+                if (powerUp instanceof NewLifePowerUp) {
+                    if (playerShip.lives < 9) {
+                        playerShip.lives++;
+                    }
+                    if (preferences.sfx) {
+                        Assets.getInstance().getOneUp().play(preferences.sfxVolume);
+                    }
+                } else if (powerUp instanceof LaserPowerUp) {
+                    laserPowerUpActive = true;
+                    laserPowerUpFrames = 0;
+                }
+                if (Constants.DEBUG) {
+                    Gdx.app.log(TAG, "Player has collided with power up");
                 }
             }
+            if (powerUp.isCullable()) {
+                powerUps.removeIndex(powerUps.indexOf(powerUp, false));
+                if (powerUp instanceof NewLifePowerUp) {
+                    newLifePowerUpPool.free((NewLifePowerUp) powerUp);
+                }
+            }
+        }
+
+        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100
+                && !playerExploding) {
 
             if (MathUtils.randomBoolean(0.01f * difficulty)) {
                 if (enemyShips.size > 0) {
@@ -217,6 +312,14 @@ public class Level {
                     lastEnemyShot = TimeUtils.millis();
                 }
             }
+
+            if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
+                if (enemyShips.size > 0) {
+                    shootEnemyLaser(getRandomEnemyShip());
+                    lastEnemyShot = TimeUtils.millis();
+                }
+            }
+
         }
 
         if (enemyShips.size <= 0 && !playerExploding) {
@@ -235,10 +338,7 @@ public class Level {
     private void addShips(String colour, float height) {
         for (int i = 0; i < 6; i++) {
             EnemyShip enemy = enemyShipPool.obtain();
-            enemy.init(world, this, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
-            /*if (Constants.DEBUG) {
-                Gdx.app.log(TAG, "Body is awake: " + enemy.isAWake());
-            }*/
+            enemy.init(this, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
             enemyShips.add(enemy);
         }
     }
@@ -253,34 +353,26 @@ public class Level {
     }
 
     private void init() {
-        enemyShipPool = new Pool<EnemyShip>() {
-            @Override
-            protected EnemyShip newObject() {
-                return new EnemyShip(world);
-            }
-        };
-        laserPool = new Pool<Laser>() {
-            @Override
-            protected Laser newObject() {
-                return new Laser(world, GameScreen.camera);
-            }
-        };
-        explosionPool = new Pool<Explosion>() {
-            @Override
-            protected Explosion newObject() {
-                return new Explosion();
-            }
-        };
 
         for (Laser laser : lasers) {
             laser.setCullable(true);
         }
 
+        for (PowerUp powerUp : powerUps) {
+            powerUp.setCullable(true);
+        }
+
+        for (Explosion explosion : explosions) {
+            explosion.setCullable(true);
+        }
+
+        laserPowerUpActive = false;
+        laserPowerUpFrames = 0;
+
         levelNumber++;
         setDifficulty();
 
         setUpEnemyShips();
-        startTimeForMovingShips = 1200000000;
         timeSinceLastShot = TimeUtils.nanoTime();
 
         timeStartedShowingWaveNumber = TimeUtils.millis();
@@ -339,6 +431,9 @@ public class Level {
             Laser laser = laserPool.obtain();
             laser.init("green", ship.getCentre(), new Vector2(0, -9));
             lasers.add(laser);
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "Sprites flip: " + laser.isFlipX() + " : " + laser.isFlipY());
+            }
             if (preferences.sfx) {
                 long enemyPewID = enemyPew.play(preferences.sfxVolume);
                 if (Constants.DEBUG) {
@@ -348,11 +443,6 @@ public class Level {
         }
     }
 
-    private void stopShips(EnemyShip enemy) {
-        enemy.movingLeft = false;
-        enemy.movingRight = false;
-        enemy.movingDown = false;
-    }
 //methods end
 
 

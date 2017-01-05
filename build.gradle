@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.2.3'
     }
 }
 
@@ -15,7 +15,7 @@ allprojects {
     version = '1.0'
     ext {
         appName = 'The Sky is Falling'
-        gdxVersion = '1.9.4'
+        gdxVersion = '1.9.5'
     }
 
     repositories {
@@ -63,8 +63,6 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.0"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.0"
         compile fileTree(dir: 'libs', include: '*.jar')
     }
 }
