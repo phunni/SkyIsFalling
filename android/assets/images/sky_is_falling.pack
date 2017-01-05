@@ -5,197 +5,204 @@ filter: Nearest,Nearest
 repeat: none
 background
   rotate: false
-  xy: 2, 252
-  size: 1024, 768
-  orig: 1024, 768
+  xy: 2, 409
+  size: 768, 576
+  orig: 768, 576
   offset: 0, 0
   index: -1
 icon
   rotate: false
-  xy: 2, 58
-  size: 192, 192
+  xy: 2, 220
+  size: 184, 187
   orig: 192, 192
-  offset: 0, 0
+  offset: 4, 0
   index: -1
 enemyRed
   rotate: false
-  xy: 1028, 936
+  xy: 772, 901
   size: 93, 84
   orig: 93, 84
   offset: 0, 0
   index: -1
 enemyBlue
   rotate: false
-  xy: 196, 166
+  xy: 2, 134
   size: 93, 84
   orig: 93, 84
   offset: 0, 0
   index: -1
 enemyBlack
   rotate: false
-  xy: 1028, 850
+  xy: 188, 323
   size: 93, 84
   orig: 93, 84
   offset: 0, 0
   index: -1
 enemyGreen
   rotate: false
-  xy: 1123, 936
+  xy: 772, 815
   size: 93, 84
   orig: 93, 84
   offset: 0, 0
   index: -1
 ship
   rotate: false
-  xy: 291, 175
+  xy: 867, 910
   size: 99, 75
   orig: 99, 75
   offset: 0, 0
   index: -1
 explosion
   rotate: false
-  xy: 196, 100
+  xy: 968, 929
+  size: 54, 56
+  orig: 64, 64
+  offset: 0, 8
+  index: 8
+explosion
+  rotate: false
+  xy: 2, 68
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 2
 explosion
   rotate: false
-  xy: 1028, 784
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 9
-explosion
-  rotate: false
-  xy: 1123, 870
+  xy: 97, 154
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 12
 explosion
   rotate: false
-  xy: 1218, 956
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 8
-explosion
-  rotate: false
-  xy: 392, 186
+  xy: 188, 257
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 4
 explosion
   rotate: false
-  xy: 1028, 718
+  xy: 283, 343
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 14
 explosion
   rotate: false
-  xy: 1284, 956
+  xy: 772, 749
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 11
 explosion
   rotate: false
-  xy: 458, 186
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 6
-explosion
-  rotate: false
-  xy: 1028, 652
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 7
-explosion
-  rotate: false
-  xy: 1350, 956
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: 10
-explosion
-  rotate: false
-  xy: 524, 186
+  xy: 867, 844
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 0
 explosion
   rotate: false
-  xy: 1028, 586
+  xy: 2, 2
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 3
 explosion
   rotate: false
-  xy: 1416, 956
+  xy: 349, 343
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 13
 explosion
   rotate: false
-  xy: 590, 186
+  xy: 772, 683
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: 15
 explosion
   rotate: false
-  xy: 1028, 520
+  xy: 415, 343
   size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: 1
+explosion
+  rotate: false
+  xy: 772, 621
+  size: 64, 60
   orig: 64, 64
   offset: 0, 0
   index: 5
 explosion
   rotate: false
-  xy: 1482, 956
-  size: 64, 64
+  xy: 481, 343
+  size: 56, 64
   orig: 64, 64
   offset: 0, 0
-  index: 1
+  index: 7
+explosion
+  rotate: false
+  xy: 772, 562
+  size: 56, 57
+  orig: 64, 64
+  offset: 0, 0
+  index: 6
+explosion
+  rotate: false
+  xy: 539, 351
+  size: 53, 56
+  orig: 64, 64
+  offset: 0, 8
+  index: 9
+explosion
+  rotate: false
+  xy: 772, 504
+  size: 44, 56
+  orig: 64, 64
+  offset: 8, 8
+  index: 10
+laserPowerUp
+  rotate: false
+  xy: 594, 371
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
 laserRed
   rotate: false
-  xy: 2, 2
+  xy: 68, 78
   size: 9, 54
   orig: 9, 54
   offset: 0, 0
   index: -1
 laserGreen
   rotate: false
-  xy: 262, 110
+  xy: 163, 164
   size: 9, 54
   orig: 9, 54
   offset: 0, 0
   index: -1
 laserBlue
   rotate: false
-  xy: 1094, 794
+  xy: 254, 267
   size: 9, 54
   orig: 9, 54
   offset: 0, 0
   index: -1
 playerLife
   rotate: false
-  xy: 196, 72
+  xy: 188, 229
   size: 33, 26
   orig: 33, 26
   offset: 0, 0
   index: -1
 pause
   rotate: false
-  xy: 1189, 909
-  size: 25, 25
+  xy: 968, 911
+  size: 15, 16
   orig: 25, 25
-  offset: 0, 0
+  offset: 5, 5
   index: -1

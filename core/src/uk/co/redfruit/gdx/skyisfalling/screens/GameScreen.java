@@ -96,13 +96,16 @@ public class GameScreen extends RedfruitScreen {
         if (!suspended) {
             batch = new SpriteBatch();
             camera = new OrthographicCamera(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
-            gameViewport = new StretchViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT, camera);
+            gameViewport = new StretchViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT,
+                    camera);
             camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
             camera.update();
             batch.setProjectionMatrix(camera.combined);
 
-            cameraGUI = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-            guiViewport = new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+            cameraGUI = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH,
+                    Constants.VIEWPORT_GUI_HEIGHT);
+            guiViewport = new StretchViewport(Constants.VIEWPORT_GUI_WIDTH,
+                    Constants.VIEWPORT_GUI_HEIGHT);
             guiViewport.setCamera(cameraGUI);
             cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
             cameraGUI.setToOrtho(false);
@@ -112,7 +115,8 @@ public class GameScreen extends RedfruitScreen {
             createGround();
             createSideWalls();
             level = new Level(world, googlePlayServices);
-            world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall, level));
+            world.setContactListener(new WorldContactListener(groundBody, leftWall, rightWall,
+                    level));
             if (Constants.DEBUG) {
                 debugRenderer = new Box2DDebugRenderer();
             }
@@ -120,7 +124,8 @@ public class GameScreen extends RedfruitScreen {
             background.setPosition(0, 0);
             background.setSize(camera.viewportWidth, camera.viewportHeight);
             if (Constants.DEBUG) {
-                Gdx.app.log(TAG, "Background initial size: " + background.getWidth() + "  x " + background.getHeight());
+                Gdx.app.log(TAG, "Background initial size: " + background.getWidth() + "  x "
+                        + background.getHeight());
             }
 
 
@@ -215,8 +220,10 @@ public class GameScreen extends RedfruitScreen {
         stage.getViewport().update(width, height);
         background.setSize(20, arHeight);
         if (Constants.DEBUG) {
-            Gdx.app.log(TAG, "Viewport resized: " + camera.viewportWidth + " x " + camera.viewportHeight);
-            Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x " + background.getHeight());
+            Gdx.app.log(TAG, "Viewport resized: " + camera.viewportWidth + " x "
+                    + camera.viewportHeight);
+            Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x "
+                    + background.getHeight());
         }
     }
 
@@ -281,7 +288,8 @@ public class GameScreen extends RedfruitScreen {
 
         layer.add(livesImage).pad(10).fill();
 
-        livesLabel = new Label("" + level.getPlayerShip().lives, new Label.LabelStyle(smallFont, Color.WHITE));
+        livesLabel = new Label("" + level.getPlayerShip().lives,
+                new Label.LabelStyle(smallFont, Color.WHITE));
         layer.add(livesLabel).pad(10, 5, 10, 25);
         return layer;
     }
@@ -372,7 +380,8 @@ public class GameScreen extends RedfruitScreen {
     private Table buildWaveLayer() {
         Table layer = new Table();
         layer.center();
-        waveLabel = new Label("Wave #" + +MathUtils.floor(level.levelNumber), new Label.LabelStyle(largeFont, Color.GREEN));
+        waveLabel = new Label("Wave #" + +MathUtils.floor(level.levelNumber),
+                new Label.LabelStyle(largeFont, Color.GREEN));
         waveLabel.setVisible(false);
         layer.add(waveLabel);
 
@@ -441,7 +450,8 @@ public class GameScreen extends RedfruitScreen {
     }
 
     private void rebuildStage() {
-        stage = new Stage(new StretchViewport(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT));
+        stage = new Stage(new StretchViewport(Constants.VIEWPORT_GUI_WIDTH,
+                Constants.VIEWPORT_GUI_HEIGHT));
 
         stage.clear();
         if (Constants.DEBUG) {

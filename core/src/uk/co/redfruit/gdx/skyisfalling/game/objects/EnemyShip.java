@@ -47,7 +47,7 @@ public class EnemyShip extends GameObject implements Poolable {
     }
 
 
-    public void init(World world, Level level, String colour, Vector2 position) {
+    public void init(Level level, String colour, Vector2 position) {
         this.level = level;
         framesMoved = 0;
         EnemyShipAsset enemyShipRegion = Assets.getInstance().getEnemies();

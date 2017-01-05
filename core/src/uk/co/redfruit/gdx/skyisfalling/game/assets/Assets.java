@@ -9,6 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -26,6 +27,8 @@ public class Assets implements Disposable, AssetErrorListener {
 
     private Sprite background;
     private Sprite playerLife;
+    private TextureRegion newLifePowerup;
+    private TextureRegion laserPowerUp;
     private PlayerShipAsset player;
     private EnemyShipAsset enemies;
     private LaserAsset lasers;
@@ -35,6 +38,8 @@ public class Assets implements Disposable, AssetErrorListener {
     private Sound playerPew;
     private Sound enemyPew;
     private Sound boom;
+    private Sound oneUp;
+    private Sound redPew;
 
 
     private Assets(){}
@@ -56,6 +61,8 @@ public class Assets implements Disposable, AssetErrorListener {
         this.assetManager.load("audio/pew.ogg", Sound.class);
         this.assetManager.load("audio/enemyPew.ogg", Sound.class);
         this.assetManager.load("audio/explosion.ogg", Sound.class);
+        this.assetManager.load("audio/1up.ogg", Sound.class);
+        this.assetManager.load("audio/pew-red.ogg", Sound.class);
         this.assetManager.finishLoading();
         if (Constants.DEBUG) {
             Gdx.app.log(TAG, "Load Time: " + TimeUtils.timeSinceMillis(loadTimeStarted));
@@ -80,12 +87,16 @@ public class Assets implements Disposable, AssetErrorListener {
         fonts = new AssetFonts();
         explosion = new ExplosionAsset(atlas);
         pause = atlas.createSprite("pause");
+        newLifePowerup = atlas.findRegion("playerLife");
+        laserPowerUp = atlas.findRegion("laserPowerUp");
 
         //audio
         music = this.assetManager.get("audio/music.mp3");
         playerPew = this.assetManager.get("audio/pew.ogg");
         enemyPew = this.assetManager.get("audio/enemyPew.ogg");
         boom = this.assetManager.get("audio/explosion.ogg");
+        oneUp = this.assetManager.get("audio/1up.ogg");
+        redPew = this.assetManager.get("audio/pew-red.ogg");
 
     }
 
@@ -148,5 +159,21 @@ public class Assets implements Disposable, AssetErrorListener {
 
     public Sound getBoom() {
         return boom;
+    }
+
+    public Sound getOneUp() {
+        return oneUp;
+    }
+
+    public Sound getRedPew() {
+        return redPew;
+    }
+
+    public TextureRegion getNewLifePowerup() {
+        return newLifePowerup;
+    }
+
+    public TextureRegion getLaserPowerUp() {
+        return laserPowerUp;
     }
 }

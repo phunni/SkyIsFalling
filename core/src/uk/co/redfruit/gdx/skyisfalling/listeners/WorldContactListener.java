@@ -105,9 +105,14 @@ public class WorldContactListener implements ContactListener {
 
     private void laserHitsEnemyShip(EnemyShip aUserData, Laser bUserData) {
         bUserData.setCullable(true);
-        if (!aUserData.isFalling()) {
-            aUserData.reduceHitPoints();
-        } else {
+        if ("blue".equals(bUserData.getColour())) {
+            //bUserData.setCullable(true);
+            if (!aUserData.isFalling()) {
+                aUserData.reduceHitPoints();
+            } else {
+                aUserData.setDestroyed(true);
+            }
+        } else if ("red".equals(bUserData.getColour())) {
             aUserData.setDestroyed(true);
         }
     }
