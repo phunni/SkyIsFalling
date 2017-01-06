@@ -45,13 +45,9 @@ public class WorldContactListener implements ContactListener {
             } else if (bUserData instanceof Laser && aUserData instanceof EnemyShip) {
                 laserEnemyCollision((Laser) bUserData, (EnemyShip) aUserData);
             } else if (aUserData instanceof PlayerShip && bUserData instanceof EnemyShip) {
-                if (!level.playerExploding) {
-                    ((PlayerShip) aUserData).loseALife();
-                }
+                crashPlayerShip((PlayerShip) aUserData, (EnemyShip) bUserData);
             } else if (bUserData instanceof PlayerShip && aUserData instanceof EnemyShip) {
-                if (!level.playerExploding) {
-                    ((PlayerShip) bUserData).loseALife();
-                }
+                crashPlayerShip((PlayerShip) bUserData, (EnemyShip) aUserData);
             } else if (aUserData instanceof Laser && bUserData instanceof PlayerShip) {
                 if (((Laser) aUserData).isEnemyLaser) {
                     playerShipHitByLaser((Laser) aUserData, (PlayerShip) bUserData);
@@ -72,6 +68,13 @@ public class WorldContactListener implements ContactListener {
         }
 
 
+    }
+
+    private void crashPlayerShip(PlayerShip playerShip, EnemyShip enemyShip) {
+        if (!level.playerExploding) {
+            enemyShip.setDestroyed(true);
+            playerShip.loseALife();
+        }
     }
 
     private void crashEnemyShip(EnemyShip enemyShip) {
