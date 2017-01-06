@@ -338,7 +338,7 @@ public class Level {
     private void addShips(String colour, float height) {
         for (int i = 0; i < 6; i++) {
             EnemyShip enemy = enemyShipPool.obtain();
-            enemy.init(this, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
+            enemy.init(this, colour, new Vector2(0.8f + (2.5f * i), Constants.WORLD_HEIGHT - height));
             enemyShips.add(enemy);
         }
     }
