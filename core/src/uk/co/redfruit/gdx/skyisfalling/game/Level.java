@@ -303,6 +303,13 @@ public class Level {
             }
         }
 
+        for (Explosion explosion : explosions) {
+            if (explosion.isCullable()) {
+                explosions.removeValue(explosion, false);
+                explosionPool.free(explosion);
+            }
+        }
+
         if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100
                 && !playerExploding) {
 
