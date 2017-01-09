@@ -230,7 +230,9 @@ public class Level {
             }
             powerUpPosition = null;
             timeForNewPowerup = false;
-            Gdx.app.log(TAG, "Number of power ups: " + powerUps.size);
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "Number of power ups: " + powerUps.size);
+            }
         }
 
         if (laserPowerUpActive) {
