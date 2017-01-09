@@ -204,6 +204,9 @@ public class OptionsScreen extends RedfruitScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 prefs.showFPS = fpsCheck.isChecked();
+                if (gameScreen != null) {
+                    gameScreen.fpsLayer.setVisible(true);
+                }
                 prefs.save();
             }
         });
