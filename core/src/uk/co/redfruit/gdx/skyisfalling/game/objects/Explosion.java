@@ -45,6 +45,7 @@ public class Explosion extends GameObject implements Pool.Poolable {
         position = null;
         origin = new Vector2();
         defaultDynamicBodyDef = null;
+        cullable = false;
     }
 
     public void init(Vector2 position, Vector2 size) {

@@ -50,6 +50,7 @@ public class GameScreen extends RedfruitScreen {
     private static final float FIXED_TIME_STEP = 1f / 60f;
     public static OrthographicCamera camera;
     private static OrthographicCamera cameraGUI;
+    public Table fpsLayer;
     double accumulator = 0.0;
     private int totalElapsedTime = 0;
     private SpriteBatch batch;
@@ -74,7 +75,6 @@ public class GameScreen extends RedfruitScreen {
     private Body leftWall;
     private Body rightWall;
     private boolean suspended = false;
-
     private GamePreferences preferences = GamePreferences.getInstance();
 
     private State state = State.RUN;
@@ -219,12 +219,12 @@ public class GameScreen extends RedfruitScreen {
 
         stage.getViewport().update(width, height);
         background.setSize(20, arHeight);
-        if (Constants.DEBUG) {
+        //if (Constants.DEBUG) {
             Gdx.app.log(TAG, "Viewport resized: " + camera.viewportWidth + " x "
                     + camera.viewportHeight);
             Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x "
                     + background.getHeight());
-        }
+        // }
     }
 
     @Override
@@ -258,15 +258,19 @@ public class GameScreen extends RedfruitScreen {
     }
 
     private Table buildFPSLayer() {
-        Table layer = new Table();
-        layer.bottom().right();
+        fpsLayer = new Table();
+        fpsLayer.bottom().right();
         int fps = Gdx.graphics.getFramesPerSecond();
         // colour will default to red, but should change to reflect fps almost instantly
         Label.LabelStyle fpsStyle = new Label.LabelStyle(smallFont, Color.RED);
         fpsLabel = new Label("FPS: " + fps, fpsStyle);
+        fpsLayer.add(fpsLabel).pad(25);
 
-        layer.add(fpsLabel).pad(25);
-        return layer;
+        if (!preferences.showFPS) {
+            fpsLayer.setVisible(false);
+        }
+
+        return fpsLayer;
     }
 
     private Table buildGameOverLayer() {
@@ -484,9 +488,7 @@ public class GameScreen extends RedfruitScreen {
             case PAUSE:
                 Table pausedLayer = buildPausedLayer();
                 stack.add(pausedLayer);
-                if (preferences.showFPS) {
-                    stack.add(buildFPSLayer());
-                }
+                stack.add(buildFPSLayer());
                 break;
         }
     }

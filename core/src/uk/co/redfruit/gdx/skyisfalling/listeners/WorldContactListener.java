@@ -45,13 +45,9 @@ public class WorldContactListener implements ContactListener {
             } else if (bUserData instanceof Laser && aUserData instanceof EnemyShip) {
                 laserEnemyCollision((Laser) bUserData, (EnemyShip) aUserData);
             } else if (aUserData instanceof PlayerShip && bUserData instanceof EnemyShip) {
-                if (!level.playerExploding) {
-                    ((PlayerShip) aUserData).loseALife();
-                }
+                crashPlayerShip((PlayerShip) aUserData, (EnemyShip) bUserData);
             } else if (bUserData instanceof PlayerShip && aUserData instanceof EnemyShip) {
-                if (!level.playerExploding) {
-                    ((PlayerShip) bUserData).loseALife();
-                }
+                crashPlayerShip((PlayerShip) bUserData, (EnemyShip) aUserData);
             } else if (aUserData instanceof Laser && bUserData instanceof PlayerShip) {
                 if (((Laser) aUserData).isEnemyLaser) {
                     playerShipHitByLaser((Laser) aUserData, (PlayerShip) bUserData);
@@ -62,9 +58,9 @@ public class WorldContactListener implements ContactListener {
                 }
             }
         } else if (aUserData instanceof EnemyShip && groundBody.equals(b)) {
-            ((EnemyShip) aUserData).setDestroyed(true);
+            crashEnemyShip((EnemyShip) aUserData);
         } else if (groundBody.equals(a) && bUserData instanceof EnemyShip) {
-            ((EnemyShip) bUserData).setDestroyed(true);
+            crashEnemyShip((EnemyShip) bUserData);
         } else if (aUserData instanceof Laser && groundBody.equals(b)) {
             laserHitsGround((Laser) aUserData);
         } else if (bUserData instanceof Laser && groundBody.equals(a)) {
@@ -72,6 +68,21 @@ public class WorldContactListener implements ContactListener {
         }
 
 
+    }
+
+    private void crashPlayerShip(PlayerShip playerShip, EnemyShip enemyShip) {
+        if (!level.playerExploding) {
+            enemyShip.setDestroyed(true);
+            playerShip.loseALife();
+        }
+    }
+
+    private void crashEnemyShip(EnemyShip enemyShip) {
+        enemyShip.setDestroyed(true);
+        if (!enemyShip.isFalling()) {
+            level.getPlayerShip().lives = 0;
+            //level.gameOver = true;
+        }
     }
 
 

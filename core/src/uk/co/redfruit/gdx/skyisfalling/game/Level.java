@@ -230,7 +230,9 @@ public class Level {
             }
             powerUpPosition = null;
             timeForNewPowerup = false;
-            Gdx.app.log(TAG, "Number of power ups: " + powerUps.size);
+            if (Constants.DEBUG) {
+                Gdx.app.log(TAG, "Number of power ups: " + powerUps.size);
+            }
         }
 
         if (laserPowerUpActive) {
@@ -303,6 +305,13 @@ public class Level {
             }
         }
 
+        for (Explosion explosion : explosions) {
+            if (explosion.isCullable()) {
+                explosions.removeValue(explosion, false);
+                explosionPool.free(explosion);
+            }
+        }
+
         if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100
                 && !playerExploding) {
 
@@ -338,7 +347,7 @@ public class Level {
     private void addShips(String colour, float height) {
         for (int i = 0; i < 6; i++) {
             EnemyShip enemy = enemyShipPool.obtain();
-            enemy.init(this, colour, new Vector2(0.5f + (2.5f * i), Constants.WORLD_HEIGHT - height));
+            enemy.init(this, colour, new Vector2(0.8f + (2.5f * i), Constants.WORLD_HEIGHT - height));
             enemyShips.add(enemy);
         }
     }
