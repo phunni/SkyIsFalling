@@ -41,10 +41,11 @@ public class SkyIsFalling extends Game {
 				Gdx.app.log(TAG, controller.getName());
 				ControllerManager.setControllerListener(controller);
 				Gdx.app.log(TAG, "Controller class: " + controller.getClass().getName());
-			}
+                Gdx.app.log(TAG, "Number of Controllers: " + Controllers.getControllers().size);
+            }
 
-			Gdx.app.log(TAG, "Number of Controllers: " + Controllers.getControllers().size);
-		}
+
+        }
 		Controllers.addListener(controllerListener);
 
 		setScreen(new MenuScreen(this, googlePlayServices));
