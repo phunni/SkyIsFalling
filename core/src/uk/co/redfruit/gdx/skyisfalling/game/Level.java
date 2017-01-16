@@ -454,11 +454,11 @@ public class Level {
         } else if (difficulty == 4) {
             addShips("red", 0.0f);
             addShips("red", 1.5f);
-            addShips("green", 3.0f);
+            addShips("blue", 3.0f);
         } else if (difficulty >= 5) {
             addShips("red", 0.0f);
             addShips("red", 1.5f);
-            addShips("red", 3.0f);
+            addShips("green", 3.0f);
         }
     }
 
