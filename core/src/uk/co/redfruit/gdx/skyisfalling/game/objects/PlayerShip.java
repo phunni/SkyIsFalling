@@ -86,6 +86,10 @@ public class PlayerShip extends GameObject {
             Sprite ship = playerShipRegion.ship;
             level.playerExploding = true;
 
+            for (Laser laser : level.lasers) {
+                laser.isCullable();
+            }
+
             level.blowUp(position.cpy()
                     , new Vector2(playerShipRegion.ship.getWidth(), ship.getHeight()));
             Timer.schedule(new Timer.Task() {

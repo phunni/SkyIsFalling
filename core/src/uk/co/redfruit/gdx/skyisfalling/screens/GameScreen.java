@@ -219,12 +219,12 @@ public class GameScreen extends RedfruitScreen {
 
         stage.getViewport().update(width, height);
         background.setSize(20, arHeight);
-        //if (Constants.DEBUG) {
+        if (Constants.DEBUG) {
             Gdx.app.log(TAG, "Viewport resized: " + camera.viewportWidth + " x "
                     + camera.viewportHeight);
             Gdx.app.log(TAG, "Background resized: " + background.getWidth() + "  x "
                     + background.getHeight());
-        // }
+        }
     }
 
     @Override

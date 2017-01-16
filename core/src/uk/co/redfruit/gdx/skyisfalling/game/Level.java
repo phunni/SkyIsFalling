@@ -29,6 +29,8 @@ public class Level {
 
     private static final String TAG = "Level";
 
+    private final int END_OF_GRACE = 40;
+
     private final World world;
     public float levelNumber;
     public long gameOverStartTime;
@@ -37,9 +39,9 @@ public class Level {
     public boolean paused;
     public boolean unpaused;
     public boolean playerExploding;
+    public Array<Laser> lasers = new Array<>();
     private PlayerShip playerShip;
     private Array<EnemyShip> enemyShips = new Array<>();
-    private Array<Laser> lasers = new Array<>();
     private Array<Explosion> explosions = new Array<>();
     private Array<PowerUp> powerUps = new Array<>();
     private float difficulty;
@@ -62,6 +64,7 @@ public class Level {
     private Vector2 powerUpPosition;
     private boolean laserPowerUpActive = false;
     private int laserPowerUpFrames;
+    private int gracePeriod;
 
     private GamePreferences preferences = GamePreferences.getInstance();
     private GooglePlayServices googlePlayServices;
@@ -137,6 +140,10 @@ public class Level {
                     dice = 8;
                 } else if (difficulty == 3) {
                     dice = 6;
+                } else if (difficulty == 4) {
+                    dice = 4;
+                } else if (difficulty >= 5) {
+                    dice = 3;
                 }
                 int showPowerUp = MathUtils.random(0, dice);
                 if (showPowerUp == 0) {
@@ -216,6 +223,9 @@ public class Level {
     }
 
     public void update() {
+        if (gracePeriod < END_OF_GRACE) {
+            gracePeriod++;
+        }
         if (timeForNewPowerup) {
             if (MathUtils.random(0, 2) == 0) {
                 if (playerShip.lives < 9) {
@@ -252,8 +262,9 @@ public class Level {
             playerShip.stop();
         }
 
-        if (TimeUtils.timeSinceMillis(timeStartedShowingWaveNumber) > 1500) {
+        if ((TimeUtils.timeSinceMillis(timeStartedShowingWaveNumber) > 1500) && showingWaveNumber) {
             showingWaveNumber = false;
+            gracePeriod = 0;
         }
 
         if (getPlayerShip().lives <= 0 && !gameOver) {
@@ -312,23 +323,25 @@ public class Level {
             }
         }
 
-        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100
-                && !playerExploding) {
+        if (gracePeriod == END_OF_GRACE) {
+            if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 200
+                    && !playerExploding) {
 
-            if (MathUtils.randomBoolean(0.01f * difficulty)) {
-                if (enemyShips.size > 0) {
-                    shootEnemyLaser(getRandomEnemyShip());
-                    lastEnemyShot = TimeUtils.millis();
+                if (MathUtils.randomBoolean(0.01f * difficulty)) {
+                    if (enemyShips.size > 0) {
+                        shootEnemyLaser(getRandomEnemyShip());
+                        lastEnemyShot = TimeUtils.millis();
+                    }
                 }
-            }
 
-            if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
-                if (enemyShips.size > 0) {
-                    shootEnemyLaser(getRandomEnemyShip());
-                    lastEnemyShot = TimeUtils.millis();
+                if (TimeUtils.timeSinceMillis(lastEnemyShot) > 2000) {
+                    if (enemyShips.size > 0) {
+                        shootEnemyLaser(getRandomEnemyShip());
+                        lastEnemyShot = TimeUtils.millis();
+                    }
                 }
-            }
 
+            }
         }
 
         if (enemyShips.size <= 0 && !playerExploding) {
@@ -362,6 +375,8 @@ public class Level {
     }
 
     private void init() {
+
+        gracePeriod = 0;
 
         for (Laser laser : lasers) {
             laser.setCullable(true);
@@ -412,6 +427,10 @@ public class Level {
             difficulty = 2;
         } else if (levelNumber < 12) {
             difficulty = 3;
+        } else if (levelNumber < 20) {
+            difficulty = 4;
+        } else if (levelNumber >= 24) {
+            difficulty = 5;
         }
     }
 
@@ -428,10 +447,18 @@ public class Level {
             addShips("green", 0.0f);
             addShips("blue", 1.5f);
             addShips("black", 3.0f);
-        } else if (difficulty >= 3) {
+        } else if (difficulty == 3) {
             addShips("red", 0.0f);
             addShips("green", 1.5f);
             addShips("blue", 3.0f);
+        } else if (difficulty == 4) {
+            addShips("red", 0.0f);
+            addShips("red", 1.5f);
+            addShips("blue", 3.0f);
+        } else if (difficulty >= 5) {
+            addShips("red", 0.0f);
+            addShips("red", 1.5f);
+            addShips("green", 3.0f);
         }
     }
 

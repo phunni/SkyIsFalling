@@ -124,6 +124,7 @@ public class WorldContactListener implements ContactListener {
                 aUserData.setDestroyed(true);
             }
         } else if ("red".equals(bUserData.getColour())) {
+            level.increaseScore(50);
             aUserData.setDestroyed(true);
         }
     }
