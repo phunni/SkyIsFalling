@@ -137,6 +137,10 @@ public class Level {
                     dice = 8;
                 } else if (difficulty == 3) {
                     dice = 6;
+                } else if (difficulty == 4) {
+                    dice = 4;
+                } else if (difficulty >= 5) {
+                    dice = 3;
                 }
                 int showPowerUp = MathUtils.random(0, dice);
                 if (showPowerUp == 0) {
@@ -312,7 +316,7 @@ public class Level {
             }
         }
 
-        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 100
+        if (!gameOver && !showingWaveNumber && TimeUtils.timeSinceMillis(lastEnemyShot) > 200
                 && !playerExploding) {
 
             if (MathUtils.randomBoolean(0.01f * difficulty)) {
@@ -412,6 +416,10 @@ public class Level {
             difficulty = 2;
         } else if (levelNumber < 12) {
             difficulty = 3;
+        } else if (levelNumber < 20) {
+            difficulty = 4;
+        } else if (levelNumber >= 24) {
+            difficulty = 5;
         }
     }
 
@@ -428,10 +436,18 @@ public class Level {
             addShips("green", 0.0f);
             addShips("blue", 1.5f);
             addShips("black", 3.0f);
-        } else if (difficulty >= 3) {
+        } else if (difficulty == 3) {
             addShips("red", 0.0f);
             addShips("green", 1.5f);
             addShips("blue", 3.0f);
+        } else if (difficulty == 4) {
+            addShips("red", 0.0f);
+            addShips("red", 1.5f);
+            addShips("green", 3.0f);
+        } else if (difficulty >= 5) {
+            addShips("red", 0.0f);
+            addShips("red", 1.5f);
+            addShips("red", 3.0f);
         }
     }
 
