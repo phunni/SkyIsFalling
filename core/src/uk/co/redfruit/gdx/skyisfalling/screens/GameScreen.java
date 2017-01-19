@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -62,9 +61,6 @@ public class GameScreen extends RedfruitScreen {
     private Label fpsLabel;
     private Label waveLabel;
     private Label gameOverLabel;
-    private BitmapFont normalFont = Assets.getInstance().getFonts().defaultNormal;
-    private BitmapFont largeFont = Assets.getInstance().getFonts().defaultBig;
-    private BitmapFont smallFont = Assets.getInstance().getFonts().defaultSmall;
     private InputMultiplexer inputMultiplexer;
     private GameInputListener gameInputListener;
     private Sprite background = Assets.getInstance().getBackground();
