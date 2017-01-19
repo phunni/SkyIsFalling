@@ -425,11 +425,11 @@ public class Level {
             difficulty = 1;
         } else if (levelNumber < 8) {
             difficulty = 2;
-        } else if (levelNumber < 12) {
+        } else if (levelNumber < 16) {
             difficulty = 3;
         } else if (levelNumber < 20) {
             difficulty = 4;
-        } else if (levelNumber >= 24) {
+        } else if (levelNumber >= 26) {
             difficulty = 5;
         }
     }
