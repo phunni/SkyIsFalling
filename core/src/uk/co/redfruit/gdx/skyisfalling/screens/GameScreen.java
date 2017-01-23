@@ -32,14 +32,12 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import uk.co.redfruit.gdx.skyisfalling.SkyIsFalling;
 import uk.co.redfruit.gdx.skyisfalling.game.Level;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.controllers.ControllerManager;
 import uk.co.redfruit.gdx.skyisfalling.google.play.services.GooglePlayServices;
 import uk.co.redfruit.gdx.skyisfalling.listeners.GameInputListener;
 import uk.co.redfruit.gdx.skyisfalling.listeners.WorldContactListener;
-import uk.co.redfruit.gdx.skyisfalling.listeners.controllers.SkyIsFallingControllerListener;
 import uk.co.redfruit.gdx.skyisfalling.utils.Constants;
 import uk.co.redfruit.gdx.skyisfalling.utils.GamePreferences;
 
@@ -127,7 +125,7 @@ public class GameScreen extends RedfruitScreen {
 
             rebuildStage();
 
-            SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
+            //SkyIsFallingControllerListener controllerListener = SkyIsFalling.getControllerListener();
             ControllerManager.setLevel(level);
 
             gameInputListener = new GameInputListener(camera, level);
@@ -183,7 +181,7 @@ public class GameScreen extends RedfruitScreen {
                     accumulator += frameTime;
 
                     while (accumulator >= FIXED_TIME_STEP) {
-                        doPhysicsWorldStep(totalElapsedTime);
+                        doPhysicsWorldStep();
                         accumulator -= FIXED_TIME_STEP;
                         totalElapsedTime += FIXED_TIME_STEP;
                     }
@@ -439,7 +437,7 @@ public class GameScreen extends RedfruitScreen {
         wallBox.dispose();
     }
 
-    private void doPhysicsWorldStep(int totalElapsedTime) {
+    private void doPhysicsWorldStep() {
         world.step(FIXED_TIME_STEP, 6, 2);
     }
 
