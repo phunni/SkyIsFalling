@@ -2,7 +2,6 @@ package uk.co.redfruit.gdx.skyisfalling.game.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -10,6 +9,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pool;
+
+import net.dermetfan.gdx.graphics.g2d.Box2DSprite;
 
 import uk.co.redfruit.gdx.skyisfalling.game.assets.Assets;
 import uk.co.redfruit.gdx.skyisfalling.game.assets.LaserAsset;
@@ -22,11 +23,11 @@ public class Laser extends GameObject implements Pool.Poolable {
 
     private static final String TAG = "Laser";
 
-    private final float LASER_WIDTH = 0.1f;
+    private final float LASER_WIDTH = 0.065f;
     public boolean isEnemyLaser;
     private LaserAsset laserRegion = Assets.getInstance().getLasers();
     private OrthographicCamera camera;
-    private Sprite sprite;
+    private Box2DSprite sprite;
     private String colour;
 
     public Laser(World world, OrthographicCamera camera) {
@@ -38,14 +39,14 @@ public class Laser extends GameObject implements Pool.Poolable {
         this.colour = colour;
         switch (colour) {
             case "green":
-                sprite = laserRegion.greenLaser;
+                sprite = new Box2DSprite(laserRegion.greenLaser);
                 isEnemyLaser = true;
                 break;
             case "blue":
-                sprite = laserRegion.blueLaser;
+                sprite = new Box2DSprite(laserRegion.blueLaser);
                 break;
             case "red":
-                sprite = laserRegion.redLaser;
+                sprite = new Box2DSprite(laserRegion.redLaser);
         }
         if (Constants.DEBUG) {
             Gdx.app.log(TAG, "Sprites Initial flip: " + sprite.isFlipX() + " : " + sprite.isFlipY());
@@ -60,6 +61,8 @@ public class Laser extends GameObject implements Pool.Poolable {
         this.position = position;
         defaultDynamicBodyDef.position.set(position.x, position.y);
         defaultDynamicBodyDef.fixedRotation = true;
+        //sprite.setBounds(position.x, position.y, LASER_WIDTH,
+        //        LASER_WIDTH * (sprite.getHeight() / sprite.getWidth()));
         //create shape
         PolygonShape square = new PolygonShape();
         square.setAsBox(LASER_WIDTH, LASER_WIDTH * (sprite.getHeight() / sprite.getWidth()));
@@ -79,15 +82,18 @@ public class Laser extends GameObject implements Pool.Poolable {
         body.setUserData(this);
         body.setLinearVelocity(linearVelocity);
         square.dispose();
+
+        if (Constants.DEBUG) {
+            Gdx.app.log(TAG, "Body Position: " + position.x + " : " + position.y);
+            Gdx.app.log(TAG, "Sprite Position: " + sprite.getX() + " : " + sprite.getY());
+        }
+
     }
 
     @Override
     public void render(SpriteBatch batch) {
         position = body.getPosition().sub(sprite.getOriginX(), sprite.getOriginY());
-        sprite.setPosition(position.x, position.y);
-        sprite.setBounds(position.x, position.y,
-                LASER_WIDTH, LASER_WIDTH * sprite.getHeight() / sprite.getWidth());
-        sprite.draw(batch);
+        sprite.draw(batch, body);
         if (position.y > 11) {
             this.setCullable(true);
             if (Constants.DEBUG) {
@@ -115,6 +121,9 @@ public class Laser extends GameObject implements Pool.Poolable {
         sprite = null;
         cullable = false;
         isEnemyLaser = false;
+        position = null;
+        origin = null;
+
     }
 
     public String getColour() {

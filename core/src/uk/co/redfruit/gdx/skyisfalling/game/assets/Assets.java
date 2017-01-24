@@ -176,4 +176,8 @@ public class Assets implements Disposable, AssetErrorListener {
     public TextureRegion getLaserPowerUp() {
         return laserPowerUp;
     }
+
+    public AssetManager getAssetManager() {
+        return assetManager;
+    }
 }

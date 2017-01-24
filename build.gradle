@@ -16,6 +16,7 @@ allprojects {
     ext {
         appName = 'The Sky is Falling'
         gdxVersion = '1.9.5'
+        gdxUtilsVersion = '0.13.3'
     }
 
     repositories {
@@ -71,5 +72,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile fileTree(dir: 'libs', include: '*.jar')
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils:$gdxUtilsVersion"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:$gdxUtilsVersion"
     }
 }
