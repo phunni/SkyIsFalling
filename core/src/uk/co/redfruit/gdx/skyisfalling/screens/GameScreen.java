@@ -49,7 +49,6 @@ public class GameScreen extends RedfruitScreen {
     private static OrthographicCamera cameraGUI;
     public Table fpsLayer;
     double accumulator = 0.0;
-    private int totalElapsedTime = 0;
     private SpriteBatch batch;
     private Viewport gameViewport;
     private Viewport guiViewport;
@@ -183,7 +182,6 @@ public class GameScreen extends RedfruitScreen {
                     while (accumulator >= FIXED_TIME_STEP) {
                         doPhysicsWorldStep();
                         accumulator -= FIXED_TIME_STEP;
-                        totalElapsedTime += FIXED_TIME_STEP;
                     }
                 }
                 break;
