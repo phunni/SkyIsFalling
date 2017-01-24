@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?><!--suppress LibGDXOpenGLVersion -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.co.redfruit.gdx.skyisfalling.android"
-    android:versionCode="3"
-    android:versionName="2017.0.7">
+    android:versionCode="4"
+    android:versionName="2017.0.8">
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="11"
         android:targetSdkVersion="25" />
 
     <application
