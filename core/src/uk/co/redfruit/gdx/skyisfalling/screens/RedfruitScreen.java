@@ -29,6 +29,7 @@ public abstract class RedfruitScreen implements Screen {
     public RedfruitScreen(Game game) {
         this.game = game;
         atlas = new TextureAtlas(Constants.TEXTURE_SKY_IS_FALLING);
+        Gdx.input.setCatchBackKey(true);
     }
 
     protected Table buildBackgroundLayer() {
